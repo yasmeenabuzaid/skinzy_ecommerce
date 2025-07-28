@@ -2,7 +2,7 @@
 import React from "react";
 import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
-import { useCartContext } from "../../../context/CartContext"; // تأكد من المسار الصحيح
+import { useCartContext } from "../../../context/CartContext"; 
 import Link from "next/link";
 import { useLocale } from 'next-intl';
 const TrashIcon = (props) => (

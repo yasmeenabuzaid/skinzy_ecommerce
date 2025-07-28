@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import BackendConnector from "@/services/connectors/BackendConnector";
+import BackendConnector from "../../../../services/connectors/BackendConnector";
 import Swal from "sweetalert2";
 
 const AddressesView = ({ onBack, onAddAddress }) => {

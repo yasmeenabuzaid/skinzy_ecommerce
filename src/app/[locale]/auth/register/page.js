@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import Header from '../../components/ui/Header';
 import Footer from '../../components/ui/Footer';
-import BackendConnector from '@/services/connectors/BackendConnector';
+import BackendConnector from '../../../../services/connectors/BackendConnector';
 import { useLocale } from 'next-intl';
 
 // Eye Icons

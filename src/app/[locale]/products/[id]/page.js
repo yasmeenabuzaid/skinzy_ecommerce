@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import useProductQuery from "@/hooks/useProductQuery";
+import useProductQuery from "../../../../hooks/useProductQuery";
 import Breadcrumbs from "../../components/ProductPage/Breadcrumbs";
 import ProductGallery from "../../components/ProductPage/ProductGallery";
 import ProductDetails from "../../components/ProductPage/ProductDetails";

@@ -1,6 +1,6 @@
 import { Poppins, Noto_Kufi_Arabic } from 'next/font/google';
 import { notFound } from 'next/navigation';
-import { CartContextProvider } from '@/context/CartContext';
+import { CartContextProvider } from '../../context/CartContext';
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';

@@ -1,5 +1,5 @@
 "use client";
-import { useCartContext } from "@/context/CartContext";
+import { useCartContext } from "../../../../context/CartContext";
 import { Star, Heart, Repeat2 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useRouter, useParams } from "next/navigation";
