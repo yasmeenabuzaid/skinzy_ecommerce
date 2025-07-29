@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import localStorageService from "../../../../services/storage/localStorageService";
-import storageService from "../../../../services/storage/storageService";
+import localStorageService from "@/services/storage/localStorageService";
+import storageService from "@/services/storage/storageService";
 import Swal from "sweetalert2";
 import UserIcon from "./UserIcon";
-import useAddressQuery from "../../../../hooks/useAddressQuery";
+import { useLocale } from "next-intl";
+import useAddressQuery from "@/hooks/useAddressQuery";
 
 const AccountDetailsView = ({ onViewAddresses }) => {
   const router = useRouter();

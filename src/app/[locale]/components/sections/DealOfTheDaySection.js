@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useOnScreen } from '../../../../hooks/useOnScreen';
+import { useOnScreen } from '@/hooks/useOnScreen';
 
 export default function DealOfTheDaySection() {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });

@@ -1,8 +1,8 @@
 "use client";
 import React, { useContext, useState, useEffect, createContext } from "react";
-import BackendConnector from "../services/connectors/BackendConnector";
+import BackendConnector from "@/services/connectors/BackendConnector";
 import Swal from "sweetalert2";
-import storageService from "../services/storage/storageService";
+import storageService from "@/services/storage/storageService";
 
 const CartContext = createContext({});
 

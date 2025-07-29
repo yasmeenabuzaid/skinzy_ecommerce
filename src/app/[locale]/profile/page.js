@@ -1,8 +1,9 @@
 "use client";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import storageService from "../../../services/storage/storageService";
+import storageService from "@/services/storage/storageService";
 
 import AccountPage from "../components/account/AccountPage";
 import Header from "../components/ui/Header";

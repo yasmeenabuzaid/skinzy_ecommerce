@@ -5,7 +5,7 @@ import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import OrderSummary from "./OrderSummary";
 import { useLocale } from "next-intl";
-import BackendConnector from "../../../services/connectors/BackendConnector";
+import BackendConnector from "@/services/connectors/BackendConnector";
 import { useCartContext } from "../../../context/CartContext";
 import StripePayment from "./StripePayment.js";
 import Swal from "sweetalert2";

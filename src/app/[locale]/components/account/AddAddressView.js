@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import BackendConnector from "../../../../services/connectors/BackendConnector";
+import BackendConnector from "@/services/connectors/BackendConnector";
 
 const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
-  const [title, setTitle] = useState(""); 
+  const [title, setTitle] = useState(""); // مثل "المنزل"
   const [fullAddress, setFullAddress] = useState("");
   const [cityId, setCityId] = useState("");
   const [customCity, setCustomCity] = useState("");

@@ -1,6 +1,6 @@
 // hooks/useAddressQuery.js
 import { useEffect, useState } from "react";
-import BackendConnector from "../services/connectors/BackendConnector";
+import BackendConnector from "@/services/connectors/BackendConnector";
 
 const useAddressQuery = () => {
   const [country, setCountry] = useState("");

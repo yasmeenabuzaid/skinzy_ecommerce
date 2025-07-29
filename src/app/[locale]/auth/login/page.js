@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import Header from '../../components/ui/Header';
 import Footer from '../../components/ui/Footer';
-import BackendConnector from '../../../../services/connectors/BackendConnector';
+import BackendConnector from '@/services/connectors/BackendConnector';
 import { useLocale } from 'next-intl';
-import storageService from '../../../../services/storage/storageService';
+import storageService from '@/services/storage/storageService';
 
 // Eye Icons
 const Eye = (props) => (
