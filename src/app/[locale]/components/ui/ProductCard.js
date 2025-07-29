@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShoppingBag, Heart, Repeat, Eye, Star } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProductCard({ product }) {
    const productImage =
@@ -17,18 +18,18 @@ export default function ProductCard({ product }) {
                     </span>
                 )}
                 <div className="absolute top-5 right-5 flex flex-col gap-2.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform group-hover:translate-x-0 translate-x-3">
-                    <a href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
+                    <Link href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
                         <ShoppingBag size={18} />
-                    </a>
-                    <a href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
+                    </Link>
+                    <Link href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
                         <Heart size={18} />
-                    </a>
-                    <a href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
+                    </Link>
+                    <Link href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
                         <Repeat size={18} />
-                    </a>
-                    <a href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
+                    </Link>
+                    <Link href="#" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#ef8172] hover:text-white transition-colors">
                         <Eye size={18} />
-                    </a>
+                    </Link>
                 </div>
             </div>
             <div className="p-5">

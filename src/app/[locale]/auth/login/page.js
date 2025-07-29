@@ -7,6 +7,7 @@ import Footer from '../../components/ui/Footer';
 import BackendConnector from '@/services/connectors/BackendConnector';
 import { useLocale } from 'next-intl';
 import storageService from '@/services/storage/storageService';
+import Link from 'next/link'; // ✅ أضفنا الاستيراد هنا
 
 // Eye Icons
 const Eye = (props) => (
@@ -48,26 +49,24 @@ const LoginPage = () => {
             setLoading(true);
             const response = await BackendConnector.login({ email, password });
             
-    if (response?.success) {
-  storageService.setUserInfo({
-    accessToken: response.accessToken,
-    user: response.user,
-  });
+            if (response?.success) {
+                storageService.setUserInfo({
+                    accessToken: response.accessToken,
+                    user: response.user,
+                });
 
-  Swal.fire({
-    title: 'تم تسجيل الدخول بنجاح!',
-    icon: 'success',
-    timer: 1500,
-    showConfirmButton: false,
-  });
+                Swal.fire({
+                    title: 'تم تسجيل الدخول بنجاح!',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
 
-  // توجيه مع إعادة تحميل لتفعيل السياقات أو الجلسات الأخرى
-  router.push(`/`);
-  setTimeout(() => {
-    window.location.reload(); // لإجبار إعادة تحميل الصفحة بعد التوجيه
-  }, 300); 
-}
-
+                router.push(`/`);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
 
         } catch (err) {
             Swal.fire('Error', 'Something went wrong. Try again.', 'error');
@@ -84,7 +83,11 @@ const LoginPage = () => {
                 <div className="w-full max-w-6xl mx-auto lg:grid rounded-2xl overflow-hidden">
                     <div className="p-8 md:p-12 bg-white flex flex-col justify-center">
                         <div className="max-w-md mx-auto w-full">
-                            <a href="#" className="text-3xl font-bold text-gray-800 mb-4 block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>Essentia</a>
+                            {/* ✅ شعار الموقع برابط صفحة رئيسية */}
+                            <Link href="/" className="text-3xl font-bold text-gray-800 mb-4 block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                Essentia
+                            </Link>
+
                             <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 text-center mt-4">Welcome Back!</h2>
                             <p className="text-gray-500 text-center mt-2 mb-8">Please enter your details to sign in.</p>
 
@@ -105,7 +108,11 @@ const LoginPage = () => {
                                 <div>
                                     <div className="flex justify-between items-center mb-1">
                                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                                        <a href="#" className="text-sm text-[#ef8172] hover:underline">Forgot Password?</a>
+
+                                        {/* ✅ رابط نسيان كلمة المرور */}
+                                        <Link href={`/${locale}/auth/forgot`} className="text-sm text-[#ef8172] hover:underline">
+                                            Forgot Password?
+                                        </Link>
                                     </div>
                                     <div className="relative">
                                         <input
@@ -141,7 +148,9 @@ const LoginPage = () => {
 
                             <p className="text-center text-sm text-gray-600 mt-8">
                                 Don&apos;t have an account?{' '}
-                                <a href={`/${locale}/auth/register`} className="font-semibold text-[#ef8172] hover:underline">Create an account</a>
+                                <Link href={`/${locale}/auth/register`} className="font-semibold text-[#ef8172] hover:underline">
+                                    Create an account
+                                </Link>
                             </p>
                         </div>
                     </div>
@@ -152,7 +161,6 @@ const LoginPage = () => {
     );
 };
 
-// Wrapper
 export default function App() {
     return (
         <div className="font-sans bg-gray-100" style={{ fontFamily: "'Poppins', sans-serif" }}>

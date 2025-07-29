@@ -45,8 +45,8 @@ const LanguageSwitcher = () => (
       <ChevronDown size={14} />      
     </button>
     <div className="absolute top-full right-0 mt-2 w-28 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 border border-gray-100">
-      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">English</a>
-      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">العربية</a>
+      <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">English</Link>
+      <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">العربية</Link>
     </div>
   </div>
 );
@@ -57,8 +57,8 @@ const TopBar = () => (
     <div className="w-full flex justify-between items-center">
       <div className="hidden md:flex items-center gap-4">
         <div className="flex gap-3">
-            <a href="https://www.facebook.com/profile.php?id=61574964286607&rdid=0k8iaoTm0BuSADV7" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-amber-300 transition-colors"><Facebook className="w-4 h-4" /></a>
-            <a href="https://www.instagram.com/skincarejo8" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-amber-300 transition-colors"><Instagram className="w-4 h-4" /></a>
+            <Link href="https://www.facebook.com/profile.php?id=61574964286607&rdid=0k8iaoTm0BuSADV7" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-amber-300 transition-colors"><Facebook className="w-4 h-4" /></Link>
+            <Link href="https://www.instagram.com/skincarejo8" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-amber-300 transition-colors"><Instagram className="w-4 h-4" /></Link>
         </div>
         <span className="ml-4">Call Us: +00 123 456 789</span>
       </div>

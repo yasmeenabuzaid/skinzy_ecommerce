@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../../hooks/useProductsQuery';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
+import Link from 'next/link';
 
 export default function ProductSliderSection({ title, subtitle, filters, buttonText, buttonLink }) {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
@@ -85,9 +86,10 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
               <div
                 key={product.id}
                 className="snap-start flex-shrink-0 w-full sm:w-[calc(50%-1rem)] md:w-[calc(33.33%-1.33rem)] lg:w-[calc(25%-1.5rem)] xl:w-[calc(20%-1.6rem)]"
-                onClick={() => router.push(`/${locale}/products/${product.id}`)}
               >
-                <ProductCard product={product} />
+                <Link href={`/${locale}/products/${product.id}`}>
+                  <ProductCard product={product} />
+                </Link>
               </div>
             ))}
           </div>
@@ -101,9 +103,11 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
 
         {buttonText && (
           <div className="text-center mt-12">
-            <a href={buttonLink} className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all">
-              {buttonText}
-            </a>
+            <Link href={buttonLink}>
+              <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all cursor-pointer">
+                {buttonText}
+              </span>
+            </Link>
           </div>
         )}
       </div>

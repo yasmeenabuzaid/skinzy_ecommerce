@@ -7,6 +7,7 @@ import Header from '../../components/ui/Header';
 import Footer from '../../components/ui/Footer';
 import BackendConnector from '@/services/connectors/BackendConnector';
 import { useLocale } from 'next-intl';
+import Link from 'next/link';
 
 // Eye Icons
 const Eye = (props) => (
@@ -90,9 +91,10 @@ const RegisterPage = () => {
         <div className="w-full max-w-6xl mx-auto lg:grid rounded-2xl overflow-hidden">
           <div className="p-8 md:p-12 bg-white flex flex-col justify-center">
             <div className="max-w-md mx-auto w-full">
-              <a href="#" className="text-3xl font-bold text-gray-800 mb-4 block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Essentia
-              </a>
+            <Link href="/" className="text-3xl font-bold text-gray-800 mb-4 block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
+  Essentia
+</Link>
+
               <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 text-center mt-4">Create your account</h2>
               <p className="text-gray-500 text-center mt-2 mb-8">Fill in the information below to get started.</p>
 
@@ -195,7 +197,9 @@ const RegisterPage = () => {
 
               <p className="text-center text-sm text-gray-600 mt-8">
                 Already have an account?{' '}
-                <a href={`/${locale}/auth/login`} className="font-semibold text-[#ef8172] hover:underline">Sign in</a>
+<Link href={`/${locale}/auth/login`} className="font-semibold text-[#ef8172] hover:underline">
+  Sign in
+</Link>
               </p>
             </div>
           </div>

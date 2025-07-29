@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import AccountDetailsView from "./AccountDetailsView";
 import AddressesView from "./AddressesView";
 import AddAddressView from "./AddAddressView";
+import Link from "next/link";
 
 export default function AccountPage() {
   const [view, setView] = useState("account");
@@ -24,9 +25,10 @@ export default function AccountPage() {
       <header className="border-b border-gray-200">
         <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center h-16">
-            <a href="#" className="text-sm text-gray-600 hover:text-black transition-colors">
-              Home
-            </a>
+           <Link href="/" className="text-sm text-gray-600 hover:text-black transition-colors">
+  Home
+</Link>
+
           </div>
         </nav>
       </header>

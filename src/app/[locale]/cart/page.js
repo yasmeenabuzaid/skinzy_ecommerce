@@ -95,7 +95,15 @@ export default function CartPage() {
                     <span className="text-lg font-semibold">${subtotal.toFixed(2)} USD</span>
                   </div>
                   <p className="text-xs text-gray-500 mb-6">
-                    Taxes and <a href="#" className="underline">shipping</a> calculated at checkout
+                    Taxes and 
+                    
+                   <Link href={`/${locale}`} className="text-[#d77979] underline font-semibold">
+  Continue shopping
+</Link>
+
+                    
+                    
+                     calculated at checkout
                   </p>
                      <Link
                   href={`/${locale}/checkout`}
@@ -110,7 +118,9 @@ export default function CartPage() {
           ) : (
             <div className="text-center py-16">
               <h2 className="text-2xl font-semibold mb-2">Your cart is empty</h2>
-              <a href="#" className="text-[#d77979] underline font-semibold">Continue shopping</a>
+<Link href={`/${locale}`} className="text-[#d77979] underline font-semibold">
+  Continue shopping
+</Link>
             </div>
           )}
         </div>

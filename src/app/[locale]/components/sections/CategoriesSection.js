@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { useOnScreen } from '../../../../hooks/useOnScreen'; // تأكد من صحة المسار
-import useCategoryQuery from '../../../../hooks/useCategoriesQuery'; // تأكد من صحة المسار
-
+import { useOnScreen } from '../../../../hooks/useOnScreen'; 
+import useCategoryQuery from '../../../../hooks/useCategoriesQuery'; 
+import Link from 'next/link'; 
 export default function CategoriesSection() {
     const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
     const { categories, isLoadingCategories, errorCategories } = useCategoryQuery();
@@ -35,9 +35,9 @@ export default function CategoriesSection() {
                                     />
                                 </div>
                                 <h3 className="text-lg font-semibold text-gray-800 mb-1">{cat.name}</h3>
-                                <a href="#" className="text-sm text-gray-500 hover:text-gray-800">
-                                    View all
-                                </a>
+                             <Link href={`/category/${cat.slug || cat.id}`} className="text-sm text-gray-500 hover:text-gray-800">
+  View all
+</Link>
                             </div>
                         ))}
                     </div>

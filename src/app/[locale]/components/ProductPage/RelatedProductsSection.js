@@ -4,6 +4,7 @@ import { useOnScreen } from '../../../../hooks/useOnScreen';
 import ProductCard from '../../components/ui/ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../../hooks/useProductsQuery';
+import Link from 'next/link'; // ✅ أضفنا Link
 
 export default function ProductSliderSection({ title, subtitle, filters, buttonText, buttonLink }) {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
@@ -65,8 +66,6 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
         )}
 
         <div className="relative px-0 md:px-10">
-        
-
           <div ref={sliderRef} className="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide">
             {products.map(product => (
               <div key={product.id} className="snap-start flex-shrink-0 w-full sm:w-[calc(50%-1rem)] md:w-[calc(33.33%-1.33rem)] lg:w-[calc(25%-1.5rem)] xl:w-[calc(20%-1.6rem)]">
@@ -74,15 +73,13 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
               </div>
             ))}
           </div>
-
-    
         </div>
 
         {buttonText && (
           <div className="text-center mt-12">
-            <a href={buttonLink} className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all">
+            <Link href={buttonLink} className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all">
               {buttonText}
-            </a>
+            </Link>
           </div>
         )}
       </div>
