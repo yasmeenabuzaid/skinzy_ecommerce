@@ -1,4 +1,3 @@
-// middleware.js (ضعه في جذر المشروع)
 import createMiddleware from 'next-intl/middleware';
 
 export default createMiddleware({

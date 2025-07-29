@@ -62,7 +62,7 @@ export const promoCards = [
 export const trendingProducts = [
     { id: 1, name: 'Renaissance Brightlight Serum 30ml', image: '/product-1 (95).jpg', rating: 5, reviews: 2, price: 100.00 },
     { id: 2, name: 'Super C Smart Nutrient Beauty Capsules', image: '/product-1 (97).jpg', rating: 5, reviews: 1, price: 65.00 },
-    { id: 3, name: "Paula's Resist Hydrating Fluid Spf50 60ml", image: '/product-1 - 2025-01-24T154848.535.jpg', rating: 5, reviews: 1, price: 180.00 },
+    { id: 3, name: "Paula\'s Resist Hydrating Fluid Spf50 60ml", image: '/product-1 - 2025-01-24T154848.535.jpg', rating: 5, reviews: 1, price: 180.00 },
     { id: 4, name: 'Ordinary Hyaluronic Acid 2% + B5 30ml', image: '/product-1 - 2025-01-24T155552.518.jpg', rating: 4.5, reviews: 2, price: 70.00 },
     { id: 5, name: 'Mz Skin Reviving Antioxidant Glow Oil 30ml', image: '/product-1 - 2025-01-24T155844.176.jpg', rating: 0, reviews: 0, price: 80.00, originalPrice: 99.00, sale: true },
 ];

@@ -34,7 +34,7 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=2070&auto=format&fit=crop',
     offer: 'Limited Time',
     title: 'Summer Sale is Here!',
-    description: "Get up to 50% off on selected items. Don't miss out!",
+    description: "Get up to 50% off on selected items",
     buttonText: 'View Deals',
   },
 ];
