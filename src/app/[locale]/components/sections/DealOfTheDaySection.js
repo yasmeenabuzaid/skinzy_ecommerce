@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useOnScreen } from '@/hooks/useOnScreen';
+import Image from 'next/image';
 
 export default function DealOfTheDaySection() {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
@@ -8,16 +9,19 @@ export default function DealOfTheDaySection() {
   return (
     <section
       ref={ref}
-      className={`py-20 bg-[#f8f9fa] transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+      className={`py-20 bg-[#f8f9fa] transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
     >
       <div className="container mx-auto px-4 max-w-screen-xl grid grid-cols-1 md:grid-cols-2 items-center gap-20">
-
         <div className="flex justify-start">
-          <div className="w-full aspect-square overflow-hidden rounded-xl">
-            <img
+          <div className="w-full aspect-square overflow-hidden rounded-xl relative" style={{ minHeight: '300px' }}>
+            <Image
               src="https://images.pexels.com/photos/7262995/pexels-photo-7262995.jpeg"
               alt="Radiant Glow Face Serum"
-              className="w-full h-full object-cover"
+              layout="fill"
+              objectFit="cover"
+              priority
             />
           </div>
         </div>
@@ -29,7 +33,7 @@ export default function DealOfTheDaySection() {
             Radiant Glow Face Serum
           </h2>
           <p className="text-gray-600 leading-relaxed mb-8 max-w-lg">
-            Lorem Ipsum is simply dummy text of the printing industry, reoym Ipsum has been the industry's standard dummy text ever since the 1500s.
+            Lorem Ipsum is simply dummy text of the printing industry, reoym Ipsum has been the industry&apos;s standard dummy text ever since the 1500s.
           </p>
           <a
             href="#"
@@ -38,7 +42,6 @@ export default function DealOfTheDaySection() {
             Discover More
           </a>
         </div>
-
       </div>
     </section>
   );
