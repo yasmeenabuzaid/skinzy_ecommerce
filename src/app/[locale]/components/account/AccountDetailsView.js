@@ -11,7 +11,7 @@ const AccountDetailsView = ({ onViewAddresses }) => {
   const router = useRouter();
   const [userName, setUserName] = useState("");
 
-const { country, city, addressCount, loading, error } = useAddressQuery();
+  const { country, city, addressCount, loading, error } = useAddressQuery();
 
   useEffect(() => {
     const userInfo = storageService.getUserInfo();
@@ -50,7 +50,7 @@ const { country, city, addressCount, loading, error } = useAddressQuery();
 
         <div className="mt-8">
           <h2 className="text-2xl font-light tracking-tight mb-4">Order history</h2>
-          <p className="text-gray-500">You haven't placed any orders yet.</p>
+          <p className="text-gray-500">You haven&apos;t placed any orders yet.</p>
         </div>
       </div>
 
@@ -67,13 +67,12 @@ const { country, city, addressCount, loading, error } = useAddressQuery();
               <p>{country || "الدولة غير متوفرة"} / {city || "المدينة غير متوفرة"}</p>
             )}
           </div>
-        <button
-  onClick={onViewAddresses}
-  className="text-sm text-gray-600 hover:text-black transition-colors underline mt-4 inline-block"
->
-  View addresses ({addressCount})
-</button>
-
+          <button
+            onClick={onViewAddresses}
+            className="text-sm text-gray-600 hover:text-black transition-colors underline mt-4 inline-block"
+          >
+            View addresses ({addressCount})
+          </button>
         </div>
       </div>
     </div>
