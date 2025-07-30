@@ -103,10 +103,13 @@ constructor() {
     // };
 fetchCategories = () => {
     const defaultParams = this.getDefaultParams();
+    const baseURL = "https://saddlebrown-eagle-408332.hostingersite.com/api"; // ثابت
+
+    console.log("Using baseURL:", baseURL);
 
     const options = {
         url: `/e-commerce/customer/categories`,
-        baseURL: "https://saddlebrown-eagle-408332.hostingersite.com/api",  
+        baseURL,
         params: {
             ...defaultParams,
         },
@@ -117,6 +120,7 @@ fetchCategories = () => {
         .then((response) => response)
         .catch((err) => err);
 };
+
 
 
     fetchSubCategories = () => {
