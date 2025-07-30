@@ -7,12 +7,15 @@ class BackendConnector {
     //
     // Shared
     //
-    constructor() {
-        axios.defaults.headers = {
-            "Content-Type": "application/json",
-            Origin: "https://api.atech-workspace.com",
-        };
-    }
+constructor() {
+  this.axios = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://saddlebrown-eagle-408332.hostingersite.com/api",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 
     getDefaultParams = () => {
         const userInfo = storageService.getUserInfo();
