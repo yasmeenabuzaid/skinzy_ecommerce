@@ -9,7 +9,7 @@ class BackendConnector {
     //
 constructor() {
   this.axios = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://saddlebrown-eagle-408332.hostingersite.com/api",
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL || "https://saddlebrown-eagle-408332.hostingersite.com/api",
     headers: {
       "Content-Type": "application/json",
     },
