@@ -9,7 +9,7 @@ class BackendConnector {
     //
 constructor() {
   this.axios = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BASE_URL || "https://saddlebrown-eagle-408332.hostingersite.com/api",
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL ,
     headers: {
       "Content-Type": "application/json",
     },
@@ -85,41 +85,41 @@ constructor() {
 
     // CATEGORIES
 
-    // fetchCategories = () => {
-    //     const defaultParams = this.getDefaultParams();
+    fetchCategories = () => {
+        const defaultParams = this.getDefaultParams();
 
-    //     const options = {
-    //         url: `/e-commerce/customer/categories`,
-    //         baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-    //         params: {
-    //             ...defaultParams,
-    //         },
-    //     };
+        const options = {
+            url: `/e-commerce/customer/categories`,
+            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+            params: {
+                ...defaultParams,
+            },
+        };
 
-    //     return requests
-    //         .get(options)
-    //         .then((response) => response)
-    //         .catch((err) => err);
-    // };
-fetchCategories = () => {
-    const defaultParams = this.getDefaultParams();
-    const baseURL = "https://saddlebrown-eagle-408332.hostingersite.com/api"; // ثابت
-
-    console.log("Using baseURL:", baseURL);
-
-    const options = {
-        url: `/e-commerce/customer/categories`,
-        baseURL,
-        params: {
-            ...defaultParams,
-        },
+        return requests
+            .get(options)
+            .then((response) => response)
+            .catch((err) => err);
     };
+// fetchCategories = () => {
+//     const defaultParams = this.getDefaultParams();
+//     const baseURL = "https://saddlebrown-eagle-408332.hostingersite.com/api"; 
 
-    return requests
-        .get(options)
-        .then((response) => response)
-        .catch((err) => err);
-};
+//     console.log("Using baseURL:", baseURL);
+
+//     const options = {
+//         url: `/e-commerce/customer/categories`,
+//         baseURL,
+//         params: {
+//             ...defaultParams,
+//         },
+//     };
+
+//     return requests
+//         .get(options)
+//         .then((response) => response)
+//         .catch((err) => err);
+// };
 
 
 

@@ -11,7 +11,7 @@ const useCategoryQuery = () => {
       setIsLoadingCategories(true);
       try {
         const result = await BackendConnector.fetchCategories(); // تأكد أن هذه الدالة موجودة
-        console.log(result)
+        console.log(" of categories",result)
         if (Array.isArray(result)) {
           setCategories(result);
           setErrorCategories(null);

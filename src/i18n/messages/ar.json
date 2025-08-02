@@ -1,188 +1,95 @@
 {
-  
-  "home": {
-    "popularCategories": "الفئات الشائعة",
-    "featuredProducts": "منتجات مميزة",
-    "seasonalProducts": "منتجات موسمية",
-    "pageTitle": "الصفحة الرئيسية",
-    "metaDescription": "الوصف التعريفي للصفحة الرئيسية"
-  },
-
-  "categories": {
-    "noCategories": "لم يتم العثور على فئات",
-    "noCategoriesAvailable": "لا توجد فئات متاحة"
-  },
-
-  "products": {
-    "noProducts": "لم يتم العثور على منتجات",
-    "productImageAlt": "صورة المنتج",
-  "code": "الرمز",
-  "addToCart": "أضف إلى السلة",
-  "currency": "دينار",
-  "removedFromFavoritesTitle": "تمت الإزالة من المفضلة",
-  "removedFromFavoritesText": "تمت إزالة {name} من قائمتك المفضلة.",
-  "addedToFavoritesTitle": "تمت الإضافة إلى المفضلة",
-  "addedToFavoritesText": "تمت إضافة {name} إلى قائمتك المفضلة.",
-  "errorLoading": "فشل في تحميل تفاصيل المنتج.",
-  "noProductFound": "لم يتم العثور على منتج",
-  "reviews": "التقييمات"
-  
-  },
-  "singleProductCard": {
-"productCode": "رمز المنتج",
-  "currency": "دينار",
-  "priceNote": "السعر عند الشراء عبر الإنترنت",
-  "onlinePriceInfo": "السعر عند الشراء عبر الإنترنت",
-  "addToCart": "أضف إلى السلة",
-  "noProductFound": "لم يتم العثور على المنتج"
-  
-  },
-  "reviews": {
-  "title": "اترك مراجعة",
-  "commentPlaceholder": "اكتب تعليقك",
-  "submit": "إرسال المراجعة",
-  "loading": "جاري تحميل المراجعات...",
-  "noReviews": "لا توجد مراجعات حتى الآن.",
-  "anonymous": "مجهول",
-  "successMessage": "تم إرسال المراجعة بنجاح!",
-  "loginRequired": "يجب تسجيل الدخول لإرسال مراجعة",
-  "errorMessage": "حدث خطأ أثناء إرسال المراجعة. حاول مرة أخرى."
-  
-  },
-  "specs": {
- "main": "الأساسي",
-  "code": "رمز المنتج",
-  "title": "اسم المنتج",
-  "label": "اسم التصنيف"
-  
-  },
-  "productTabs": {
-  "specifications": "المواصفات",
-  "reviews": "المراجعات"
-  
-  },
-  "notFound": {
-  "pleaseLogin": "الرجاء تسجيل الدخول أولاً",
-  "login": "تسجيل الدخول",
-    "comingSoonTitle": "مركز المساعدة قريبًا!",
-  "comingSoonDescription": "نعمل حاليًا على إنشاء مركز المساعدة. تابعنا قريبًا للحصول على الدعم والتحديثات!",
-  "goHome": "العودة إلى الصفحة الرئيسية"
-  
-  },
-    "photoGallery": {
-"description": "الوصف",
-  "noImagesFound": "لا توجد صور"
-  
-  },
-  
-  "navBar": {
-    "catalog": "الكتالوج",
-    "favorites": "المفضلة",
-    "cart": "السلة",
-    "home": "الرئيسية",
-    "helpCenter": "مركز المساعدة",
-    "searchPlaceholder": "ابحث هنا...",
-    "login": "تسجيل الدخول",
-    "logout": "تسجيل الخروج",
+  "Header": {
+    "language": "العربية",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "callUs": "اتصل بنا: +00 123 456 789",
+    "newsletter": "اشترِ بأكثر من 15 دينار واحصل على توصيل مجاني حتى باب بيتك!",
+    "home": "الصفحة الرئيسية",
+    "loadingCategories": "جاري تحميل الفئات...",
+    "errorLoadingCategories": "حدث خطأ أثناء تحميل الفئات.",
     "loading": "جاري التحميل...",
-  "brandLogo": "شعار العلامة",
-  "brandLogoAlt": "شعار العلامة",
-  "jordan": "الأردن",
-  "menu": "القائمة"
+    "error": "حدث خطأ.",
+    "noSubcategories": "لا توجد تصنيفات فرعية"
   },
-
-  "catalogMenu": {
-    "home": "الرئيسية",
-    "products": "المنتجات",
-    "cart": "السلة",
-    "favorites": "المفضلة",
-    "myAccount": "حسابي",
-    "orderHistory": "تاريخ الطلبات",
-    "logout": "تسجيل الخروج",
-    "signin": "تسجيل الدخول"
-  },
-  "auth": {
-"registerTitle": "تسجيل حساب",
-  "firstName": "الاسم الأول",
-  "lastName": "اسم العائلة",
-  "phoneNumber": "رقم الهاتف",
-  "selectCountry": "اختر الدولة",
-  "email": "البريد الإلكتروني",
-  "password": "كلمة المرور",
-  "confirmPassword": "تأكيد كلمة المرور",
-  "register": "تسجيل",
-  "loading": "جاري التحميل...",
-  "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
-  "signIn": "تسجيل الدخول",
-  "fillAllFields": "يرجى ملء جميع الحقول",
-  "passwordMismatch": "كلمة المرور غير متطابقة",
-  "successTitle": "تم التسجيل بنجاح!",
-  "successMessage": "لقد قمت بالتسجيل بنجاح. يمكنك تسجيل الدخول الآن.",
-  "successButton": "رائع!",
-  "errorTitle": "حدث خطأ!",
-  "errorButton": "حاول مرة أخرى",
-  "unexpectedTitle": "حدث خطأ غير متوقع!",
-  "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.",
-  "genericError": "حدث خطأ. يرجى المحاولة لاحقًا.",
-  "loginTitle": "تسجيل الدخول",
-  "emailRequired": "البريد الإلكتروني مطلوب",
-  "passwordRequired": "كلمة المرور مطلوبة",
-  "forgotPassword": "هل نسيت كلمة المرور؟",
-  "login": "تسجيل الدخول",
-  "newMember": "عضو جديد؟",
-  "signUpHere": "سجّل هنا",
-  "welcome": "مرحباً",
-  "loginSuccessMessage": "تم تسجيل الدخول بنجاح. استمتع بالتصفح!",
-  "awesome": "رائع!",
-  "loginFailedTitle": "عذراً! حدث خطأ!",
-  "loginFailedText": "يرجى التأكد من صحة البريد الإلكتروني وكلمة المرور، أو حاول مرة أخرى لاحقاً.",
-  "tryAgain": "حاول مرة أخرى",
-  "unexpectedErrorTitle": "حدث خطأ غير متوقع!",
-  "unexpectedErrorText": "حدث خطأ غير متوقع. لا تقلق، سنقوم بالتحقق!",
-  "close": "إغلاق"
-
-  },
-    "cart": {
-"title": "عربة التسوق"
-
-    },
-"checkoutCard": {
-  "total": "الإجمالي",
-  "items": "عدد العناصر",
-  "totalAfterDiscount": "الإجمالي بعد الخصم",
-  "cartIsEmpty": "العربة فارغة",
-  "checkout": "الدفع"
-},
-
-  
-  "Register": {
-    "title": "إنشاء حساب",
-    "placeholders": {
-      "firstName": "الاسم الأول",
-      "lastName": "اسم العائلة",
-      "phone": "رقم الهاتف",
-      "email": "البريد الإلكتروني",
-      "password": "كلمة المرور",
-      "confirmPassword": "تأكيد كلمة المرور",
-      "selectCountry": "اختر الدولة"
-    },
-    "submit": "تسجيل",
-    "loading": "جاري التحميل...",
-    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
-    "signIn": "تسجيل الدخول",
-    "errors": {
-      "allFields": "يرجى تعبئة جميع الحقول",
-      "passwordMismatch": "كلمتا المرور غير متطابقتين",
-      "unexpected": "حدث خطأ غير متوقع، يرجى المحاولة لاحقًا"
-    },
-    "alerts": {
-      "successTitle": "تم التسجيل بنجاح!",
-      "successMessage": "تم إنشاء الحساب بنجاح. يرجى تسجيل الدخول الآن.",
-      "errorTitle": "عذرًا!",
-      "generalErrorTitle": "حدث خطأ ما!"
-    
+  "hero": {
+    "slides": [
+      {
+        "offer": "الافتتاح الكبير",
+        "title": "توصيل مجاني على الطلبات فوق 15 دينار!",
+        "description": "استمتع بتجربة تسوق فريدة مع منتجاتنا الجديدة وتوصيل مجاني للطلبات فوق 15 دينار أردني.",
+        "buttonText": "تسوق الآن"
+      },
+      {
+        "offer": "عرض خاص",
+        "title": "توصيل مجاني على كل طلب يزيد عن 15 دينار",
+        "description": "لا تفوت فرصة التوصيل المجاني على جميع الطلبات التي تزيد قيمتها عن 15 دينار.",
+        "buttonText": "اكتشف المزيد"
+      },
+      {
+        "offer": "لفترة محدودة",
+        "title": "احصل على التوفير مع التوصيل المجاني!",
+        "description": "اطلب الآن واستمتع بالتوصيل المجاني للطلبات التي تزيد عن 15 دينار أردني.",
+        "buttonText": "تسوق ووفر"
       }
-  }
+    ]
+  },
+  "brandsSection": {
+    "shopByCategories": "تسوق حسب الفئات",
+    "ourSeasonBrands": "علامات موسمنا",
+    "loading": "جاري تحميل العلامات التجارية...",
+    "error": "فشل تحميل العلامات التجارية:",
+    "noBrands": "لا توجد علامات تجارية متاحة حاليا"
+  },
+  "categories": {
+    "shopByCategories": "تسوق حسب الفئات",
+    "seasonCollection": "تشكيلتنا الموسمية",
+    "loadingCategories": "جاري تحميل الفئات...",
+    "errorLoadingCategories": "خطأ في تحميل الفئات.",
+    "viewAll": "عرض الكل",
+    "noCategoriesFound": "لا توجد فئات.",
+    "imageOf": "صورة لـ {name}"
+  },
+   "dealOfTheDay": {
+  "dealOfTheDayLabel": "صفقة اليوم",
+  "altText": "سيروم الوجه المتوهج",
+  "title": "سيروم الوجه المتوهج",
+  "description": "لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعات الطباعة والتنضيد.",
+  "discoverMore": "اكتشف المزيد"
+  },
+    "discoverSection": {
+  "latestCollection": "أحدث المجموعات",
+  "moreToDiscover": "المزيد لاكتشافه",
+  "shopToLook": "تسوق الآن"
+  },
+  "productSlider": {
+  "loading": "جاري تحميل المنتجات...",
+  "error": "فشل تحميل المنتجات:",
+  "defaultSubtitle": "تصفح مجموعتنا الواسعة من المنتجات",
+  "defaultButtonText": "عرض الكل"
+},
+  "searchModal": {
+    "placeholder": "ابحث عن منتج...",
+    "loading": "جاري تحميل المنتجات...",
+    "error": "حدث خطأ أثناء جلب البيانات:",
+    "noResults": "لا توجد نتائج تطابق بحثك.",
+    "startTyping": "ابدأ بالكتابة لعرض المنتجات.",
+    "close": "إغلاق البحث"
+  },
+"cartDrawer": {
+  "cartTitle": "سلة المشتريات",
+  "closeDrawer": "إغلاق السلة",
+  "emptyCartTitle": "سلتك فارغة",
+  "emptyCartMessage": "يبدو أنك لم تضف أي شيء إلى سلتك بعد.",
+  "continueShopping": "تابع التسوق",
+  "removeItem": "إزالة المنتج",
+  "subtotal": "المجموع الفرعي",
+  "shippingMessage": "يتم حساب التوصيل والضرائب عند الدفع.",
+  "goToCheckout": "الانتقال إلى الدفع",
+      "goToCart": "الذهاب الى السلة",
+
+  "orContinueShopping": "أو تابع التسوق"
+}
 
 
 }

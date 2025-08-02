@@ -1,10 +1,8 @@
-// BrandsSection.tsx
-
 'use client';
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import useBrandsQuery from "../../../../hooks/useBrandsQuery";
 
 const useOnScreen = (options) => {
@@ -39,14 +37,15 @@ function BrandsSection() {
   const { brands, isLoadingBrands, errorBrands } = useBrandsQuery();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('brandsSection');
 
   const handleBrandClick = (brandId) => {
     router.push(`/${locale}/brands/${brandId}`); 
   };
 
-  if (isLoadingBrands) return <p className="text-center">جاري تحميل الماركات...</p>;
-  if (errorBrands) return <p className="text-center text-red-500">فشل تحميل الماركات: {errorBrands}</p>;
-  if (!brands?.length) return <p className="text-center">لا توجد ماركات حالياً</p>;
+  if (isLoadingBrands) return <p className="text-center">{t('loading')}</p>;
+  if (errorBrands) return <p className="text-center text-red-500">{t('error')} {errorBrands}</p>;
+  if (!brands?.length) return <p className="text-center">{t('noBrands')}</p>;
 
   return (
     <section
@@ -79,12 +78,13 @@ function BrandsSection() {
 }
 
 export default function App() {
+  const t = useTranslations('brandsSection');
   return (
     <main>
       <div className="container mx-auto px-4 text-center">
-        <p className="text-gray-500 mb-1.5">Shop By Categories</p>
+        <p className="text-gray-500 mb-1.5">{t('shopByCategories')}</p>
         <h2 className="text-4xl font-semibold text-gray-800 mb-12">
-          Our Season Brands
+          {t('ourSeasonBrands')}
         </h2>
         <BrandsSection />
       </div>

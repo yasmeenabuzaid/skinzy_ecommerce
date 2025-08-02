@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import useProductsQuery from '../../../../hooks/useProductsQuery'; // عدّل المسار حسب هيكل مشروعك
+import useProductsQuery from '../../../../hooks/useProductsQuery'; 
 import Link from "next/link";
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 // أيقونة X (إغلاق)
 const X = (props) => (
@@ -26,6 +26,8 @@ const SearchResultCard = ({ product }) => {
       ? product.images[0].image
       : '/fallback.jpg';
 
+  const productName = locale === 'ar' && product.name_ar ? product.name_ar : product.name;
+
   return (
     <Link
       href={`/${locale}/products/${product.id}`}
@@ -33,21 +35,25 @@ const SearchResultCard = ({ product }) => {
     >
       <img
         src={imageUrl}
-        alt={product.name}
+        alt={productName}
         className="w-16 h-16 object-cover rounded-md border border-gray-200"
       />
       <div className="flex-grow">
-        <p className="font-semibold text-sm text-gray-800">{product.name}</p>
+        <p className="font-semibold text-sm text-gray-800">{productName}</p>
         <p className="text-sm text-[#ef8172]">${product.price?.toFixed(2)}</p>
       </div>
     </Link>
   );
 };
 
+
 export default function SearchModal({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
   const inputRef = useRef(null);
   const { products, isLoading, error } = useProductsQuery();
+  
+  const t = useTranslations('searchModal'); // مفتاح الترجمة الخاص بالبحث
+  const locale = useLocale();
 
   useEffect(() => {
     if (isOpen) {
@@ -78,7 +84,7 @@ export default function SearchModal({ isOpen, onClose }) {
             <input
               ref={inputRef}
               type="text"
-              placeholder="ابحث عن منتج..."
+              placeholder={t('placeholder')} // ترجمة النص هنا
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#ef8172] transition-colors mt-7 text-black"
               value={query}
               onChange={e => setQuery(e.target.value)}
@@ -91,15 +97,15 @@ export default function SearchModal({ isOpen, onClose }) {
 
         <div className="overflow-y-auto max-h-[60vh] p-5">
           {isLoading && (
-            <p className="text-center text-gray-500 py-8">جاري تحميل المنتجات...</p>
+            <p className="text-center text-gray-500 py-8">{t('loading')}</p>
           )}
 
           {error && (
-            <p className="text-center text-red-500 py-8">حدث خطأ أثناء جلب البيانات: {error}</p>
+            <p className="text-center text-red-500 py-8">{t('error')} {error}</p>
           )}
 
           {!isLoading && !error && query && filteredProducts.length === 0 && (
-            <p className="text-center text-gray-500 py-8">لا توجد نتائج تطابق بحثك.</p>
+            <p className="text-center text-gray-500 py-8">{t('noResults')}</p>
           )}
 
           {!isLoading && !error && filteredProducts.length > 0 && (
@@ -111,14 +117,14 @@ export default function SearchModal({ isOpen, onClose }) {
           )}
 
           {!query && !isLoading && !error && (
-            <p className="text-center text-gray-400 py-8">ابدأ بالكتابة لعرض المنتجات.</p>
+            <p className="text-center text-gray-400 py-8">{t('startTyping')}</p>
           )}
         </div>
 
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
-          aria-label="Close search"
+          aria-label={t('close')}
         >
           <X size={28} />
         </button>

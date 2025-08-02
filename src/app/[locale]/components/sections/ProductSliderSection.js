@@ -5,7 +5,7 @@ import ProductCard from '../ui/ProductCard.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../../hooks/useProductsQuery';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function ProductSliderSection({ title, subtitle, filters, buttonText, buttonLink }) {
@@ -14,6 +14,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
   const [activeFilter, setActiveFilter] = useState(filters ? filters[0] : '');
   const [isHovered, setIsHovered] = useState(false);
   const locale = useLocale();
+  const t = useTranslations('productSlider'); // use translation namespace
 
   const { products, isLoading, error } = useProductsQuery();
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
   if (isLoading) {
     return (
       <section className="py-20">
-        <div className="container mx-auto px-4 text-center text-gray-500">Loading products...</div>
+        <div className="container mx-auto px-4 text-center text-gray-500">{t('loading')}</div>
       </section>
     );
   }
@@ -39,7 +40,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
   if (error) {
     return (
       <section className="py-20">
-        <div className="container mx-auto px-4 text-center text-red-500">Failed to load products: {error}</div>
+        <div className="container mx-auto px-4 text-center text-red-500">{t('error')} {error}</div>
       </section>
     );
   }
@@ -48,7 +49,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
     <section ref={ref} className={`py-20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <p className="text-gray-500 mb-1.5">{subtitle}</p>
+          <p className="text-gray-500 mb-1.5">{subtitle || t('defaultSubtitle')}</p>
           <h2 className="text-4xl font-semibold text-gray-800">{title}</h2>
         </div>
 
@@ -105,7 +106,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
           <div className="text-center mt-12">
             <Link href={buttonLink}>
               <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all cursor-pointer">
-                {buttonText}
+                {buttonText || t('defaultButtonText')}
               </span>
             </Link>
           </div>

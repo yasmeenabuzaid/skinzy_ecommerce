@@ -1,185 +1,93 @@
 {
-  
-  "home": {
-    "popularCategories": "Popular categories",
-    "featuredProducts": "Featured products",
-    "seasonalProducts": "Seasonal products",
-    "pageTitle": "Home Page Title",
-    "metaDescription": "Meta description for the home page"
+  "Header": {
+    "language": "English",
+    "english": "English",
+    "arabic": "Arabic",
+    "callUs": "Call Us: +00 123 456 789",
+    "newsletter": "Spend over 15 JOD and enjoy free delivery to your doorstep!",
+    "home": "Home",
+    "loadingCategories": "Loading Categories...",
+    "errorLoadingCategories": "Error loading categories.",
+    "loading": "Loading...",
+    "error": "Error.",
+    "noSubcategories": "No subcategories"
   },
-
+  "hero": {
+    "slides": [
+      {
+        "offer": "Grand Opening",
+        "title": "Free Delivery on Orders Over 15 JD!",
+        "description": "Enjoy a unique shopping experience with our new products and free delivery on orders over 15 Jordanian Dinars.",
+        "buttonText": "Shop Now"
+      },
+      {
+        "offer": "Special Offer",
+        "title": "Free Delivery on Every Order Above 15 JD",
+        "description": "Don't miss the chance to get free delivery on all orders worth 15 JD or more.",
+        "buttonText": "Discover More"
+      },
+      {
+        "offer": "Limited Time",
+        "title": "Unlock Savings with Free Delivery!",
+        "description": "Order now and enjoy free delivery on orders exceeding 15 Jordanian Dinars.",
+        "buttonText": "Shop & Save"
+      }
+    ]
+  },
+  "brandsSection": {
+    "shopByCategories": "Shop By Categories",
+    "ourSeasonBrands": "Our Season Brands",
+    "loading": "Loading brands...",
+    "error": "Failed to load brands:",
+    "noBrands": "No brands available currently"
+  },
   "categories": {
-    "noCategories": "No Categories found",
-    "noCategoriesAvailable": "No categories available"
+    "shopByCategories": "Shop By Categories",
+    "seasonCollection": "Our Season Collection",
+    "loadingCategories": "Loading categories...",
+    "errorLoadingCategories": "Error loading categories.",
+    "viewAll": "View all",
+    "noCategoriesFound": "No categories found.",
+    "imageOf": "Image of {name}"
   },
-
-  "products": {
-    "noProducts": "No products found",
-    "productImageAlt": "Product Image",
-  "code": "Code",
-  "addToCart": "Add to Cart",
-  "currency": "JOD",
-  "removedFromFavoritesTitle": "Removed from Favorites",
-  "removedFromFavoritesText": "{name} has been removed from your favorites.",
-  "addedToFavoritesTitle": "Added to Favorites",
-  "addedToFavoritesText": "{name} has been added to your favorites.",
-   "errorLoading": "Failed to load product details.",
-  "noProductFound": "No product found",
-  "reviews": "Reviews"
-  
+  "dealOfTheDay": {
+"dealOfTheDayLabel": "DEAL OF THE DAY",
+  "altText": "Radiant Glow Face Serum",
+  "title": "Radiant Glow Face Serum",
+  "description": "Lorem Ipsum is simply dummy text of the printing industry, reoym Ipsum has been the industry's standard dummy text ever since the 1500s.",
+  "discoverMore": "Discover More"
   },
-  "singleProductCard": {
-"productCode": "Product Code",
-  "currency": "JOD",
-  "priceNote": "Price when purchased online",
-  "onlinePriceInfo": "Price when purchased online",
-  "addToCart": "Add to Cart",
-  "noProductFound": "No product found"
-  
+  "discoverSection": {
+  "latestCollection": "Latest Collection",
+  "moreToDiscover": "More To Discover",
+  "shopToLook": "Shop To Look"
   },
-  "productTabs": {
- "specifications": "Specification",
-  "reviews": "Reviews"
-  
+  "productSlider": {
+  "loading": "Loading products...",
+  "error": "Failed to load products:",
+  "defaultSubtitle": "Explore our wide range of products",
+  "defaultButtonText": "Browse All"
+},
+ "searchModal": {
+    "placeholder": "Search for a product...",
+    "loading": "Loading products...",
+    "error": "An error occurred:",
+    "noResults": "No results match your search.",
+    "startTyping": "Start typing to see products.",
+    "close": "Close search"
   },
-  "reviews": {
-  "title": "Leave a Review",
-  "commentPlaceholder": "Write your comment",
-  "submit": "Submit Review",
-  "loading": "Loading reviews...",
-  "noReviews": "No reviews yet.",
-  "anonymous": "Anonymous",
-  "successMessage": "Review submitted successfully!",
-  "loginRequired": "You must be logged in to submit a review",
-  "errorMessage": "Error submitting review. Please try again."
-  
-  },
-  "specs": {
- "main": "Main",
-  "code": "Product Code",
-  "title": "Product Title",
-  "label": "Label Name"
-  
-  },
-  "photoGallery": {
-"description": "Description",
-  "noImagesFound": "No Images Found"
-  
-  },
-  "notFound": {
-"pleaseLogin": "Please login first",
-  "login": "Login",
-    "comingSoonTitle": "Help Center Coming Soon!",
-  "comingSoonDescription": "Our Help Center is under construction. Stay tuned for updates and support coming soon!",
-  "goHome": "Go Back to Home"
-  
-  },
-  "navBar": {
-    "catalog": "Catalog",
-    "favorites": "Favorites",
-    "cart": "Cart",
-    "home": "Home",
-    "helpCenter": "Help Center",
-    "searchPlaceholder": "Search here...",
-    "login": "Log In",
-    "logout": "Log Out",
-    "loading": "Loading...",
-  "brandLogo": "Brand Logo",
-  "brandLogoAlt": "Brand Logo",
-  "jordan": "Jordan",
-  "menu": "Menu"
-  },
-
-  "catalogMenu": {
-    "home": "Home",
-    "products": "Products",
-    "cart": "Cart",
-    "favorites": "Favorites",
-    "myAccount": "My Account",
-    "orderHistory": "Order History",
-    "logout": "Log Out",
-    "signin": "Sign In"
-  },
-  "auth": {
-     "loginTitle": "Log In",
-  "email": "Email",
-  "password": "Password",
-  "emailRequired": "Email is required",
-  "passwordRequired": "Password is required",
-  "forgotPassword": "Forgot password?",
-  "login": "Login",
-  "newMember": "New member?",
-  "signUpHere": "Sign up here",
-  "loading": "Loading...",
-  "welcome": "Welcome",
-  "loginSuccessMessage": "You have successfully logged in. Enjoy browsing!",
-  "awesome": "Awesome!",
-  "loginFailedTitle": "Oops! Something went wrong!",
-  "loginFailedText": "Please make sure your email and password are correct, or try again later.",
-  "tryAgain": "Try Again",
-  "unexpectedErrorTitle": "Something went wrong!",
-  "unexpectedErrorText": "An unexpected error occurred. Don’t worry, we’ll look into it!",
-  "close": "Close",
-   "registerTitle": "Register",
-  "firstName": "First Name",
-  "lastName": "Last Name",
-  "phoneNumber": "Phone Number",
-  "selectCountry": "Select Country",
-  "confirmPassword": "Confirm Password",
-  "register": "Register",
-  "alreadyHaveAccount": "Already have an account?",
-  "signIn": "Sign in",
-  "fillAllFields": "Please fill all fields",
-  "passwordMismatch": "Password does not match",
-  "successTitle": "Registration Successful!",
-  "successMessage": "You have successfully registered. Please log in now.",
-  "successButton": "Awesome!",
-  "errorTitle": "Oops!",
-  "errorButton": "Try Again",
-  "unexpectedTitle": "Something Went Wrong!",
-  "unexpectedError": "An unexpected error occurred. Please try again later.",
-  "genericError": "An error occurred. Please try again."
-  
-  },
-   "cart": {
-    "title": "Shopping Cart"
-
-    },
-   "checkoutCard": {
-  "total": "Total",
-  "items": "Items",
-  "totalAfterDiscount": "Total after Discount",
-  "cartIsEmpty": "Cart Is Empty",
-  "checkout": "Checkout"
-    },
-  
-  "Register": {
-    "title": "Register",
-    "placeholders": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "phone": "Phone Number",
-      "email": "Email Address",
-      "password": "Password",
-      "confirmPassword": "Confirm Password",
-      "selectCountry": "Select Country"
-    },
-    "submit": "Register",
-    "loading": "Loading...",
-    "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign in",
-    "errors": {
-      "allFields": "Please fill all fields",
-      "passwordMismatch": "Password does not match",
-      "unexpected": "An unexpected error occurred. Please try again later."
-    },
-    "alerts": {
-      "successTitle": "Registration Successful!",
-      "successMessage": "You have successfully registered. Please log in now.",
-      "errorTitle": "Oops!",
-      "generalErrorTitle": "Something Went Wrong!"
-    }
+"cartDrawer": {
+    "cartTitle": "Shopping Cart",
+    "closeDrawer": "Close Drawer",
+    "emptyCartTitle": "Your cart is empty",
+    "emptyCartMessage": "Looks like you haven't added anything to your cart yet.",
+    "continueShopping": "Continue Shopping",
+    "removeItem": "Remove Item",
+    "subtotal": "Subtotal",
+    "shippingMessage": "Shipping & taxes calculated at checkout.",
+    "goToCheckout": "Proceed to Checkout",
+    "goToCart": "Proceed to Cart",
+    "orContinueShopping": "or continue shopping"
   }
-
 
 }
