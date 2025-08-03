@@ -14,6 +14,7 @@ import BrandsSection from './components/sections/BrandsSection';
 import CategoriesSection from './components/sections/CategoriesSection'; 
 import PromoSection from './components/sections/PromoSection'; 
 import ProductSliderSection from './components/sections/ProductSliderSection'; 
+import AllProductSliderSection from './components/sections/allProductSliderSection'; 
 import DealOfTheDaySection from './components/sections/DealOfTheDaySection'; 
 import DiscoverSection from './components/sections/DiscoverSection'; 
 import TestimonialSection from './components/sections/TestimonialSection'; 
@@ -52,6 +53,15 @@ export default function HomePage() {
   <BrandsSection />
   <div className="h-20" />
 
+  
+    <AllProductSliderSection
+      title="Products"
+      subtitle="Our Products"
+      products={trendingProducts}
+      filters={['Our Collection', 'Tinted Oils', 'Creams']}
+      buttonText="View all"
+  buttonLink={`/${locale}/subcategory`}
+    />
   <CategoriesSection />
   <div className="h-20" />
 

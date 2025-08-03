@@ -11,6 +11,25 @@ import SearchBar from "./SearchBar";
 import SearchModal from "./SearchModal";
 import { useLocale, useTranslations } from "next-intl";
 
+// --- SVG Icons ---
+
+const Heart = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+  </svg>
+);
+
 const ChevronDown = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -135,6 +154,8 @@ const Instagram = (props) => (
     <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.5A4.25 4.25 0 003.5 7.75v8.5A4.25 4.25 0 007.75 20.5h8.5a4.25 4.25 0 004.25-4.25v-8.5A4.25 4.25 0 0016.25 3.5h-8.5zm8.75 2a1 1 0 110 2 1 1 0 010-2zm-4.25 1.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 1.5a3 3 0 100 6 3 3 0 000-6z" />
   </svg>
 );
+
+// --- Components ---
 
 const LanguageSwitcher = () => {
   const t = useTranslations("Header");
@@ -323,7 +344,6 @@ const MainNav = ({
               {t("errorLoadingCategories")}
             </li>
           )}
-
           {!isLoadingCategories &&
             !errorCategories &&
             navLinks.map((link) => {
@@ -347,7 +367,6 @@ const MainNav = ({
                       {link.name}
                     </span>
                   )}
-
                   {hasSubCategories && <CategoryMegaMenu category={link} />}
                 </li>
               );
@@ -366,6 +385,16 @@ const MainNav = ({
           >
             <User size={20} />
           </Link>
+          
+          {/* ----- NEW WISHLIST ICON IS HERE ----- */}
+          <Link
+            href={`/${locale}/favorite`}
+            aria-label="favorite"
+            className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer"
+          >
+            <Heart size={22} />
+          </Link>
+          
           <button
             onClick={onCartToggle}
             aria-label="Shopping Cart"

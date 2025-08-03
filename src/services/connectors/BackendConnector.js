@@ -208,7 +208,24 @@ constructor() {
     }
 
     const options = {
-        url: `/e-commerce/customer/products/${subCategoryId}`, 
+        url: `/e-commerce/customer/products/subcategory/${subCategoryId}`, 
+        baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+    };
+
+    return requests
+        .get(options)
+        .then((response) => response)
+        .catch((err) => err);
+};
+   fetchProductsByCategory = async ({ CategoryId, filter }) => {
+
+   
+    if (filter) {
+        params.filter = filter;
+    }
+
+    const options = {
+        url: `/e-commerce/customer/products/category/${CategoryId}`, 
         baseURL: process.env.NEXT_PUBLIC_BASE_URL,
     };
 
@@ -298,7 +315,7 @@ fetchProductsByBrand = async ({ brandId, brandSlug, filter }) => {
             .catch((err) => err);
     };
 
-    addFavorite = async (data) => {
+    addToFavorites = async (data) => {
         const defaultHeaders = await this.getDefaultHeaders();
         let options = {
             data: data,

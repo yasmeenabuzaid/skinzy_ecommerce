@@ -20,7 +20,8 @@ export default function ProductPage() {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  console.log("single product", product);
+  
   const handleCartToggle = () => setIsCartOpen(!isCartOpen);
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
@@ -82,7 +83,11 @@ export default function ProductPage() {
           </main>
         </div>
 
-        <ProductDescriptionSection description={product.description} />
+        <ProductDescriptionSection 
+          description={product.description} 
+          specifications={product.specifications} 
+        />
+
         <RelatedProductsSection products={product.related || []} />
         <ScrollToTopButton show={showScrollBtn} onClick={scrollToTop} />
       </div>

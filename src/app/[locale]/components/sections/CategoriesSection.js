@@ -42,9 +42,9 @@ export default function CategoriesSection() {
                                 <h3 className="text-lg font-semibold text-gray-800 mb-1">
                                   {locale === 'ar' ? cat.name_ar || cat.name : cat.name}
                                 </h3>
-                                {/* <Link href={`/${locale}/category/${cat.slug || cat.id}`} className="text-sm text-gray-500 hover:text-gray-800">
+                                <Link href={`/${locale}/category/${cat.slug || cat.id}`} className="text-sm text-gray-500 hover:text-gray-800">
                                     {t('viewAll')}
-                                </Link> */}
+                                </Link>
                             </div>
                         ))}
                     </div>

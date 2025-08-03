@@ -1,8 +1,10 @@
 "use client";
 import { useCartContext } from "@/context/CartContext";
-import { Star, Heart, Repeat2 } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import Swal from "sweetalert2";
 import { useRouter, useParams } from "next/navigation";
+import storageService from "@/services/storage/storageService";
+import BackendConnector from "@/services/connectors/BackendConnector";
 
 const formatPrice = (price) =>
   typeof price === "number" ? `$${price.toFixed(2)}` : "السعر غير متوفر";
@@ -54,6 +56,31 @@ export default function ProductDetails({
       icon: "success",
       confirmButtonText: "متابعة",
     });
+  };
+
+  // دالة إضافة المنتج للمفضلة
+  const addToFavorites = async () => {
+    const userInfo = storageService.getUserInfo();
+
+    if (!userInfo?.accessToken) {
+      Swal.fire("خطأ", "يجب تسجيل الدخول لإضافة للمفضلة", "error");
+      return;
+    }
+
+    try {
+      const response = await BackendConnector.addToFavorites({
+        product_id: product.id,
+        user_id: userInfo.id,
+      });
+
+      if (response?.success) {
+        Swal.fire("تم", "تمت إضافة المنتج إلى المفضلة", "success");
+      } else {
+        Swal.fire("خطأ", response?.message || "فشل في الإضافة", "error");
+      }
+    } catch (error) {
+      Swal.fire("خطأ", "حدث خطأ أثناء الإضافة", "error");
+    }
   };
 
   const variationOptions = isVariation
@@ -174,38 +201,14 @@ export default function ProductDetails({
         >
           أضف إلى السلة
         </button>
-        <button className="bg-black text-white w-full py-3 rounded-md font-semibold hover:bg-gray-900 transition">
-          اشترِ الآن
-        </button>
-      </div>
-
-      <div className="flex gap-6 text-gray-600 text-sm">
-        <button className="flex items-center gap-2 hover:text-red-600 transition">
+        <button
+          onClick={addToFavorites}
+          className="bg-white border border-gray-300 w-full py-3 rounded-md font-semibold transition hover:bg-red-100 flex items-center justify-center gap-2 text-gray-700"
+          aria-label="أضف إلى المفضلة"
+        >
           <Heart size={20} /> أضف إلى المفضلة
         </button>
-        <button className="flex items-center gap-2 hover:text-gray-900 transition">
-          <Repeat2 size={20} /> أضف للمقارنة
-        </button>
-      </div>
-
-      <div className="mt-8 space-y-2 text-gray-700 text-sm">
-        {mainProduct.details?.brand && <DetailItem label="الماركة" value={mainProduct.details.brand} />}
-        {mainProduct.details?.shade && <DetailItem label="الظل" value={mainProduct.details.shade} />}
-        {mainProduct.details?.finish && <DetailItem label="التشطيب" value={mainProduct.details.finish} />}
-        {mainProduct.details?.skin_type && <DetailItem label="نوع البشرة" value={mainProduct.details.skin_type} />}
-        {mainProduct.details?.ingredients && <DetailItem label="المكونات" value={mainProduct.details.ingredients} />}
-        {mainProduct.details?.expiration_date && <DetailItem label="تاريخ الانتهاء" value={mainProduct.details.expiration_date} />}
-        {mainProduct.details?.volume && <DetailItem label="الحجم" value={mainProduct.details.volume} />}
-        {mainProduct.details?.usage_instructions && <DetailItem label="تعليمات الاستخدام" value={mainProduct.details.usage_instructions} />}
       </div>
     </div>
-  );
-}
-
-function DetailItem({ label, value }) {
-  return (
-    <p>
-      <span className="font-semibold">{label}:</span> {value}
-    </p>
   );
 }
