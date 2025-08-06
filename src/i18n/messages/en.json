@@ -12,6 +12,7 @@
     "error": "Error.",
     "noSubcategories": "No subcategories"
   },
+  
   "hero": {
     "slides": [
       {
@@ -63,11 +64,17 @@
   "shopToLook": "Shop To Look"
   },
   "productSlider": {
-  "loading": "Loading products...",
-  "error": "Failed to load products:",
-  "defaultSubtitle": "Explore our wide range of products",
-  "defaultButtonText": "Browse All"
-},
+    "defaultSubtitle": "Discover our top picks",
+    "defaultButtonText": "View All Products",
+    "loading": "Loading...",
+        "latestSubtitle": "Just Arrived"
+,
+  "latestTitle": "Latest Products",
+    "browseProducts": "Browse All Products",
+    "error": "An error occurred while loading products",
+    "latestProductsTitle": "Latest Products",
+    "latestProductsSubtitle": "Just Arrived"
+  },
  "searchModal": {
     "placeholder": "Search for a product...",
     "loading": "Loading products...",

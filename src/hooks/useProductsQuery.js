@@ -12,10 +12,9 @@ const useProductsQuery = () => {
       setIsLoading(true);
       try {
         const result = await BackendConnector.fetchProducts();
-        console.log(result);
+       console.log("single product",result)
 
         if (Array.isArray(result)) {
-          // إذا الـ API يرجع مصفوفة مباشرة
           setProducts(result);
           setGroups([]);
           setError(null);

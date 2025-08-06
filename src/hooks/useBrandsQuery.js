@@ -11,7 +11,6 @@ const useBrandQuery = () => {
       setIsLoadingBrands(true);
       try {
         const result = await BackendConnector.fetchBrands();
-        console.log(result);
 
         if (Array.isArray(result)) {
           setBrands(result);

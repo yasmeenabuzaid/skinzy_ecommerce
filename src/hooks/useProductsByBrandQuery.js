@@ -18,7 +18,6 @@ const useProductsByBrandQuery = ({ brandId, brandSlug, filter }) => {
           brandSlug,
           filter,
         });
-        console.log('Response from API:', result);
 
         if (Array.isArray(result)) {
           setProducts(result);

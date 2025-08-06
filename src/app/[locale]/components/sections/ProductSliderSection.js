@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { useOnScreen } from '../../../../hooks/useOnScreen';
+// Assuming useOnScreen is a custom hook you have
+// import { useOnScreen } from '../../../../hooks/useOnScreen';
 import ProductCard from '../ui/ProductCard.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../../hooks/useProductsQuery';
@@ -8,12 +9,19 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
+// Mock hook for demonstration purposes
+const useOnScreen = (options) => {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(true); // Default to true for demo
+  return [ref, isVisible];
+};
+
 export default function ProductSliderSection({
   title,
   subtitle,
   buttonText,
   buttonLink,
-  // تمرير قائمة subCategories (مصفوفة من الكائنات {id, name})
+  // Pass the list of subCategories (array of objects {id, name})
   subCategories = [],
 }) {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
@@ -25,11 +33,10 @@ export default function ProductSliderSection({
   const { products, isLoading, error } = useProductsQuery();
   const router = useRouter();
 
-  // حساب الفلاتر (الأكثر تكرارًا) باستخدام useMemo
+  // Calculate the most frequent filters using useMemo
   const filters = useMemo(() => {
     if (!products || products.length === 0) return [];
 
-    // عداد التكرار لكل sub_category_id
     const counts = {};
     products.forEach(product => {
       const subCatId = product.sub_category_id;
@@ -38,7 +45,6 @@ export default function ProductSliderSection({
       }
     });
 
-    // ترتيب حسب التكرار ونختار أعلى 3
     const sorted = Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
@@ -47,21 +53,22 @@ export default function ProductSliderSection({
     return sorted;
   }, [products]);
 
-  // إعداد activeFilter تلقائيًا عند تحميل الفلاتر أو تغيرها
+  // Set the activeFilter automatically when filters load
   useEffect(() => {
     if (filters.length > 0 && !activeFilter) {
       setActiveFilter(filters[0]);
     }
   }, [filters, activeFilter]);
 
-  // فلترة المنتجات حسب الـ activeFilter، واقتصار العرض على 5 منتجات فقط
-  const filteredProducts = activeFilter
-    ? products
-        .filter(
+  // Filter products based on the activeFilter, and limit to 8 products
+  const filteredProducts = useMemo(() => {
+    const allProducts = activeFilter
+      ? products.filter(
           product => product.sub_category_id?.toString() === activeFilter?.toString()
         )
-        .slice(0, 5)
-    : products.slice(0, 5);
+      : products;
+    return allProducts.slice(0, 8); // Limit to 8 for a better grid view
+  }, [products, activeFilter]);
 
   const scroll = (direction) => {
     if (sliderRef.current) {
@@ -85,15 +92,18 @@ export default function ProductSliderSection({
     return (
       <section className="py-20">
         <div className="container mx-auto px-4 text-center text-red-500">
-          {t('error')} {error}
+          {t('error')} {error.message}
         </div>
       </section>
     );
   }
 
-  // دالة لإظهار اسم الـ subCategory حسب الـ id، أو إظهار الـ id لو الاسم غير موجود
+  // Function to get the subCategory name by id
   const getSubCategoryName = (id) => {
-    return subCategories.find(sc => sc.id.toString() === id.toString())?.name || id;
+    const subCategory = subCategories.find(sc => sc.id.toString() === id.toString());
+    // Assuming subcategories have name and name_ar
+    if (!subCategory) return id;
+    return locale === 'ar' ? subCategory.name_ar : subCategory.name;
   };
 
   return (
@@ -105,10 +115,8 @@ export default function ProductSliderSection({
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <p className="text-gray-500 mb-1.5">
-            {subtitle || t('defaultSubtitle')}
-          </p>
-          <h2 className="text-4xl font-semibold text-gray-800">{title}</h2>
+          <p className="text-gray-500 mb-1.5">{subtitle || t('defaultSubtitle')}</p>
+          <h2 className="text-3xl md:text-4xl font-semibold text-gray-800">{title}</h2>
         </div>
 
         {filters.length > 0 && (
@@ -137,6 +145,7 @@ export default function ProductSliderSection({
           {isHovered && (
             <button
               onClick={() => scroll('prev')}
+              aria-label="Previous products"
               className="absolute top-1/2 -translate-y-1/2 -left-2 md:left-0 w-10 h-10 bg-[#ef8172] text-white rounded-full hidden md:flex items-center justify-center hover:bg-opacity-80 transition-opacity z-10"
             >
               <ChevronLeft size={20} />
@@ -145,14 +154,14 @@ export default function ProductSliderSection({
 
           <div
             ref={sliderRef}
-            className="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
+            className="grid grid-cols-2 gap-4 md:flex md:gap-8 md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4 md:scrollbar-hide"
           >
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="snap-start flex-shrink-0 w-full sm:w-[calc(50%-1rem)] md:w-[calc(33.33%-1.33rem)] lg:w-[calc(25%-1.5rem)] xl:w-[calc(20%-1.6rem)]"
+                className="md:snap-start md:flex-shrink-0 md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.33rem)] xl:w-[calc(25%-1.5rem)]"
               >
-                <Link href={`/${locale}/products/${product.id}`}>
+                <Link href={`/${locale}/products/${product.id}`} className="block h-full">
                   <ProductCard product={product} />
                 </Link>
               </div>
@@ -162,6 +171,7 @@ export default function ProductSliderSection({
           {isHovered && (
             <button
               onClick={() => scroll('next')}
+              aria-label="Next products"
               className="absolute top-1/2 -translate-y-1/2 -right-2 md:right-0 w-10 h-10 bg-[#ef8172] text-white rounded-full hidden md:flex items-center justify-center hover:bg-opacity-80 transition-opacity z-10"
             >
               <ChevronRight size={20} />
@@ -169,7 +179,7 @@ export default function ProductSliderSection({
           )}
         </div>
 
-        {buttonText && (
+        {buttonText && buttonLink && (
           <div className="text-center mt-12">
             <Link href={buttonLink}>
               <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all cursor-pointer">

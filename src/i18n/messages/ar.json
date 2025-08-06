@@ -62,12 +62,18 @@
   "moreToDiscover": "المزيد لاكتشافه",
   "shopToLook": "تسوق الآن"
   },
-  "productSlider": {
-  "loading": "جاري تحميل المنتجات...",
-  "error": "فشل تحميل المنتجات:",
-  "defaultSubtitle": "تصفح مجموعتنا الواسعة من المنتجات",
-  "defaultButtonText": "عرض الكل"
-},
+ "productSlider": {
+    "defaultSubtitle": "استكشف أفضل اختياراتنا",
+    "defaultButtonText": "عرض جميع المنتجات",
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ أثناء تحميل المنتجات",
+    "latestProductsTitle": "أجدد المنتجات",
+"latestSubtitle": "وصلت حديثًا"
+,
+  "latestTitle": "أحدث المنتجات",
+    "browseProducts": "تصفح جميع المنتجات",
+    "latestProductsSubtitle": "وصلت حديثًا"
+  },
   "searchModal": {
     "placeholder": "ابحث عن منتج...",
     "loading": "جاري تحميل المنتجات...",
@@ -115,5 +121,6 @@
     "gridView3Cols": "عرض شبكة 3 أعمدة",
     "listView": "عرض القائمة"
   }
+
 
 }

@@ -14,7 +14,6 @@ const useProductQuery = (id) => {
       setIsLoading(true);
       try {
         const result = await BackendConnector.fetchSingleProduct(id);
-
         if (result?.message || result?.error) {
           setError(result.message || result.error);
           setProduct(null);
