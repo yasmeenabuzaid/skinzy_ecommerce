@@ -104,11 +104,11 @@ export default function FavoriteProductsPage() {
             {t('favoriteProductsTitle')}
           </h1>
           <div className="flex items-center gap-3 mt-4 md:mt-0">
-            <select className="border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            {/* <select className="border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option>{t('sortByPopular')}</option>
               <option>{t('sortByPriceAsc')}</option>
               <option>{t('sortByPriceDesc')}</option>
-            </select>
+            </select> */}
             <div className="flex items-center gap-1 bg-white border border-gray-300 rounded-md p-0.5">
               <button
                 onClick={() => setView(2)}
