@@ -97,6 +97,20 @@
     "priceLowHigh": "Price: Low to High",
     "priceHighLow": "Price: High to Low",
     "noProducts": "No products available for this brand"
+  },
+   "FavoriteProducts": {
+    "favoriteProductsTitle": "Favorite Products",
+    "loginRequired": "You must be logged in to view favorite products.",
+    "login": "Log In",
+    "loadingFavorites": "Loading favorite products...",
+    "noFavorites": "No products in your favorites list.",
+    "browseProducts": "Browse Products",
+    "sortByPopular": "Sort by: Most Popular",
+    "sortByPriceAsc": "Price: Low to High",
+    "sortByPriceDesc": "Price: High to Low",
+    "gridView2Cols": "Grid view 2 columns",
+    "gridView3Cols": "Grid view 3 columns",
+    "listView": "List view"
   }
 
 }

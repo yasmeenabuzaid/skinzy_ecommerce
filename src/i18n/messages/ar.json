@@ -100,6 +100,20 @@
     "priceHighLow": "السعر: من الأعلى إلى الأقل",
     "noProducts": "لا توجد منتجات متاحة لهذا البراند"
   }
-  
+  ,
+    "FavoriteProducts": {
+    "favoriteProductsTitle": "المنتجات المفضلة",
+    "loginRequired": "يجب عليك تسجيل الدخول لعرض المنتجات المفضلة.",
+    "login": "تسجيل الدخول",
+    "loadingFavorites": "جاري تحميل المنتجات المفضلة...",
+    "noFavorites": "لا توجد منتجات في قائمة المفضلة.",
+    "browseProducts": "تصفح المنتجات",
+    "sortByPopular": "ترتيب حسب: الأكثر شيوعاً",
+    "sortByPriceAsc": "السعر: من الأقل للأعلى",
+    "sortByPriceDesc": "السعر: من الأعلى للأقل",
+    "gridView2Cols": "عرض شبكة عمودين",
+    "gridView3Cols": "عرض شبكة 3 أعمدة",
+    "listView": "عرض القائمة"
+  }
 
 }
