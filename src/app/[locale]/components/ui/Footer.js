@@ -66,12 +66,11 @@ export default function Footer() {
 
         <div className="border-t border-gray-200 py-5 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-4">
-            <Link href="#" aria-label="Twitter" className="hover:text-gray-800"><Twitter size={18} /></Link>
             <Link href="#" aria-label="Facebook" className="hover:text-gray-800"><Facebook size={18} /></Link>
             <Link href="#" aria-label="Instagram" className="hover:text-gray-800"><Instagram size={18} /></Link>
           </div>
           <p>© Skinzy Care. All Rights Reserved.</p>
-          <img src="https://i.imgur.com/2Y0wS3n.png" alt="Payment methods" className="h-6" />
+          <img src="./logo.png" alt="Payment methods" className="h-6" />
         </div>
       </div>
     </footer>
