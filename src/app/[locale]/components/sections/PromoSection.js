@@ -2,8 +2,27 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { useOnScreen } from '../../../../hooks/useOnScreen'; // Adjust path
-import { promoCards } from '../../../../lib/data'; // Adjust path
+import { useOnScreen } from '../../../../hooks/useOnScreen'; 
+import { promoCards } from '../../../../lib/data'; 
+
+const ArrowRight = (props) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    {...props}
+  >
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+
 
 export default function PromoSection() {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
@@ -27,16 +46,21 @@ export default function PromoSection() {
             <div
               key={promo.title}
               onClick={() => handleClick(promo)}
-              className="relative h-72 bg-cover bg-center bg-gray-100 p-8 flex flex-col justify-start items-start rounded-lg cursor-pointer"
-              style={{ backgroundImage: `url(${promo.image})` }}
+              className="relative h-80 rounded-xl cursor-pointer overflow-hidden shadow-lg group"
             >
-              <div className="relative z-10">
-                <h3 className="text-2xl font-semibold text-gray-900 max-w-[80%] leading-snug mb-4">
-                  {promo.title}
-                </h3>
-                <span className="text-sm font-medium text-gray-900 underline hover:text-black">
-                  Shop Now
-                </span>
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-110"
+                style={{ backgroundImage: `url(${promo.image})` }}
+              ></div>
+
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent transition-opacity"></div>
+
+              <div className="relative z-10 flex flex-col justify-end h-full p-8 text-white transition-transform duration-500 ease-in-out transform group-hover:-translate-y-4">
+                <h3 className="text-3xl font-bold mb-3 drop-shadow-md">{promo.title}</h3>
+                <div className="flex items-center justify-start text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span>Shop Now</span>
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </div>
               </div>
             </div>
           ))}

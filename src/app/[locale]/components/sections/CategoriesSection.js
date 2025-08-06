@@ -32,16 +32,22 @@ export default function CategoriesSection() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
                         {categories.map((cat) => (
                             <div key={cat.id || cat.name} className="flex flex-col items-center">
-                                <div className="w-44 h-44 bg-gray-100 rounded-full flex items-center justify-center mb-5 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                                    <img
-                                        src={cat.image}
-                                        alt={t('imageOf', { name: locale === 'ar' ? cat.name_ar || cat.name : cat.name })}
-                                        className="max-w-[70%] max-h-[70%] object-contain"
-                                    />
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                                  {locale === 'ar' ? cat.name_ar || cat.name : cat.name}
-                                </h3>
+                                <Link 
+                                  href={`/${locale}/category/${cat.slug || cat.id}`} 
+                                  className="flex flex-col items-center"
+                                  aria-label={locale === 'ar' ? cat.name_ar || cat.name : cat.name}
+                                >
+                                    <div className="w-44 h-44 bg-gray-100 rounded-full flex items-center justify-center mb-5 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                                        <img
+                                            src={cat.image}
+                                            alt={locale === 'ar' ? cat.name_ar || cat.name : cat.name}
+                                            className="max-w-[70%] max-h-[70%] object-contain"
+                                        />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-1 text-center">
+                                        {locale === 'ar' ? cat.name_ar || cat.name : cat.name}
+                                    </h3>
+                                </Link>
                                 <Link href={`/${locale}/category/${cat.slug || cat.id}`} className="text-sm text-gray-500 hover:text-gray-800">
                                     {t('viewAll')}
                                 </Link>
