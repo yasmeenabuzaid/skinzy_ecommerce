@@ -1,7 +1,5 @@
 'use client';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-// Assuming useOnScreen is a custom hook you have
-// import { useOnScreen } from '../../../../hooks/useOnScreen';
 import ProductCard from '../ui/ProductCard.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../../hooks/useProductsQuery';
@@ -9,10 +7,9 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-// Mock hook for demonstration purposes
 const useOnScreen = (options) => {
   const ref = useRef(null);
-  const [isVisible, setIsVisible] = useState(true); // Default to true for demo
+  const [isVisible, setIsVisible] = useState(true);
   return [ref, isVisible];
 };
 
@@ -21,8 +18,6 @@ export default function ProductSliderSection({
   subtitle,
   buttonText,
   buttonLink,
-  // Pass the list of subCategories (array of objects {id, name})
-  subCategories = [],
 }) {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
   const sliderRef = useRef(null);
@@ -33,10 +28,8 @@ export default function ProductSliderSection({
   const { products, isLoading, error } = useProductsQuery();
   const router = useRouter();
 
-  // Calculate the most frequent filters using useMemo
   const filters = useMemo(() => {
     if (!products || products.length === 0) return [];
-
     const counts = {};
     products.forEach(product => {
       const subCatId = product.sub_category_id;
@@ -44,30 +37,26 @@ export default function ProductSliderSection({
         counts[subCatId] = (counts[subCatId] || 0) + 1;
       }
     });
-
     const sorted = Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([subCatId]) => subCatId);
-
     return sorted;
   }, [products]);
 
-  // Set the activeFilter automatically when filters load
   useEffect(() => {
     if (filters.length > 0 && !activeFilter) {
       setActiveFilter(filters[0]);
     }
   }, [filters, activeFilter]);
 
-  // Filter products based on the activeFilter, and limit to 8 products
   const filteredProducts = useMemo(() => {
     const allProducts = activeFilter
       ? products.filter(
           product => product.sub_category_id?.toString() === activeFilter?.toString()
         )
       : products;
-    return allProducts.slice(0, 8); // Limit to 8 for a better grid view
+    return allProducts.slice(0, 8);
   }, [products, activeFilter]);
 
   const scroll = (direction) => {
@@ -78,6 +67,20 @@ export default function ProductSliderSection({
         behavior: 'smooth',
       });
     }
+  };
+
+  const getSubCategoryNameById = (id) => {
+    if (!products) return id;
+    
+    const productWithSubCategory = products.find(p => p.sub_category_id?.toString() === id.toString());
+
+    if (productWithSubCategory && productWithSubCategory.sub_category) {
+      return locale === 'ar'
+        ? productWithSubCategory.sub_category.name_ar || productWithSubCategory.sub_category.name
+        : productWithSubCategory.sub_category.name;
+    }
+    
+    return id;
   };
 
   if (isLoading) {
@@ -97,14 +100,6 @@ export default function ProductSliderSection({
       </section>
     );
   }
-
-  // Function to get the subCategory name by id
-  const getSubCategoryName = (id) => {
-    const subCategory = subCategories.find(sc => sc.id.toString() === id.toString());
-    // Assuming subcategories have name and name_ar
-    if (!subCategory) return id;
-    return locale === 'ar' ? subCategory.name_ar : subCategory.name;
-  };
 
   return (
     <section
@@ -131,7 +126,7 @@ export default function ProductSliderSection({
                     : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
                 }`}
               >
-                {getSubCategoryName(filterId)}
+                {getSubCategoryNameById(filterId)}
               </button>
             ))}
           </div>
