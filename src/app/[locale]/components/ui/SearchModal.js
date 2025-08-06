@@ -67,7 +67,6 @@ export default function SearchModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  // دالة للتحقق إذا النص يحتوي حروف عربية
   const containsArabic = (text) => /[\u0600-\u06FF]/.test(text);
 
   const filteredProducts = query

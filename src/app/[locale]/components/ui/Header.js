@@ -240,7 +240,7 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
               <User className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           ) : (
-            <Link href={`/${locale}/login`} aria-label="Login" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
+            <Link href={`/${locale}/auth/login`} aria-label="Login" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
               <LogIn className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           )}
