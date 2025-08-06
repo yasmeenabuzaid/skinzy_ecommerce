@@ -192,14 +192,10 @@ const LanguageSwitcher = () => {
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="flex items-center gap-0.5 sm:gap-1.5 hover:text-amber-600 cursor-pointer"
       >
-        <Globe size={20} />
+<Globe className="w-4 h-4 md:w-6 md:h-6" />
         <span className="hidden sm:inline text-sm">{t("language")}</span>
-        <ChevronDown
-          className={`hidden sm:inline transition-transform duration-200 ${
-            isMenuOpen ? "rotate-180" : ""
-          }`}
-          size={14}
-        />
+   <ChevronDown className={`hidden sm:inline w-3 h-3 md:w-4 md:h-4 transition-transform duration-200 ${isMenuOpen ? "rotate-180" : ""}`} />
+
       </button>
       <div
         className={`absolute top-full right-0 mt-2 w-28 bg-white rounded-md shadow-lg transition-all z-50 border border-gray-100 ${
@@ -373,26 +369,26 @@ const MainNav = ({
             })}
         </ul>
 
-        <div className="flex items-center gap-3 md:gap-5">
+        {/* --- START OF CHANGES --- */}
+        <div className="flex items-center gap-2 md:gap-4">
           <SearchBar onSearchClick={onSearchClick} />
           <div className="md:hidden text-gray-700">
-            <LanguageSwitcher />
+            <LanguageSwitcher  />
           </div>
           <Link
             href={`/${locale}/profile`}
             aria-label="User Account"
-            className="text-gray-700 hover:text-black hidden md:block transition-transform hover:scale-110 cursor-pointer"
+            className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer"
           >
-            <User size={20} />
+            <User className="w-4 h-4 md:w-6 md:h-6" />
           </Link>
           
-          {/* ----- NEW WISHLIST ICON IS HERE ----- */}
           <Link
             href={`/${locale}/favorite`}
             aria-label="favorite"
             className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer"
           >
-            <Heart size={22} />
+<Heart className="w-4 h-4 md:w-6 md:h-6" />
           </Link>
           
           <button
@@ -400,7 +396,7 @@ const MainNav = ({
             aria-label="Shopping Cart"
             className="relative text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer"
           >
-            <ShoppingBag size={22} />
+            <ShoppingBag className="w-4 h-4 md:w-6 md:h-6" />
             {cartItemCount > 0 && (
               <span className="absolute -top-2 -right-2.5 bg-gray-800 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold">
                 {cartItemCount}
@@ -412,9 +408,10 @@ const MainNav = ({
             className="lg:hidden text-gray-800 transition-transform hover:scale-110 cursor-pointer"
             aria-label="Open navigation menu"
           >
-            <Menu size={22} />
+            <Menu className="w-4 h-4 md:w-6 md:h-6" />
           </button>
         </div>
+        {/* --- END OF CHANGES --- */}
       </div>
     </nav>
   );
