@@ -55,13 +55,14 @@ function BrandsSection() {
         {`
           @keyframes scroll-left {
             from {
-              transform: translateX(0);
+              transform: translate3d(0, 0, 0);
             }
             to {
-              transform: translateX(-50%);
+              transform: translate3d(-50%, 0, 0);
             }
           }
           .animate-scroll-left {
+            will-change: transform;
             animation: scroll-left ${animationDuration}s linear infinite;
           }
         `}
@@ -102,7 +103,7 @@ export default function App() {
 
   return (
     <div className="bg-white font-sans">
-      <main className="mr-15 ml-15">
+      <main>
         <div className="container mx-auto px-4 text-center">
           <p className="text-gray-500 mb-1.5">{t('shopByCategories')}</p>
           <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 mb-12">
