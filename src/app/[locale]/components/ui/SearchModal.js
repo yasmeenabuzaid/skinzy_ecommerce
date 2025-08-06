@@ -3,7 +3,6 @@ import useProductsQuery from '../../../../hooks/useProductsQuery';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 
-// أيقونة X (إغلاق)
 const X = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <line x1="18" y1="6" x2="6" y2="18" />
@@ -11,7 +10,6 @@ const X = (props) => (
   </svg>
 );
 
-// أيقونة البحث
 const SearchIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <circle cx="11" cy="11" r="8" />
@@ -46,13 +44,12 @@ const SearchResultCard = ({ product }) => {
   );
 };
 
-
 export default function SearchModal({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
   const inputRef = useRef(null);
   const { products, isLoading, error } = useProductsQuery();
   
-  const t = useTranslations('searchModal'); // مفتاح الترجمة الخاص بالبحث
+  const t = useTranslations('searchModal');
   const locale = useLocale();
 
   useEffect(() => {
@@ -70,8 +67,17 @@ export default function SearchModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  // دالة للتحقق إذا النص يحتوي حروف عربية
+  const containsArabic = (text) => /[\u0600-\u06FF]/.test(text);
+
   const filteredProducts = query
-    ? products.filter(p => p.name?.toLowerCase().includes(query.toLowerCase()))
+    ? products.filter(p => {
+        if (containsArabic(query)) {
+          return p.name_ar?.toLowerCase().includes(query.toLowerCase());
+        } else {
+          return p.name?.toLowerCase().includes(query.toLowerCase());
+        }
+      })
     : [];
 
   return (
@@ -84,7 +90,7 @@ export default function SearchModal({ isOpen, onClose }) {
             <input
               ref={inputRef}
               type="text"
-              placeholder={t('placeholder')} // ترجمة النص هنا
+              placeholder={t('placeholder')}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#ef8172] transition-colors mt-7 text-black"
               value={query}
               onChange={e => setQuery(e.target.value)}
