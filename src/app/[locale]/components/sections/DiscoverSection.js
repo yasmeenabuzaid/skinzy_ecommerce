@@ -49,8 +49,8 @@ const DiscoverSection = () => {
         {
             image:
                 locale === 'ar'
-                    ? 'https://images.pexels.com/photos/4465124/pexels-photo-4465124.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-                    : 'https://images.pexels.com/photos/4465124/pexels-photo-4465124.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // ممكن تستبدل بصورة عربية خاصة لو عندك
+                    ? 'https://images.pexels.com/photos/26570965/pexels-photo-26570965.jpeg'
+                    : 'https://images.pexels.com/photos/26570965/pexels-photo-26570965.jpeg', 
             alt: locale === 'ar' ? 'امرأة تمسك عبوة تجميل' : 'Woman holding a cosmetic jar',
             title: locale === 'ar' ? 'جودة وراحة لأطفالك.' : 'Quality and comfort for your kids.',
             linkText: t('shopToLook'),
@@ -58,8 +58,8 @@ const DiscoverSection = () => {
         {
             image:
                 locale === 'ar'
-                    ? 'https://images.pexels.com/photos/7262911/pexels-photo-7262911.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-                    : 'https://images.pexels.com/photos/7262911/pexels-photo-7262911.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // ممكن صورة عربية
+                    ? 'https://images.pexels.com/photos/12323055/pexels-photo-12323055.jpeg'
+                    : 'https://images.pexels.com/photos/12323055/pexels-photo-12323055.jpeg', 
             alt: locale === 'ar' ? 'امرأة تضع منتج تجميل' : 'Woman applying a cosmetic product',
             title: locale === 'ar' ? 'حقق أماني أطفالك.' : 'Make the wishes of your babies a reality.',
             linkText: t('shopToLook'),
