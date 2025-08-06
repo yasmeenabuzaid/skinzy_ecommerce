@@ -40,54 +40,77 @@ function BrandsSection() {
   const t = useTranslations('brandsSection');
 
   const handleBrandClick = (brandId) => {
-    router.push(`/${locale}/brands/${brandId}`); 
+    router.push(`/${locale}/brands/${brandId}`);
   };
 
-  if (isLoadingBrands) return <p className="text-center">{t('loading')}</p>;
-  if (errorBrands) return <p className="text-center text-red-500">{t('error')} {errorBrands}</p>;
-  if (!brands?.length) return <p className="text-center">{t('noBrands')}</p>;
+  const animationDuration = (brands?.length || 10) * 3;
+
+  if (isLoadingBrands) return <p className="text-center py-16">{t('loading')}</p>;
+  if (errorBrands) return <p className="text-center text-red-500 py-16">{t('error')} {errorBrands.message}</p>;
+  if (!brands?.length) return <p className="text-center py-16">{t('noBrands')}</p>;
 
   return (
-    <section
-      ref={ref}
-      className={`py-16 bg-gray-50 border-y border-gray-200 transition-all duration-700 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
-          <div className="flex animate-scroll-left hover:[animation-play-state:paused]">
-            {[...brands, ...brands].map((brand, index) => (
-              <div
-                key={index}
-                className="w-52 flex-shrink-0 flex items-center justify-center px-8 cursor-pointer"
-                onClick={() => handleBrandClick(brand.id)} 
-              >
-                <img
-                  src={brand.image || "/placeholder.png"}
-                  alt={brand.name}
-                  className="max-h-16 object-contain opacity-60 hover:opacity-100 transition-opacity"
-                />
-              </div>
-            ))}
+    <>
+      <style>
+        {`
+          @keyframes scroll-left {
+            from {
+              transform: translateX(0);
+            }
+            to {
+              transform: translateX(-50%);
+            }
+          }
+          .animate-scroll-left {
+            animation: scroll-left ${animationDuration}s linear infinite;
+          }
+        `}
+      </style>
+      <section
+        ref={ref}
+        className={`py-16 bg-gray-50 border-y border-gray-200 transition-all duration-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}
+      >
+        <div className="container mx-auto px-4">
+          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
+            <div className="flex animate-scroll-left hover:[animation-play-state:paused]">
+              {[...brands, ...brands].map((brand, index) => (
+                <div
+                  key={`${brand.id}-${index}`}
+                  className="w-52 flex-shrink-0 flex items-center justify-center px-8 cursor-pointer"
+                  onClick={() => handleBrandClick(brand.id)}
+                >
+                  <img
+                    src={brand.image || "https://placehold.co/208x64/f0f0f0/333?text=Brand"}
+                    alt={brand.name || 'Brand Logo'}
+                    onError={(e) => { e.currentTarget.src = 'https://placehold.co/208x64/f0f0f0/333?text=Error'; }}
+                    className="max-h-16 object-contain opacity-60 hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
 export default function App() {
   const t = useTranslations('brandsSection');
+
   return (
-    <main>
-      <div className="container mx-auto px-4 text-center">
-        <p className="text-gray-500 mb-1.5">{t('shopByCategories')}</p>
-        <h2 className="text-4xl font-semibold text-gray-800 mb-12">
-          {t('ourSeasonBrands')}
-        </h2>
-        <BrandsSection />
-      </div>
-    </main>
+    <div className="bg-white font-sans">
+      <main className="mr-15 ml-15">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-gray-500 mb-1.5">{t('shopByCategories')}</p>
+          <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 mb-12">
+            {t('ourSeasonBrands')}
+          </h2>
+          <BrandsSection />
+        </div>
+      </main>
+    </div>
   );
 }
