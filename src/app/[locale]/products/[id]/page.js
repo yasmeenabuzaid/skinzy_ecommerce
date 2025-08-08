@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import useProductQuery from "@/hooks/useProductQuery";
 import Breadcrumbs from "../../components/ProductPage/Breadcrumbs";
 import ProductGallery from "../../components/ProductPage/ProductGallery";
@@ -13,23 +14,22 @@ import Footer from "../../components/ui/Footer";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { product, isLoading, error } = useProductQuery(id); 
+  const { product, isLoading, error } = useProductQuery(id);
   const [mainImage, setMainImage] = useState("");
   const [activeSize, setActiveSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  console.log("single product", product);
-  
+
+  const locale = useLocale();
+  const isArabic = locale === "ar";
+
   const handleCartToggle = () => setIsCartOpen(!isCartOpen);
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const handleQuantityChange = (amount) => {
-    setQuantity((prev) => {
-      const newQty = Math.max(1, prev + amount);
-      return newQty;
-    });
+    setQuantity((prev) => Math.max(1, prev + amount));
   };
 
   const handleScroll = () => {
@@ -58,23 +58,35 @@ export default function ProductPage() {
   if (error) return <div className="text-center text-red-500 py-20">{error}</div>;
   if (!product) return <div className="text-center py-20">Product not found</div>;
 
+  const translatedProduct = {
+    ...product,
+    name: isArabic ? product.name_ar : product.name,
+    small_description: isArabic ? product.small_description_ar : product.small_description,
+  };
+
+const translatedSpecifications = product.specifications?.map((spec) => ({
+  ...spec,
+  key: isArabic ? spec.key_ar : spec.key,
+  value: isArabic ? spec.value_ar : spec.value,  
+})) || [];
+
   return (
-    <div className="text-gray-800">
+    <div className="text-gray-800 ">
       <Header onCartToggle={handleCartToggle} onMenuToggle={handleMenuToggle} />
 
-      <div className="bg-white text-gray-800 font-sans">
+      <div className="bg-white text-gray-800 font-sans mr-10 ml-10">
         <div className="container mx-auto px-4 py-8">
           <Breadcrumbs />
 
           <main className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <ProductGallery
               mainImage={mainImage}
-              thumbnails={product.images?.map(img => img.image) || []}
+              thumbnails={product.images?.map((img) => img.image) || []}
               setMainImage={setMainImage}
             />
 
             <ProductDetails
-              product={product}
+              product={translatedProduct}
               activeSize={activeSize}
               setActiveSize={setActiveSize}
               quantity={quantity}
@@ -83,9 +95,9 @@ export default function ProductPage() {
           </main>
         </div>
 
-        <ProductDescriptionSection 
-          description={product.description} 
-          specifications={product.specifications} 
+        <ProductDescriptionSection
+          description={isArabic ? product.description_ar : product.description}
+          specifications={translatedSpecifications}
         />
 
         <RelatedProductsSection products={product.related || []} />

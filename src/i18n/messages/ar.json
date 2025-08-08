@@ -120,6 +120,51 @@
     "gridView2Cols": "عرض شبكة عمودين",
     "gridView3Cols": "عرض شبكة 3 أعمدة",
     "listView": "عرض القائمة"
+  },
+   "login": {
+    "welcomeBack": "مرحبًا بعودتك!",
+    "subtitle": "يرجى إدخال بياناتك لتسجيل الدخول.",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "signIn": "تسجيل الدخول",
+    "signingIn": "جارٍ تسجيل الدخول...",
+    "noAccount": "ليس لديك حساب؟",
+    "createAccount": "أنشئ حسابًا",
+    "error": "خطأ",
+    "fillAllFields": "يرجى تعبئة جميع الحقول",
+    "success": "تم تسجيل الدخول بنجاح!",
+    "failed": "حدث خطأ ما. حاول مرة أخرى."
+  },
+    "register": {
+   "title": "أنشئ حسابك",
+  "subtitle": "املأ المعلومات أدناه للبدء.",
+  "fullName": "الاسم الكامل",
+  "phone": "رقم الهاتف",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "register": "تسجيل",
+  "registering": "جاري التسجيل...",
+  "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+  "signIn": "تسجيل الدخول",
+  "error": "خطأ",
+  "fillAllFields": "يرجى تعبئة جميع الحقول",
+  "passwordsMismatch": "كلمتا المرور غير متطابقتين",
+  "success": "نجاح",
+  "accountCreated": "تم إنشاء الحساب بنجاح!",
+  "registrationFailed": "فشل التسجيل",
+  "somethingWrong": "حدث خطأ ما. حاول مرة أخرى."
+,
+ "createAccount": "إنشاء حساب",
+  "fillInfo": "يرجى ملء المعلومات التالية لبدء الاستخدام.",
+  "fullNamePlaceholder": "أدخل اسمك الكامل",
+  "phonePlaceholder": "أدخل رقم هاتفك",
+  "emailPlaceholder": "أدخل بريدك الإلكتروني",
+  "passwordPlaceholder": "أدخل كلمة المرور",
+  "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+  "passwordMismatch": "كلمتا المرور غير متطابقتين",
+  "somethingWentWrong": "حدث خطأ ما. حاول مرة أخرى."
   }
 
 

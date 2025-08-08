@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 
 export default function ProductDescriptionSection({ description, specifications }) {
+  console.log("spec",specifications)
   const [activeTab, setActiveTab] = useState("description");
 
   return (
@@ -13,7 +14,7 @@ export default function ProductDescriptionSection({ description, specifications 
             onClick={() => setActiveTab("description")}
             className={`px-6 py-2 rounded-md font-semibold transition ${
               activeTab === "description"
-                ? "bg-[#d77979] text-white"
+                ? "bg-[#FF671F] text-white"
                 : "bg-white text-gray-700 hover:bg-gray-200"
             }`}
           >
@@ -23,7 +24,7 @@ export default function ProductDescriptionSection({ description, specifications 
             onClick={() => setActiveTab("specifications")}
             className={`px-6 py-2 rounded-md font-semibold transition ${
               activeTab === "specifications"
-                ? "bg-[#d77979] text-white"
+                ? "bg-[#FF671F] text-white"
                 : "bg-white text-gray-700 hover:bg-gray-200"
             }`}
           >

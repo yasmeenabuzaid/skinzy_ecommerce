@@ -1,6 +1,6 @@
 "use client";
 import { useCartContext } from "@/context/CartContext";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Minus, Plus } from "lucide-react";
 import Swal from "sweetalert2";
 import { useRouter, useParams } from "next/navigation";
 import storageService from "@/services/storage/storageService";
@@ -20,68 +20,100 @@ export default function ProductDetails({
   const router = useRouter();
   const { locale } = useParams();
 
+  // ترجمات حسب اللغة
+  const translations = {
+    ar: {
+      chooseVariant: "اختر الإصدار:",
+      quantity: "الكمية",
+      addToCart: "أضف إلى السلة",
+      addToFavoritesAria: "أضف إلى المفضلة",
+      alertSelectSize: "يرجى اختيار المقاس أو الإصدار قبل الإضافة إلى السلة",
+      alertQuantityOne: "الكمية يجب أن تكون على الأقل 1",
+      addedToCart: "تمت إضافة المنتج إلى السلة بنجاح",
+      warningTitle: "تنبيه",
+      continueBtn: "متابعة",
+      favoriteError: "يجب تسجيل الدخول لإضافة للمفضلة",
+      favoriteAdded: "تمت إضافة المنتج إلى المفضلة",
+      favoriteFailed: "فشل في الإضافة",
+      favoriteErrorOccured: "حدث خطأ أثناء الإضافة",
+      okBtn: "حسنًا",
+      noOptions: "لا توجد خيارات متاحة",
+    },
+    en: {
+      chooseVariant: "Choose Variant:",
+      quantity: "Quantity",
+      addToCart: "Add to Cart",
+      addToFavoritesAria: "Add to Favorites",
+      alertSelectSize: "Please select size or variant before adding to cart",
+      alertQuantityOne: "Quantity must be at least 1",
+      addedToCart: "Product successfully added to cart",
+      warningTitle: "Warning",
+      continueBtn: "Continue",
+      favoriteError: "You must be logged in to add to favorites",
+      favoriteAdded: "Product added to favorites",
+      favoriteFailed: "Failed to add",
+      favoriteErrorOccured: "An error occurred while adding",
+      okBtn: "OK",
+      noOptions: "No options available",
+    },
+  };
+
+  const t = translations[locale] || translations.en;
+
   const isVariation = product.type === "variation";
   const mainProduct = isVariation ? product.parent_product : product;
 
   const handleAddToCart = () => {
     if (!activeSize) {
       Swal.fire({
-        title: "تنبيه",
-        text: "يرجى اختيار المقاس أو الإصدار قبل الإضافة إلى السلة",
+        title: t.warningTitle,
+        text: t.alertSelectSize,
         icon: "warning",
-        confirmButtonText: "حسنًا",
+        confirmButtonText: t.okBtn,
       });
       return;
     }
-
     if (quantity < 1) {
       Swal.fire({
-        title: "تنبيه",
-        text: "الكمية يجب أن تكون على الأقل 1",
+        title: t.warningTitle,
+        text: t.alertQuantityOne,
         icon: "warning",
-        confirmButtonText: "حسنًا",
+        confirmButtonText: t.okBtn,
       });
       return;
     }
-
-    addCart({
-      productId: product.id,
-      quantity,
-      size: activeSize,
-    });
-
+    addCart({ productId: product.id, quantity, size: activeSize });
     Swal.fire({
-      title: "تمت الإضافة",
-      text: "تمت إضافة المنتج إلى السلة بنجاح",
+      title: t.addedToCart,
       icon: "success",
-      confirmButtonText: "متابعة",
+      confirmButtonText: t.continueBtn,
     });
   };
 
-  // دالة إضافة المنتج للمفضلة
-  const addToFavorites = async () => {
-    const userInfo = storageService.getUserInfo();
+const addToFavorites = async () => {
+  const userInfo = storageService.getUserInfo();
+  if (!userInfo?.accessToken) {
+    Swal.fire(t.warningTitle, t.favoriteError, "error");
+    return;
+  }
+  try {
+    const response = await BackendConnector.addToFavorites({
+      product_id: product.id,
+      user_id: userInfo.id,
+    });
 
-    if (!userInfo?.accessToken) {
-      Swal.fire("خطأ", "يجب تسجيل الدخول لإضافة للمفضلة", "error");
-      return;
+    // إذا فيه favorite في الرد، نعتبرها ناجحة
+    if (response?.favorite) {
+      Swal.fire(t.warningTitle, response.message || t.favoriteAdded, "success");
+    } else {
+      Swal.fire(t.warningTitle, response?.message || t.favoriteFailed, "error");
     }
+  } catch (error) {
+    console.error("Add to favorites error:", error);
+    Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
+  }
+};
 
-    try {
-      const response = await BackendConnector.addToFavorites({
-        product_id: product.id,
-        user_id: userInfo.id,
-      });
-
-      if (response?.success) {
-        Swal.fire("تم", "تمت إضافة المنتج إلى المفضلة", "success");
-      } else {
-        Swal.fire("خطأ", response?.message || "فشل في الإضافة", "error");
-      }
-    } catch (error) {
-      Swal.fire("خطأ", "حدث خطأ أثناء الإضافة", "error");
-    }
-  };
 
   const variationOptions = isVariation
     ? [mainProduct, ...(mainProduct.variations || [])]
@@ -89,124 +121,134 @@ export default function ProductDetails({
 
   const sizeOptions = variationOptions.map((v) => ({
     id: v.id,
-    name: v.name + (v.id === mainProduct.id ? " (الأساسي)" : ""),
+    name: v.name,
     price: v.price,
     image: v.images?.[0]?.image,
-    isMain: v.id === mainProduct.id,
   }));
 
   return (
-    <div className="flex flex-col">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">{mainProduct.name}</h1>
-
-      <div className="flex items-center mb-4">
-        <div className="flex text-yellow-400">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={20}
-              fill={i < mainProduct.rating ? "currentColor" : "none"}
-              stroke={i < mainProduct.rating ? "currentColor" : "#d1d5db"}
-            />
-          ))}
-        </div>
-        <span className="text-gray-500 text-sm mr-2">({mainProduct.reviews || 0})</span>
+    <div className="flex flex-col space-y-6">
+      <div>
+        <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">
+          {mainProduct.name}
+        </h1>
+        <p className="mt-2 text-lg text-gray-500">{mainProduct.small_description}</p>
       </div>
 
-      <p className="text-2xl font-semibold text-gray-800 mb-6">
-        {formatPrice(mainProduct.price)}
-        {mainProduct.originalPrice && (
-          <span className="text-sm text-gray-400 line-through ml-3">
-            {formatPrice(mainProduct.originalPrice)}
-          </span>
-        )}
-      </p>
+  <p className="text-3xl font-bold text-gray-800">
+  {product.price_after_discount ? (
+    <>
+      <span className="text-xl font-semibold text-red-600 mr-3">
+        {formatPrice(product.price_after_discount)}
+      </span>
+      <span className="text-lg text-gray-400 line-through font-medium">
+        {formatPrice(product.price)}
+      </span>
+    </>
+  ) : (
+    formatPrice(product.price)
+  )}
 
-      {/* خيارات الحجم / الإصدار */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        {sizeOptions.length > 0 ? (
-          sizeOptions.map((option) => {
-            const isCurrent = product.id === option.id;
+  {mainProduct.originalPrice && !product.priceAfterDiscount && (
+    <span className="text-lg text-gray-400 line-through ml-3 font-medium">
+      {formatPrice(mainProduct.originalPrice)}
+    </span>
+  )}
+</p>
 
-            return (
-              <div
-                key={option.id}
-                onClick={() => {
-                  if (!isCurrent) {
-                    router.push(`/${locale}/products/${option.id}`);
-                  } else {
+
+      <div>
+        <h3 className="text-sm font-semibold text-gray-800 mb-3">{t.chooseVariant}</h3>
+        <div className="flex flex-wrap gap-3">
+          {sizeOptions.length > 0 ? (
+            sizeOptions.map((option) => {
+              const isCurrent = product.id === option.id;
+              const isActive = activeSize === option.name;
+
+              return (
+                <div
+                  key={option.id}
+                  onClick={() => {
+                    if (!isCurrent) {
+                      router.push(`/${locale}/products/${option.id}`);
+                    }
                     setActiveSize(option.name);
-                  }
-                }}
-                className={`border rounded-md p-3 cursor-pointer hover:border-gray-900 transition flex flex-col items-center text-center
-                  ${isCurrent ? "border-gray-900 bg-gray-100" : "border-gray-300"}
-                `}
-              >
-                {option.image ? (
-                  <img
-                    src={option.image}
-                    alt={option.name}
-                    className="w-20 h-20 object-cover rounded mb-2"
-                  />
-                ) : (
-                  <div className="w-20 h-20 bg-gray-200 flex items-center justify-center rounded mb-2 text-gray-500 text-xs">
-                    لا توجد صورة
+                  }}
+                  className={`border rounded-lg p-2 cursor-pointer transition-all duration-200 flex items-center gap-3 w-full sm:w-auto ${
+                    isActive
+                      ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F]"
+                      : "border-gray-300 hover:border-[#FF671F]"
+                  }`}
+                >
+                  {option.image ? (
+                    <img
+                      src={option.image}
+                      alt={option.name}
+                      className="w-14 h-14 object-cover rounded-md"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 bg-gray-100 rounded-md"></div>
+                  )}
+                  <div>
+                    <span className="font-semibold text-gray-800 text-sm block">{option.name}</span>
+                    <span className="text-xs text-gray-600 mt-1">{formatPrice(option.price)}</span>
                   </div>
-                )}
-                <span className="font-medium">{option.name}</span>
-                <span className="text-sm text-gray-600 mt-1">
-                  {formatPrice(option.price)}
-                </span>
-              </div>
-            );
-          })
-        ) : (
-          <p>لا توجد خيارات متاحة</p>
-        )}
-      </div>
-
-      {/* التحكم في الكمية */}
-      <div className="mb-6 w-32">
-        <label className="font-semibold text-gray-700 mb-2 block">الكمية</label>
-        <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
-          <button
-            onClick={() => handleQuantityChange(-1)}
-            className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition"
-          >
-            −
-          </button>
-          <input
-            type="number"
-            min={1}
-            value={quantity}
-            onChange={(e) => {
-              const val = Math.max(1, Number(e.target.value));
-              handleQuantityChange(val - quantity);
-            }}
-            className="w-full text-center border-l border-r border-gray-300 focus:outline-none"
-          />
-          <button
-            onClick={() => handleQuantityChange(1)}
-            className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition"
-          >
-            +
-          </button>
+                </div>
+              );
+            })
+          ) : (
+            <p>{t.noOptions}</p>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex items-center gap-8">
+        <div>
+          <label className="font-semibold text-gray-800 mb-2 block text-sm">{t.quantity}</label>
+          <div className="flex items-center border border-gray-300 rounded-lg">
+            <button
+              onClick={() => handleQuantityChange(-1)}
+              className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-l-lg"
+              aria-label="Decrease quantity"
+            >
+              <Minus size={16} />
+            </button>
+
+            <input
+              type="number"
+              min={1}
+              value={quantity}
+              onChange={(e) => {
+                const val = Math.max(1, Number(e.target.value));
+                handleQuantityChange(val - quantity);
+              }}
+              className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2"
+            />
+
+            <button
+              onClick={() => handleQuantityChange(1)}
+              className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-r-lg"
+              aria-label="Increase quantity"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
         <button
           onClick={handleAddToCart}
-          className="bg-red-600 text-white w-full py-3 rounded-md font-semibold transition hover:bg-red-700"
+          className="w-full bg-gradient-to-r from-[#FF671F] to-[#FF671F] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
         >
-          أضف إلى السلة
+          {t.addToCart}
         </button>
         <button
           onClick={addToFavorites}
-          className="bg-white border border-gray-300 w-full py-3 rounded-md font-semibold transition hover:bg-red-100 flex items-center justify-center gap-2 text-gray-700"
-          aria-label="أضف إلى المفضلة"
+          className="w-full sm:w-auto bg-white border-2 border-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:border-[#FF671F] hover:text-[#FF671F] hover:bg-[#FFF1E6] flex items-center justify-center gap-2 text-gray-700"
+          aria-label={t.addToFavoritesAria}
         >
-          <Heart size={20} /> أضف إلى المفضلة
+          <Heart size={20} />
         </button>
       </div>
     </div>

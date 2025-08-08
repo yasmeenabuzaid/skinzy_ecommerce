@@ -52,7 +52,6 @@ export const CartContextProvider = ({ children }) => {
 console.log("Add cart response:", resp);
 
 if (resp?.success) {
-  Swal.fire("تم", "تمت إضافة المنتج إلى السلة", "success");
   await fetchCart(); // تحديث السلة
 }
 
