@@ -48,10 +48,10 @@ const AccountDetailsView = ({ onViewAddresses }) => {
           Log out
         </button>
 
-        {/* <div className="mt-8">
+        <div className="mt-8">
           <h2 className="text-2xl font-light tracking-tight mb-4">Order history</h2>
           <p className="text-gray-500">You haven&apos;t placed any orders yet.</p>
-        </div> */}
+        </div>
       </div>
 
       <div className="mt-12 lg:mt-0">

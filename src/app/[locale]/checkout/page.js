@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import OrderSummary from "./OrderSummary";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import { useCartContext } from "../../../context/CartContext";
 import StripePayment from "./StripePayment.js";
@@ -26,7 +26,7 @@ const FormInput = ({ id, label, type = "text", optional = false }) => (
       htmlFor={id}
       className="absolute left-3 -top-2.5 text-xs text-gray-500 bg-white px-1 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-black"
     >
-      {label} {optional && <span className="text-gray-400">(optional)</span>}
+      {label} {optional && <span className="text-gray-400">({label ? "optional" : ""})</span>}
     </label>
   </div>
 );
@@ -59,6 +59,7 @@ const SelectInput = ({ id, label, options = [], value, onChange }) => (
 
 export default function CheckoutPage() {
   const locale = useLocale();
+  const t = useTranslations("checkout");
   const { cart } = useCartContext();
   const router = useRouter();
 
@@ -94,19 +95,25 @@ export default function CheckoutPage() {
         const res = await BackendConnector.getAddresses();
         setAddresses(res?.addresses || []);
       } catch (error) {
-        console.error("خطأ في جلب العناوين:", error);
+        console.error(t("orderFailText"), error);
       } finally {
         setLoading(false);
       }
     };
     fetchAddresses();
-  }, []);
+  }, [t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (cart.length === 0 || !selectedAddress || !shippingMethod || !paymentMethod || (paymentMethod === "stripe" && !paymentProof)) {
-      alert("يرجى ملء جميع الحقول المطلوبة.");
+    if (
+      cart.length === 0 ||
+      !selectedAddress ||
+      !shippingMethod ||
+      !paymentMethod ||
+      (paymentMethod === "stripe" && !paymentProof)
+    ) {
+      alert(t("fillAllRequired"));
       return;
     }
 
@@ -129,16 +136,16 @@ export default function CheckoutPage() {
       await BackendConnector.handleCheckout(formData);
       Swal.fire({
         icon: "success",
-        title: "تم الطلب بنجاح!",
-        text: "سعيدون جدًا بثقتك ونتمنى لك تجربة رائعة مع منتجاتنا",
-        confirmButtonText: "موافق",
+        title: t("orderSuccessTitle"),
+        text: t("orderSuccessText"),
+        confirmButtonText: t("orderSuccessBtn"),
       }).then(() => router.push("/"));
     } catch (error) {
-      console.error("فشل في إرسال الطلب:", error);
+      console.error(t("orderFailText"), error);
       Swal.fire({
         icon: "error",
-        title: "فشل في إرسال الطلب",
-        text: "حدث خطأ أثناء المعالجة. حاول مرة أخرى لاحقًا.",
+        title: t("orderFailTitle"),
+        text: t("orderFailText"),
       });
     } finally {
       setSubmitting(false);
@@ -157,23 +164,25 @@ export default function CheckoutPage() {
         >
           <div className="w-full lg:w-3/5">
             <div className="py-8 px-4 sm:px-16 lg:px-24">
-              <h1 className="text-3xl font-bold text-center mb-8">CHECKOUT FORM</h1>
+              <h1 className="text-3xl font-bold text-center mb-8">
+                {t("checkoutFormTitle")}
+              </h1>
 
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Contact Information</h2>
-                <FormInput id="mobile" label="Mobile number" type="tel" />
-                <FormInput id="email" label="Email address" type="email" optional />
-                <FormInput id="note" label="Note" optional />
+                <h2 className="text-lg font-medium mb-4">{t("contactInformation")}</h2>
+                <FormInput id="mobile" label={t("mobileNumber")} type="tel" />
+                <FormInput id="email" label={t("emailAddress")} type="email" optional />
+                <FormInput id="note" label={t("note")} optional />
               </div>
 
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Shipping Method</h2>
+                <h2 className="text-lg font-medium mb-4">{t("shippingMethod")}</h2>
                 <SelectInput
                   id="shipping_method"
-                  label="Choose shipping method"
+                  label={t("chooseShippingMethod")}
                   options={[
-                    { value: "home_delivery", label: "Home Delivery" },
-                    { value: "pickup", label: "Pickup from Store" },
+                    { value: "home_delivery", label: t("homeDelivery") },
+                    { value: "pickup", label: t("pickup") },
                   ]}
                   value={shippingMethod}
                   onChange={(e) => setShippingMethod(e.target.value)}
@@ -181,30 +190,39 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Shipping Address</h2>
-                {loading ? (
-                  <p className="text-gray-500">جاري تحميل العناوين...</p>
-                ) : (
-                  <SelectInput
-                    id="address_id"
-                    label="Select Address"
-                    options={addresses.map((address) => ({
-                      value: address.id,
-                      label: `${address.full_address}, ${address.city?.name || ""}`,
-                    }))}
-                    value={selectedAddress?.id || ""}
-                    onChange={(e) => {
-                      const selected = addresses.find(
-                        (addr) => addr.id == e.target.value
-                      );
-                      setSelectedAddress(selected);
-                    }}
-                  />
-                )}
+                <h2 className="text-lg font-medium mb-4">{t("shippingAddress")}</h2>
+              {loading ? (
+  <p className="text-gray-500">{t("loadingAddresses")}</p>
+) : addresses.length === 0 ? (
+  <p className="text-gray-600">
+    {t("noAddressesMessage")}{" "}
+    <a
+      href={`/${locale}/profile`}
+      className="text-blue-600 underline hover:text-blue-800 cursor-pointer"
+    >
+      {t("addAddressLinkText")}
+    </a>
+  </p>
+) : (
+  <SelectInput
+    id="address_id"
+    label={t("selectAddress")}
+    options={addresses.map((address) => ({
+      value: address.id,
+      label: `${address.full_address}, ${address.city?.name || ""}`,
+    }))}
+    value={selectedAddress?.id || ""}
+    onChange={(e) => {
+      const selected = addresses.find((addr) => addr.id == e.target.value);
+      setSelectedAddress(selected);
+    }}
+  />
+)}
+
               </div>
 
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Payment Method</h2>
+                <h2 className="text-lg font-medium mb-4">{t("paymentMethod")}</h2>
                 <select
                   id="payment_method"
                   name="payment_method"
@@ -213,18 +231,18 @@ export default function CheckoutPage() {
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   required
                 >
-                  <option value="">-- Choose payment method --</option>
-                  <option value="cash_on_delivery">Cash on Delivery</option>
-                  <option value="stripe">Credit Card (Stripe)</option>
+                  <option value="">{`-- ${t("choosePaymentMethod")} --`}</option>
+                  <option value="cash_on_delivery">{t("cashOnDelivery")}</option>
+                  <option value="stripe">{t("creditCardStripe")}</option>
                 </select>
 
                 {shippingMethod === "home_delivery" &&
                   selectedAddress?.city?.delivery_fee !== undefined && (
                     <p className="text-sm text-green-700 font-semibold mt-2">
                       {subtotal > FREE_SHIPPING_THRESHOLD ? (
-                        <>✅ التوصيل مجاني لأن إجمالي الطلب أكثر من {FREE_SHIPPING_THRESHOLD} دينار</>
+                        <>{t("freeShippingMessage", { amount: FREE_SHIPPING_THRESHOLD })}</>
                       ) : (
-                        <>رسوم التوصيل: {selectedAddress.city.delivery_fee} دينار</>
+                        <>{t("deliveryFeeMessage", { fee: selectedAddress.city.delivery_fee })}</>
                       )}
                     </p>
                   )}
@@ -242,13 +260,11 @@ export default function CheckoutPage() {
                 disabled={submitting || cart.length === 0}
                 className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition-colors disabled:bg-gray-400"
               >
-                {submitting ? "جاري إرسال الطلب..." : "Place Order"}
+                {submitting ? t("submittingOrder") : t("placeOrder")}
               </button>
 
               {cart.length === 0 && (
-                <p className="mt-2 text-red-600 font-semibold">
-                  عربة التسوق فارغة! الرجاء إضافة منتجات قبل إتمام الطلب.
-                </p>
+                <p className="mt-2 text-red-600 font-semibold">{t("cartEmpty")}</p>
               )}
             </div>
           </div>

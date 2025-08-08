@@ -2,14 +2,22 @@
 
 import React from "react";
 import { FiTrash2 } from "react-icons/fi";
+import { useLocale } from "next-intl";
 
 const OrderSummaryItem = ({ item, onRemove }) => {
+  const locale = useLocale();
   const product = item?.product;
 
   if (!product) return null;
 
   const image = product.images?.[0]?.image || "https://placehold.co/100x100";
-  const name = product.name || "Unnamed";
+  
+  // عرض الاسم العربي لو اللغة عربية واسم عربي موجود، وإلا الاسم الإنجليزي
+  const name =
+    locale === "ar" && product.name_ar && product.name_ar.trim() !== ""
+      ? product.name_ar
+      : product.name || "Unnamed";
+
   const price = product.price_after_discount ?? product.price ?? 0;
 
   return (
@@ -24,7 +32,6 @@ const OrderSummaryItem = ({ item, onRemove }) => {
         <p className="text-xs text-gray-500">
           {item.quantity} × ${price.toFixed(2)}
         </p>
-        <p className="text-xs text-gray-500">Type: {product.type || "-"}</p>
       </div>
       <button
         onClick={() => onRemove(item.id)}
