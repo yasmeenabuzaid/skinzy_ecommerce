@@ -19,8 +19,8 @@ export default function ProductDetails({
   const { addCart } = useCartContext();
   const router = useRouter();
   const { locale } = useParams();
+  const userInfo = storageService.getUserInfo();
 
-  // ترجمات حسب اللغة
   const translations = {
     ar: {
       chooseVariant: "اختر الإصدار:",
@@ -64,6 +64,11 @@ export default function ProductDetails({
   const mainProduct = isVariation ? product.parent_product : product;
 
   const handleAddToCart = () => {
+    if (!userInfo?.accessToken) {
+      Swal.fire(t.warningTitle, t.favoriteError, "error");
+      return;
+    }
+
     if (!activeSize) {
       Swal.fire({
         title: t.warningTitle,
@@ -73,6 +78,7 @@ export default function ProductDetails({
       });
       return;
     }
+
     if (quantity < 1) {
       Swal.fire({
         title: t.warningTitle,
@@ -82,7 +88,9 @@ export default function ProductDetails({
       });
       return;
     }
+
     addCart({ productId: product.id, quantity, size: activeSize });
+
     Swal.fire({
       title: t.addedToCart,
       icon: "success",
@@ -90,30 +98,28 @@ export default function ProductDetails({
     });
   };
 
-const addToFavorites = async () => {
-  const userInfo = storageService.getUserInfo();
-  if (!userInfo?.accessToken) {
-    Swal.fire(t.warningTitle, t.favoriteError, "error");
-    return;
-  }
-  try {
-    const response = await BackendConnector.addToFavorites({
-      product_id: product.id,
-      user_id: userInfo.id,
-    });
-
-    // إذا فيه favorite في الرد، نعتبرها ناجحة
-    if (response?.favorite) {
-      Swal.fire(t.warningTitle, response.message || t.favoriteAdded, "success");
-    } else {
-      Swal.fire(t.warningTitle, response?.message || t.favoriteFailed, "error");
+  const addToFavorites = async () => {
+    if (!userInfo?.accessToken) {
+      Swal.fire(t.warningTitle, t.favoriteError, "error");
+      return;
     }
-  } catch (error) {
-    console.error("Add to favorites error:", error);
-    Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
-  }
-};
 
+    try {
+      const response = await BackendConnector.addToFavorites({
+        product_id: product.id,
+        user_id: userInfo.id,
+      });
+
+      if (response?.favorite) {
+        Swal.fire(t.warningTitle, response.message || t.favoriteAdded, "success");
+      } else {
+        Swal.fire(t.warningTitle, response?.message || t.favoriteFailed, "error");
+      }
+    } catch (error) {
+      console.error("Add to favorites error:", error);
+      Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
+    }
+  };
 
   const variationOptions = isVariation
     ? [mainProduct, ...(mainProduct.variations || [])]
@@ -135,27 +141,26 @@ const addToFavorites = async () => {
         <p className="mt-2 text-lg text-gray-500">{mainProduct.small_description}</p>
       </div>
 
-  <p className="text-3xl font-bold text-gray-800">
-  {product.price_after_discount ? (
-    <>
-      <span className="text-xl font-semibold text-red-600 mr-3">
-        {formatPrice(product.price_after_discount)}
-      </span>
-      <span className="text-lg text-gray-400 line-through font-medium">
-        {formatPrice(product.price)}
-      </span>
-    </>
-  ) : (
-    formatPrice(product.price)
-  )}
+      <p className="text-3xl font-bold text-gray-800">
+        {product.price_after_discount ? (
+          <>
+            <span className="text-xl font-semibold text-red-600 mr-3">
+              {formatPrice(product.price_after_discount)}
+            </span>
+            <span className="text-lg text-gray-400 line-through font-medium">
+              {formatPrice(product.price)}
+            </span>
+          </>
+        ) : (
+          formatPrice(product.price)
+        )}
 
-  {mainProduct.originalPrice && !product.priceAfterDiscount && (
-    <span className="text-lg text-gray-400 line-through ml-3 font-medium">
-      {formatPrice(mainProduct.originalPrice)}
-    </span>
-  )}
-</p>
-
+        {mainProduct.originalPrice && !product.priceAfterDiscount && (
+          <span className="text-lg text-gray-400 line-through ml-3 font-medium">
+            {formatPrice(mainProduct.originalPrice)}
+          </span>
+        )}
+      </p>
 
       <div>
         <h3 className="text-sm font-semibold text-gray-800 mb-3">{t.chooseVariant}</h3>

@@ -96,6 +96,17 @@
     "goToCart": "Proceed to Cart",
     "orContinueShopping": "or continue shopping"
   },
+"cart": {
+    "error": "Error",
+  "loginRequired": "You must be logged in to add the product to the cart",
+  "addError": "An error occurred while adding to the cart",
+  "removingProduct": "Removing the product from the cart...",
+  "deleteSuccess": "Deleted successfully",
+  "updateFailed": "Failed to update quantity",
+  "updateError": "An error occurred while updating quantity",
+  "modifyingQuantity": "Modifying quantity...",
+  "updateSuccess": "Quantity updated successfully"
+  },
   "BrandProductsPage": {
     "title": "Brand Products",
     "loading": "Loading products...",
@@ -163,5 +174,12 @@
   "registrationFailed": "Registration failed",
   "somethingWrong": "Something went wrong. Try again."
   }
-
+,
+"product": {
+    "description": "Description",
+    "specifications": "Specifications",
+    "key": "Key",
+    "value": "Value",
+    "noSpecs": "No specifications available."
+  }
 }

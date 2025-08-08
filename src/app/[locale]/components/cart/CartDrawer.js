@@ -95,7 +95,7 @@ export default function CartDrawer({
                       {isRTL ? item.product?.name_ar || item.product?.name : item.product?.name || t("noName")}
                     </Link>
                     <p className="text-sm text-gray-500">
-                      {item.quantity} × ${(item.product?.price_after_discount ?? item.product?.price ?? 0).toFixed(2)}
+                      {item.quantity} × JD {(item.product?.price_after_discount ?? item.product?.price ?? 0).toFixed(2)}
                     </p>
                   </div>
                   <button
@@ -117,7 +117,7 @@ export default function CartDrawer({
     <div className="flex justify-between items-center mb-4">
       <span className="font-semibold text-gray-800 text-lg">{t("subtotal")}</span>
       <span className="font-extrabold text-2xl text-black">
-        ${subtotal.toFixed(2)}
+        JD {subtotal.toFixed(2)}
       </span>
     </div>
     <p className="text-xs text-gray-500 text-center mb-4">{t("shippingMessage")}</p>

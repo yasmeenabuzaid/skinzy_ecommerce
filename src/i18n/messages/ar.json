@@ -165,6 +165,25 @@
   "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
   "passwordMismatch": "كلمتا المرور غير متطابقتين",
   "somethingWentWrong": "حدث خطأ ما. حاول مرة أخرى."
+  },
+  "cart": {
+     "error": "خطأ",
+  "loginRequired": "يجب تسجيل الدخول لإضافة المنتج إلى السلة",
+  "addError": "حدث خطأ أثناء الإضافة إلى السلة",
+  "removingProduct": "جاري حذف المنتج من السلة...",
+  "deleteSuccess": "تم الحذف بنجاح",
+  "updateFailed": "فشل في تعديل الكمية",
+  "updateError": "حدث خطأ أثناء تحديث الكمية",
+  "modifyingQuantity": "جاري حذف تعديل الكمية...",
+  "updateSuccess": "تم تغير الكمية بنجاح"
+  },
+  
+"product": {
+    "description": "الوصف",
+    "specifications": "المواصفات",
+    "key": "المفتاح",
+    "value": "القيمة",
+    "noSpecs": "لا توجد مواصفات متاحة."
   }
 
 
