@@ -83,7 +83,7 @@ export default function CartDrawer({
             <div className="space-y-6">
               {validItems.map((item) => (
                 <div key={item.id} className="flex gap-4 items-start">
-                  <Link href={`/${locale}/product/${item.product.id}`} className="flex-shrink-0">
+                  <Link href={`/${locale}/products/${item.product.id}`} className="flex-shrink-0">
                     <img
                       src={item.product?.images?.[0]?.image || "/default.png"}
                       alt={item.product?.name || "Product Image"}
@@ -91,7 +91,7 @@ export default function CartDrawer({
                     />
                   </Link>
                   <div className="flex-grow">
-                    <Link href={`/${locale}/product/${item.product.id}`} className="font-bold text-gray-800 text-base leading-tight hover:text-black transition-colors block mb-1">
+                    <Link href={`/${locale}/products/${item.product.id}`} className="font-bold text-gray-800 text-base leading-tight hover:text-black transition-colors block mb-1">
                       {isRTL ? item.product?.name_ar || item.product?.name : item.product?.name || t("noName")}
                     </Link>
                     <p className="text-sm text-gray-500">
@@ -126,7 +126,7 @@ export default function CartDrawer({
 <div className="flex gap-4">
   <Link href={`/${locale}/checkout`} className="flex-grow">
     <button
-      className="w-full bg-black text-white py-3 rounded-lg text-base font-bold hover:bg-gray-800 transition-transform hover:scale-[1.02] duration-300 cursor-pointer"
+      className="w-full bg-[#FF671F] text-white py-3 rounded-lg text-base font-bold hover:bg-gray-800 transition-transform hover:scale-[1.02] duration-300 cursor-pointer"
     >
       {t("goToCheckout")}
     </button>

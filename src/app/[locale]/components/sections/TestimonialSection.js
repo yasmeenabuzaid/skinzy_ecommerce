@@ -141,7 +141,7 @@ export default function TestimonialSection() {
                 onClick={() => setCurrentSlide(index)}
                 aria-label={`Go to testimonial ${index + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  index === currentSlide ? 'bg-[#ef8172] w-8' : 'bg-gray-300 w-4'
+                  index === currentSlide ? 'bg-[#FF671F] w-8' : 'bg-gray-300 w-4'
                 }`}
               />
             ))}

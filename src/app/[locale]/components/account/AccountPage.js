@@ -15,7 +15,7 @@ const NavLink = ({ icon, label, isActive, onClick }) => (
     className={`w-full flex items-center gap-4 px-4 py-3 text-left rounded-lg transition-all duration-200 font-semibold
       ${
         isActive
-          ? "bg-rose-100 text-rose-700 shadow-sm"
+          ? "bg-[#FF671F] text-white shadow-md"
           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
       }`}
   >
@@ -23,6 +23,7 @@ const NavLink = ({ icon, label, isActive, onClick }) => (
     <span>{label}</span>
   </button>
 );
+
 
 export default function AccountPage() {
   const [view, setView] = useState("details"); // Default view is 'details'

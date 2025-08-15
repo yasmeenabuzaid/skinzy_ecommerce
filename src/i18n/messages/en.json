@@ -3,8 +3,8 @@
     "language": "English",
     "english": "English",
     "arabic": "Arabic",
-    "callUs": "Call Us: +00 123 456 789",
-    "newsletter": "Spend over 15 JOD and enjoy free delivery to your doorstep!",
+"callUs": "Call Us: 0793053337 - 0793053338",
+    "newsletter": "Spend over 20 JOD and enjoy free delivery to your doorstep!",
     "home": "Home",
     "loadingCategories": "Loading Categories...",
     "errorLoadingCategories": "Error loading categories.",
@@ -17,20 +17,20 @@
     "slides": [
       {
         "offer": "Grand Opening",
-        "title": "Free Delivery on Orders Over 15 JD!",
-        "description": "Enjoy a unique shopping experience with our new products and free delivery on orders over 15 Jordanian Dinars.",
+        "title": "Free Delivery on Orders Over 20 JD!",
+        "description": "Enjoy a unique shopping experience with our new products and free delivery on orders over 20 Jordanian Dinars.",
         "buttonText": "Shop Now"
       },
       {
         "offer": "Special Offer",
-        "title": "Free Delivery on Every Order Above 15 JD",
-        "description": "Don't miss the chance to get free delivery on all orders worth 15 JD or more.",
+        "title": "Free Delivery on Every Order Above 20 JD",
+        "description": "Don't miss the chance to get free delivery on all orders worth 20 JD or more.",
         "buttonText": "Discover More"
       },
       {
         "offer": "Limited Time",
         "title": "Unlock Savings with Free Delivery!",
-        "description": "Order now and enjoy free delivery on orders exceeding 15 Jordanian Dinars.",
+        "description": "Order now and enjoy free delivery on orders exceeding 20 Jordanian Dinars.",
         "buttonText": "Shop & Save"
       }
     ]
@@ -113,6 +113,8 @@
   "mobileNumber": "Mobile number",
   "emailAddress": "Email address",
   "note": "Note",
+    "note": "Note",
+  "homeDeliveryOnlyNoPickup": "Delivery only, no local pickup available",
   "shippingMethod": "Shipping Method",
   "chooseShippingMethod": "Choose shipping method",
   "homeDelivery": "Home Delivery",
@@ -153,6 +155,37 @@
     "priceHighLow": "Price: High to Low",
     "noProducts": "No products available for this brand"
   },
+   "forgotPassword": {
+     "title": "Forgot Your Password?",
+  "subtitle": "Enter your email and we’ll send you a link to reset your password.",
+  "email": "Email Address",
+  "sendLink": "Send Reset Link",
+  "sending": "Sending...",
+  "successTitle": "Success!",
+  "successText": "A password reset link has been sent to your email.",
+  "error": "Error",
+  "failed": "Failed to send reset link.",
+  "emailRequired": "Please enter your email address.",
+  "ok": "OK",
+  "backToLogin": "Back to Login"
+  }
+  ,
+   "resetPassword": {
+     "title": "Reset Your Password",
+  "subtitle": "Enter your new password and confirm it to update your account.",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "updatePassword": "Update Password",
+  "updating": "Updating...",
+  "successTitle": "Success!",
+  "successText": "Your password has been successfully updated.",
+  "error": "Error",
+  "failed": "Failed to update password.",
+  "invalidLink": "Invalid or expired password reset link.",
+  "passwordsDoNotMatch": "Passwords do not match.",
+  "passwordTooShort": "Password must be at least 8 characters."
+  }
+  ,
    "FavoriteProducts": {
     "favoriteProductsTitle": "Favorite Products",
     "loginRequired": "You must be logged in to view favorite products.",
@@ -165,7 +198,10 @@
     "sortByPriceDesc": "Price: High to Low",
     "gridView2Cols": "Grid view 2 columns",
     "gridView3Cols": "Grid view 3 columns",
-    "listView": "List view"
+    "listView": "List view",
+    "errorTitle": "Error",
+    "removeError": "Failed to remove the product from favorites",
+    "networkError": "A network error occurred"
   },
     "login": {
     "welcomeBack": "Welcome Back!",
@@ -218,5 +254,58 @@
     "key": "Key",
     "value": "Value",
     "noSpecs": "No specifications available."
+  },
+    "AccountDetailsView": {
+    "title": "Account",
+    "logout": "Log out",
+    "logoutConfirmTitle": "Are you sure?",
+    "logoutConfirmText": "You will be logged out of your account.",
+    "logoutConfirmButton": "Yes, log out",
+    "cancel": "Cancel",
+    "orderHistoryTitle": "Order history",
+    "noOrders": "You haven't placed any orders yet.",
+    "accountDetailsTitle": "Account details",
+    "loadingAddress": "Loading address...",
+    "errorAddress": "Error loading address",
+    "viewAddresses": "View addresses ({count})"
+  },
+  "AddressesView": {
+    "title": "Addresses",
+    "returnToAccount": "Return to Account details",
+    "addNewAddress": "Add a new address",
+    "loadingAddresses": "Loading addresses...",
+    "noAddresses": "You don't have any addresses yet.",
+    "addressCardTitle": "Address {index}",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Are you sure?",
+    "deleteConfirmText": "This address will be permanently deleted.",
+    "deleteConfirmButton": "Yes, delete",
+    "deleteSuccessTitle": "Deleted!",
+    "deleteSuccessText": "The address was deleted successfully.",
+    "deleteErrorTitle": "Error",
+    "deleteErrorText": "An error occurred while deleting the address.",
+    "deleteButton": "delete"
+  },
+  "Shared": {
+    "userNotAvailable": "User not available",
+    "countryNotAvailable": "Country not available",
+    "cityNotAvailable": "City not available",
+    "addressNotAvailable": "Address not available"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create New Account",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "fullNameLabel": "Full Name",
+    "loginBtn": "Login",
+    "registerBtn": "Register",
+    "loginPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "fullNamePlaceholder": "Enter your full name",
+    "fillAllFields": "Please fill all fields",
+    "registerSuccess": "Your account has been created. Please login now.",
+    "loginFail": "Login failed",
+    "registerFail": "Registration failed"
   }
 }

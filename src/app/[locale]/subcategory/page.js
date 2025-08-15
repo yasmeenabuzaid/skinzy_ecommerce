@@ -60,11 +60,11 @@ export default function ProductListPage() {
             <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-[#f9f9f9] p-4 rounded-md">
               <p className="text-gray-600">{filteredProducts.length} products</p>
               <div className="flex items-center gap-3 mt-3 md:mt-0">
-                <select className="border rounded-md p-2 text-sm">
+                {/* <select className="border rounded-md p-2 text-sm">
                   <option>Best selling</option>
                   <option>Price: Low to High</option>
                   <option>Price: High to Low</option>
-                </select>
+                </select> */}
                 <div className="flex items-center gap-1">
                   <button onClick={() => setView(2)} className={`p-2 rounded-md ${view === 2 ? 'bg-black text-white' : 'bg-white border'}`}>
                     <LayoutGrid size={20} />

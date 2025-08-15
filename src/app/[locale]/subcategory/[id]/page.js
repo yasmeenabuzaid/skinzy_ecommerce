@@ -9,7 +9,6 @@ import useProductBySubCategory from '../../../../hooks/useProductBySubCategory';
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import ProductCard from '../../components/ui/ProductCard';
-import FilterAccordion from '../../components/products/FilterAccordion';
 
 export default function ProductListPage() {
   const [view, setView] = useState(3);
@@ -32,37 +31,12 @@ export default function ProductListPage() {
     <div className="text-gray-800">
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-
-          {/* Sidebar */}
-          <aside className="lg:col-span-1 border-r pr-8">
-            <h2 className="text-xl font-bold mb-2">Filter</h2>
-
-            <FilterAccordion title="Availability">
-              <label className="flex items-center text-gray-600">
-                <input type="checkbox" className="h-4 w-4" />
-                <span className="ml-3">In Stock</span>
-              </label>
-            </FilterAccordion>
-
-            <FilterAccordion title="Price">
-              <div className="flex items-center gap-4">
-                <input type="text" placeholder="From" className="w-1/2 border rounded-md p-2 text-sm" />
-                <input type="text" placeholder="To" className="w-1/2 border rounded-md p-2 text-sm" />
-              </div>
-            </FilterAccordion>
-          </aside>
-
+        <div className="grid grid-cols-1 gap-8">
           {/* Main content */}
-          <main className="lg:col-span-3">
+          <main className="w-full">
             <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-[#f9f9f9] p-4 rounded-md">
               <p className="text-gray-600">{products.length} products</p>
               <div className="flex items-center gap-3 mt-3 md:mt-0">
-                <select className="border rounded-md p-2 text-sm">
-                  <option>Best selling</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                </select>
                 <div className="flex items-center gap-1">
                   <button onClick={() => setView(2)} className={`p-2 rounded-md ${view === 2 ? 'bg-black text-white' : 'bg-white border'}`}>
                     <LayoutGrid size={20} />
@@ -77,11 +51,13 @@ export default function ProductListPage() {
               </div>
             </div>
 
-            <div className={`grid gap-6 ${
-              view === 2 ? 'grid-cols-2' :
-              view === 3 ? 'grid-cols-3' :
-              'grid-cols-1'
-            }`}>
+            <div
+              className={`grid gap-6 ${
+                view === 2 ? 'grid-cols-2' :
+                view === 3 ? 'grid-cols-3' :
+                'grid-cols-1'
+              }`}
+            >
               {products.map(product => (
                 <div
                   key={product.id}

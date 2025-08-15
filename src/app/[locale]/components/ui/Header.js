@@ -109,7 +109,7 @@ const LanguageSwitcher = () => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex items-center gap-1 hover:text-amber-600 cursor-pointer">
+      <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex items-center gap-1  cursor-pointer">
         <Globe className="w-5 h-5 md:w-6 md:h-6"/>
         <span className="hidden sm:inline text-sm">{t("language")}</span>
         <ChevronDown className={`hidden sm:inline transition-transform duration-200 ${isMenuOpen ? "rotate-180" : ""}`} size={14}/>
@@ -129,7 +129,7 @@ const LanguageSwitcher = () => {
 const TopBar = () => {
   const t = useTranslations("Header");
   return (
-    <div className="bg-black text-white text-xs border-b border-gray-800">
+    <div className="bg-[#FF671F] text-white text-xs border-b border-[#FF671F]-800">
       <div className="container mx-auto px-4 h-10 flex items-center justify-center">
         <div className="w-full flex justify-between items-center">
           <div className="hidden md:flex items-center gap-4">
@@ -252,7 +252,7 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
           <button onClick={onCartToggle} aria-label="Shopping Cart" className="relative text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
             <ShoppingBag className="w-5 h-5 md:w-6 md:h-6" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2.5 bg-gray-800 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold">
+              <span className="absolute -top-2 -right-2.5 bg-[#FF671F] text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold">
                 {cartItemCount}
               </span>
             )}
@@ -344,12 +344,17 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { cart, updateCart } = useCartContext() || { cart: [], updateCart: () => {} };
+  const { cartCount } = useCartContext(); // <-- هنا جلبنا العدد مباشرة
   const totalCartItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
+console.log("cartCount",cartCount)
   return (
     <div className="font-sans" style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <Header onMenuToggle={() => setIsMenuOpen(true)} onCartToggle={() => setIsCartOpen(true)} cartItemCount={totalCartItems} onSearchClick={() => setIsSearchOpen(true)} />
-      <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+<Header 
+  onMenuToggle={() => setIsMenuOpen(true)} 
+  onCartToggle={() => setIsCartOpen(true)} 
+  cartItemCount={cartCount}  // <-- هنا بدل totalCartItems
+  onSearchClick={() => setIsSearchOpen(true)} 
+/>      <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} items={cart} onRemoveItem={updateCart} />
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>

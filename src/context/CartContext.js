@@ -9,6 +9,7 @@ const CartContext = createContext({});
 
 export const CartContextProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const t = useTranslations("cart");
 
@@ -31,8 +32,23 @@ export const CartContextProvider = ({ children }) => {
     }
   };
 
+  const fetchCartCount = async () => {
+    const userInfo = storageService.getUserInfo();
+    if (!userInfo?.accessToken) return;
+
+    try {
+      const data = await BackendConnector.fetchCartCount(); 
+      if (data.success) {
+        setCartCount(data.count || 0);
+      }
+    } catch (error) {
+      console.error("Fetch cart count error:", error);
+    }
+  };
+
   useEffect(() => {
     fetchCart();
+    fetchCartCount(); // جلب العدد عند تحميل الكومبوننت
   }, []);
 
   const addCart = async ({ productId, quantity = 1, size = null }) => {
@@ -41,13 +57,13 @@ export const CartContextProvider = ({ children }) => {
       Swal.fire(t("error"), t("loginRequired"), "error");
       return;
     }
-
     try {
       const resp = await BackendConnector.addCart({ productId, quantity, size });
-
       if (resp?.success) {
         await fetchCart();
+        await fetchCartCount(); // تحديث العدد بعد الإضافة
       }
+
     } catch (error) {
       console.error("Add cart error:", error);
       Swal.fire(t("error"), t("addError"), "error");
@@ -59,6 +75,7 @@ export const CartContextProvider = ({ children }) => {
       const data = await BackendConnector.deleteCart({ id });
       if (data.success) {
         setCart((prev) => prev.filter((item) => item.id !== id));
+        await fetchCartCount(); // تحديث العدد بعد الحذف
       } else {
         console.error("Delete cart failed:", data.message);
       }
@@ -78,9 +95,9 @@ export const CartContextProvider = ({ children }) => {
 
     try {
       const data = await BackendConnector.updateCart({ id, quantity });
-
       if (data?.success) {
         await fetchCart();
+        await fetchCartCount(); // تحديث العدد بعد التحديث
 
         Swal.fire({
           icon: "success",
@@ -109,9 +126,9 @@ export const CartContextProvider = ({ children }) => {
 
     try {
       const data = await BackendConnector.updateCartq({ id, quantity });
-
       if (data?.success) {
         await fetchCart();
+        await fetchCartCount(); // تحديث العدد بعد التعديل
 
         Swal.fire({
           icon: "success",
@@ -136,9 +153,11 @@ export const CartContextProvider = ({ children }) => {
         deleteCart,
         updateCart,
         updateCartq,
+        cartCount,
         cart,
         isFetching,
         fetchCart,
+        fetchCartCount
       }}
     >
       {children}

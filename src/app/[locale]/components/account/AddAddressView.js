@@ -24,20 +24,17 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
         console.error("خطأ في جلب المدن:", error);
       }
     };
-
     fetchCities();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // تحقق من الحقول المطلوبة
-    if (!fullAddress || (!cityId)) {
+    if (!fullAddress || !cityId) {
       alert("يرجى تعبئة العنوان والمدينة");
       return;
     }
 
-    // إذا اختار المدينة "Other" (id = 14) تأكد من تعبئة customCity
     if (cityId === "14" && !customCity.trim()) {
       alert("يرجى كتابة اسم المدينة الأخرى");
       return;
@@ -46,8 +43,7 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
     const addressData = {
       title,
       full_address: fullAddress,
-      city_id: cityId || null,  // ترسل city_id دائماً
-      custom_city: cityId === "14" ? customCity : null, // ترسل custom_city فقط لو المدينة 14
+      city_id: cityId || null,
       state,
       postal_code: postalCode,
       country,
@@ -67,7 +63,7 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-4xl font-light tracking-tight text-center mb-10">
+      <h1 className="text-4xl font-light tracking-tight text-center mb-10 text-gray-900">
         Add a new address
       </h1>
       <form onSubmit={handleSubmit}>
@@ -76,13 +72,13 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
           placeholder="Title (مثلاً: المنزل)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         />
         <textarea
           placeholder="Full Address"
           value={fullAddress}
           onChange={(e) => setFullAddress(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 resize-none"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
           rows={3}
           required
         />
@@ -90,11 +86,9 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
           value={cityId}
           onChange={(e) => {
             setCityId(e.target.value);
-            if (e.target.value !== "14") {
-              setCustomCity("");
-            }
+            if (e.target.value !== "14") setCustomCity("");
           }}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 bg-white"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 bg-white focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         >
           <option value="">اختر المدينة</option>
           {cities.map((city) => (
@@ -109,7 +103,7 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
             placeholder="اكتب اسم المدينة"
             value={customCity}
             onChange={(e) => setCustomCity(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md mb-4"
+            className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
             required
           />
         )}
@@ -118,19 +112,19 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
           placeholder="State"
           value={state}
           onChange={(e) => setState(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         />
         <input
           type="text"
           placeholder="Postal/ZIP code"
           value={postalCode}
           onChange={(e) => setPostalCode(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         />
         <select
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 bg-white"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 bg-white focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         >
           <option value="Jordan">Jordan</option>
           {/* اضف دول اخرى اذا احتجت */}
@@ -141,7 +135,7 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
           placeholder="Latitude"
           value={latitude}
           onChange={(e) => setLatitude(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         />
         <input
           type="number"
@@ -149,20 +143,20 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
           placeholder="Longitude"
           value={longitude}
           onChange={(e) => setLongitude(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4"
+          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF671F]"
         />
 
         <div className="flex flex-col items-center gap-4">
           <button
             type="submit"
-            className="bg-red-400 text-white px-8 py-3 rounded-md hover:bg-red-500 transition-colors w-full sm:w-auto"
+            className="bg-[#FF671F] text-white px-8 py-3 rounded-md hover:bg-[#e65c00] transition-colors w-full sm:w-auto"
           >
             Add address
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="text-sm text-gray-600 hover:text-black transition-colors underline"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors underline"
           >
             or Cancel
           </button>

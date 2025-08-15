@@ -1,110 +1,110 @@
-import React, { useState, useEffect } from "react";
+// /components/account/views/AddressesView.jsx
+import React, { useEffect, useState } from "react";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import Swal from "sweetalert2";
+import { useTranslations } from "next-intl";
+import { Plus, Trash2, Home } from "lucide-react";
 
-const AddressesView = ({ onBack, onAddAddress }) => {
+// ✨ مكون لعرض بطاقة العنوان بشكل أفضل
+const AddressCard = ({ address, onDelete }) => {
+    const t = useTranslations("AddressesView");
+    return (
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
+            <div>
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-bold text-gray-800">{address.title || t('defaultTitle')}</h3>
+                    {address.is_default && (
+                        <span className="flex items-center gap-1 text-xs font-semibold bg-rose-100 text-rose-700 px-2 py-1 rounded-full">
+                            <Home size={14} /> {t('defaultBadge')}
+                        </span>
+                    )}
+                </div>
+                <div className="text-sm text-gray-600 space-y-1">
+                    <p>{address.full_address}</p>
+                    <p>{address.city?.name}, {address.country}</p>
+                </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+                {/* <button className="text-sm font-semibold text-gray-600 hover:text-black">Edit</button> */}
+                <button 
+                    onClick={() => onDelete(address.id)}
+                    className="text-sm font-semibold text-red-600 hover:text-red-800 flex items-center gap-1"
+                >
+                    <Trash2 size={14} /> {t('deleteButton')}
+                </button>
+            </div>
+        </div>
+    );
+};
+
+
+export default function AddressesView({ onAddAddress }) {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
+  const t = useTranslations("AddressesView");
 
   const fetchAddresses = async () => {
     try {
+      setLoading(true);
       const res = await BackendConnector.getAddresses();
       setAddresses(res?.addresses || []);
     } catch (error) {
-      console.error("خطأ في جلب العناوين:", error);
+      console.error("Error fetching addresses:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
   const handleDelete = (id) => {
     Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "سيتم حذف العنوان نهائيًا.",
+      title: t("deleteConfirmTitle"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "نعم، احذف",
-      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#e11d48", // لون أحمر مناسب
+      confirmButtonText: t("deleteConfirmButton"),
+      cancelButtonText: t("cancel"),
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await BackendConnector.deleteAddress(id);
-          setAddresses((prev) => prev.filter((address) => address.id !== id));
-          Swal.fire("تم الحذف!", "تم حذف العنوان بنجاح.", "success");
+          fetchAddresses(); // ✨ إعادة جلب العناوين لتحديث القائمة
+          Swal.fire(t("deleteSuccessTitle"), t("deleteSuccessText"), "success");
         } catch (error) {
-          console.error("فشل في حذف العنوان:", error);
-          Swal.fire("خطأ", "حدث خطأ أثناء حذف العنوان.", "error");
+          Swal.fire(t("deleteErrorTitle"), "", "error");
         }
       }
     });
   };
 
   return (
-    <div className="flex flex-col items-center text-center px-4">
-      <h1 className="text-4xl font-light tracking-tight mb-4">Addresses</h1>
-
-      <button
-        onClick={onBack}
-        className="text-sm text-gray-600 hover:text-black transition-colors underline mb-8"
-      >
-        Return to Account details
-      </button>
-
-      <button
-        onClick={onAddAddress}
-        className="bg-red-400 text-white px-6 py-3 rounded-md hover:bg-red-500 transition-colors mb-12"
-      >
-        Add a new address
-      </button>
-
-      {loading ? (
-        <p>جاري تحميل العناوين...</p>
-      ) : addresses.length === 0 ? (
-        <p className="text-gray-500">لا يوجد عناوين بعد.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-7xl">
-          {[...addresses]
-            .sort((a, b) => {
-              const cityA = a.city?.name?.toLowerCase() || "";
-              const cityB = b.city?.name?.toLowerCase() || "";
-              if (cityA < cityB) return -1;
-              if (cityA > cityB) return 1;
-              return 0;
-            })
-            .map((address, index) => (
-              <div
-                key={address.id || index}
-                className="border p-6 rounded-md shadow-sm"
-              >
-                <h3 className="text-xl font-semibold mb-2">Address {index + 1}</h3>
-                <div className="text-gray-600 mb-4">
-                  <p>{address.full_address || "عنوان غير متوفر"}</p>
-                  <p>
-                    {address.city?.name || "مدينة غير معروفة"},{" "}
-                    {address.country || "دولة غير معروفة"}
-                  </p>
-                </div>
-                <div className="flex gap-4 justify-center">
-                  {/* <button className="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors">
-                    Edit
-                  </button> */}
-                  <button
-                    onClick={() => handleDelete(address.id)}
-                    className="bg-red-400 text-white px-6 py-2 rounded-md hover:bg-red-500 transition-colors"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+    <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm animate-fadeIn">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">{t('title')}</h2>
+            <button
+                onClick={onAddAddress}
+                className="flex items-center gap-2 bg-[#FF671F] text-white font-semibold px-4 py-2 rounded-lg hover:bg-rose-700 transition-all shadow-sm"
+            >
+                <Plus size={18} /> {t('addButton')}
+            </button>
         </div>
-      )}
+      
+        {loading ? (
+            <p>{t('loading')}</p>
+        ) : addresses.length === 0 ? (
+            <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                <p className="text-gray-500">{t('noAddresses')}</p>
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {addresses.map((address) => (
+                    <AddressCard key={address.id} address={address} onDelete={handleDelete} />
+                ))}
+            </div>
+        )}
     </div>
   );
 };
-
-export default AddressesView;

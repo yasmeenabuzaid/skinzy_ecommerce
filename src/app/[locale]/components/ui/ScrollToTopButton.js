@@ -28,7 +28,7 @@ export default function ScrollToTopButton() {
     return (
         <button
             onClick={scrollToTop}
-            className={`fixed bottom-10 right-10 w-11 h-11 bg-[#ef8172] text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-30 ${isVisible ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+            className={`fixed bottom-10 right-10 w-11 h-11 bg-[#FF671F] text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-30 ${isVisible ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         >
             <ChevronUp size={20} />
         </button>

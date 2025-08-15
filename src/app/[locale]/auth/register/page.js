@@ -29,7 +29,7 @@ const RegisterPage = () => {
   const t = useTranslations('register');
 
   const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
+  // ===== تم حذف حالة الهاتف من هنا =====
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,7 +43,8 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!fullName || !phone || !email || !password || !confirmPassword) {
+    // ===== تم حذف التحقق من الهاتف من هنا =====
+    if (!fullName || !email || !password || !confirmPassword) {
       Swal.fire(t('error'), t('fillAllFields'), 'error');
       return;
     }
@@ -59,7 +60,7 @@ const RegisterPage = () => {
     const registrationData = {
       Fname: firstName,
       Lname: lastName,
-      mobile: phone,
+      // ===== تم حذف الهاتف من البيانات المرسلة =====
       email,
       password,
       password_confirmation: confirmPassword,
@@ -112,7 +113,8 @@ const RegisterPage = () => {
                   />
                 </div>
 
-                <div>
+                {/* ===== START: تم حذف حقل الهاتف من هنا ===== */}
+                {/* <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{t('phone')}</label>
                   <input
                     type="tel"
@@ -124,6 +126,8 @@ const RegisterPage = () => {
                     placeholder={t('phonePlaceholder')}
                   />
                 </div>
+                */}
+                {/* ===== END: تم حذف حقل الهاتف ===== */}
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>

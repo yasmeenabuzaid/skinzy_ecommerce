@@ -86,7 +86,7 @@ const DiscoverSection = () => {
                             <h3 className="text-xl font-medium text-gray-800 mb-3">{title}</h3>
                             <Link
                                 href="/shop"
-                                className="font-medium text-gray-800 underline hover:text-[#ef8172] transition-colors text-sm"
+                                className="font-medium text-gray-800 underline hover:text-[#FF671F] transition-colors text-sm"
                             >
                                 {linkText}
                             </Link>

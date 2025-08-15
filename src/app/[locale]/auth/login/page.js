@@ -97,7 +97,7 @@ const LoginPage = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#FF671F] focus:border-[#ef8172] transition-colors"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#FF671F] focus:border-[#FF671F] transition-colors"
                                         placeholder="your.email@example.com"
                                     />
                                 </div>
@@ -140,10 +140,12 @@ const LoginPage = () => {
                                     </button>
                                 </div>
                             </form>
-
+<Link href={`/${locale}/auth/forgot`} className="text-sm text-[#FF671F] hover:underline">
+    {t('forgotPassword')}
+</Link>
                             <p className="text-center text-sm text-gray-600 mt-8">
                                 {t('noAccount')} {' '}
-                                <Link href={`/${locale}/auth/register`} className="font-semibold text-[#ef8172] hover:underline">
+                                <Link href={`/${locale}/auth/register`} className="font-semibold text-[#FF671F] hover:underline">
                                     {t('createAccount')}
                                 </Link>
                             </p>

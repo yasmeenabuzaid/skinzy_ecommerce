@@ -55,7 +55,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
                 onClick={() => setActiveFilter(filter)}
                 className={`py-2.5 px-6 text-sm font-medium border rounded-full transition-colors ${
                   activeFilter === filter
-                    ? 'bg-[#ef8172] text-white border-[#ef8172]'
+                    ? 'bg-[#FF671F] text-white border-[#FF671F]'
                     : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
                 }`}
               >
@@ -77,7 +77,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
 
         {buttonText && (
           <div className="text-center mt-12">
-            <Link href={buttonLink} className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all">
+            <Link href={buttonLink} className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#FF671F] hover:text-white hover:border-[#FF671F] transition-all">
               {buttonText}
             </Link>
           </div>

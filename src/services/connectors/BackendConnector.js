@@ -299,21 +299,25 @@ fetchProductsByBrand = async ({ brandId, brandSlug, filter }) => {
             .catch((err) => err);
     };
 
-    deleteFavorite = async (data) => {
-        const defaultHeaders = await this.getDefaultHeaders();
-        let options = {
-            data: data,
-            url: "/e-commerce/customer/favorites",
-            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-            headers: {
-                ...defaultHeaders,
-            },
-        };
-        return requests
-            .delete(options)
-            .then((response) => response)
-            .catch((err) => err);
-    };
+removeFromFavorites = async (productId) => {
+  try {
+    const defaultHeaders = await this.getDefaultHeaders();
+    const response = await requests.patch({
+      url: `/e-commerce/customer/favorites/${productId}`,
+      baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+      headers: { ...defaultHeaders },
+    });
+
+    // قراءة success بأمان
+    const success = response.data?.success ?? true; // افتراض النجاح لو غير موجود
+    return { success, data: response.data };
+  } catch (error) {
+    console.error('Remove favorite error:', error);
+    return { success: false, error };
+  }
+};
+
+
 
     addToFavorites = async (data) => {
         const defaultHeaders = await this.getDefaultHeaders();
@@ -365,6 +369,23 @@ fetchProductsByBrand = async ({ brandId, brandSlug, filter }) => {
         const defaultHeaders = await this.getDefaultHeaders();
         const options = {
             url: "/e-commerce/customer/cart",
+            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+            headers: {
+                ...defaultHeaders,
+            },
+        };
+
+        console.log(options);
+
+        return requests
+            .get(options)
+            .then((response) => response)
+            .catch((err) => err);
+    };
+    fetchCartCount = async () => {
+        const defaultHeaders = await this.getDefaultHeaders();
+        const options = {
+            url: "/e-commerce/customer/cart/count",
             baseURL: process.env.NEXT_PUBLIC_BASE_URL,
             headers: {
                 ...defaultHeaders,
@@ -447,20 +468,47 @@ fetchProductsByBrand = async ({ brandId, brandSlug, filter }) => {
             .catch((err) => err);
     };
 
-    forgetPassword = (data) => {
-        const options = {
-            url: "/e-commerce/customer/auth/forget-password",
+    forgotPassword(data) {
+        const requestConfig = {
+            url: "/e-commerce/customer/auth/forgot-password",
             baseURL: process.env.NEXT_PUBLIC_BASE_URL,
             data: {
-                userId: 3,
                 email: data?.email,
+                            locale: data?.locale, // <--- تأكد من إضافة هذا السطر
+
             },
         };
         return requests
-            .post(options)
-            .then((response) => response)
-            .catch((err) => err);
-    };
+            .post(requestConfig)
+            .then((res) => res)
+            .catch((err) => {
+                console.log("Forgot password connector error: ", err);
+                return err;
+            });
+    }
+    // ===== END: دالة طلب إعادة تعيين كلمة المرور =====
+
+
+    // ===== START: دالة تنفيذ إعادة تعيين كلمة المرور =====
+    resetPassword(data) {
+        const requestConfig = {
+            url: "/e-commerce/customer/auth/reset-password",
+            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+            data: {
+                email: data?.email,
+                token: data?.token,
+                password: data?.password,
+                password_confirmation: data?.password_confirmation,
+            },
+        };
+        return requests
+            .post(requestConfig)
+            .then((res) => res)
+            .catch((err) => {
+                console.log("Reset password connector error: ", err);
+                return err;
+            });
+    }
 
     changePassword = (data) => {
         const options = {

@@ -5,9 +5,6 @@ import OrderSummaryItem from "./OrderSummaryItem";
 import { useTranslations } from "next-intl";
 import { useCartContext } from "../../../context/CartContext";
 
-// سعر الصرف من دولار إلى دينار أردني (غيره حسب السوق)
-const USD_TO_JOD_RATE = 0.71;
-
 const OrderSummary = ({ extraFee = 0 }) => {
   const t = useTranslations("checkout");
   const { cart, updateCart } = useCartContext();
@@ -16,7 +13,8 @@ const OrderSummary = ({ extraFee = 0 }) => {
     await updateCart(id);
   };
 
-  const subtotalUSD = cart.reduce(
+  // نحسب المجموع مباشرة بدون تحويل عملة
+  const subtotal = cart.reduce(
     (sum, item) =>
       sum +
       ((item.product?.price_after_discount ?? item.product?.price ?? 0) *
@@ -24,14 +22,10 @@ const OrderSummary = ({ extraFee = 0 }) => {
     0
   );
 
-  const finalExtraFeeUSD = subtotalUSD > 15 ? 0 : parseFloat(extraFee || 0);
+  const shippingFee = subtotal > 20 ? 0 : parseFloat(extraFee || 0);
 
-  const totalUSD = subtotalUSD + finalExtraFeeUSD;
+  const total = subtotal + shippingFee;
 
-  // تحويل الأسعار لدينار أردني
-  const subtotalJOD = subtotalUSD * USD_TO_JOD_RATE;
-  const extraFeeJOD = finalExtraFeeUSD * USD_TO_JOD_RATE;
-  const totalJOD = totalUSD * USD_TO_JOD_RATE;
   return (
     <div className="w-full lg:w-2/5 bg-gray-50 lg:min-h-screen border-l">
       <div className="py-8 px-4 sm:px-10">
@@ -61,15 +55,15 @@ const OrderSummary = ({ extraFee = 0 }) => {
             <div className="py-6 border-t space-y-3 text-sm">
               <div className="flex justify-between">
                 <p className="text-gray-600">{t("subtotal")}</p>
-                <p className="font-semibold">{subtotalJOD.toFixed(2)} JD</p>
+                <p className="font-semibold">{subtotal.toFixed(2)} JD</p>
               </div>
 
               <div className="flex justify-between">
                 <p className="text-gray-600">{t("shipping")}</p>
-                {subtotalUSD > 15 ? (
+                {subtotal > 20 ? (
                   <p className="font-semibold text-green-600">{t("freeDelivery")}</p>
                 ) : (
-                  <p className="font-semibold text-gray-800">{extraFeeJOD.toFixed(2)} JD</p>
+                  <p className="font-semibold text-gray-800">{shippingFee.toFixed(2)} JD</p>
                 )}
               </div>
             </div>
@@ -78,7 +72,7 @@ const OrderSummary = ({ extraFee = 0 }) => {
               <p className="font-semibold">{t("total")}</p>
               <p>
                 <span className="text-xs text-gray-500 mr-2">JD</span>{" "}
-                <span className="text-2xl font-semibold">{totalJOD.toFixed(2)}</span>
+                <span className="text-2xl font-semibold">{total.toFixed(2)}</span>
               </p>
             </div>
           </>

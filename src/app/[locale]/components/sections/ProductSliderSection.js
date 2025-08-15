@@ -10,6 +10,7 @@ import Link from 'next/link';
 const useOnScreen = (options) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(true);
+  // This hook's implementation might need adjustment based on actual visibility logic
   return [ref, isVisible];
 };
 
@@ -122,7 +123,7 @@ export default function ProductSliderSection({
                 onClick={() => setActiveFilter(filterId)}
                 className={`py-2.5 px-6 text-sm font-medium border rounded-full transition-colors ${
                   activeFilter === filterId
-                    ? 'bg-[#ef8172] text-white border-[#ef8172]'
+                    ? 'bg-[#FF671F] text-white border-[#FF671F]'
                     : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
                 }`}
               >
@@ -141,12 +142,13 @@ export default function ProductSliderSection({
             <button
               onClick={() => scroll('prev')}
               aria-label="Previous products"
-              className="absolute top-1/2 -translate-y-1/2 -left-2 md:left-0 w-10 h-10 bg-[#ef8172] text-white rounded-full hidden md:flex items-center justify-center hover:bg-opacity-80 transition-opacity z-10"
+              className="absolute top-1/2 -translate-y-1/2 -left-2 md:left-0 w-10 h-10 bg-[#FF671F] text-white rounded-full hidden md:flex items-center justify-center hover:bg-opacity-80 transition-opacity z-10"
             >
               <ChevronLeft size={20} />
             </button>
           )}
 
+          {/* ===== تم إخفاء شريط التمرير هنا ===== */}
           <div
             ref={sliderRef}
             className="grid grid-cols-2 gap-4 md:flex md:gap-8 md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4 md:scrollbar-hide"
@@ -167,7 +169,7 @@ export default function ProductSliderSection({
             <button
               onClick={() => scroll('next')}
               aria-label="Next products"
-              className="absolute top-1/2 -translate-y-1/2 -right-2 md:right-0 w-10 h-10 bg-[#ef8172] text-white rounded-full hidden md:flex items-center justify-center hover:bg-opacity-80 transition-opacity z-10"
+              className="absolute top-1/2 -translate-y-1/2 -right-2 md:right-0 w-10 h-10 bg-[#FF671F] text-white rounded-full hidden md:flex items-center justify-center hover:bg-opacity-80 transition-opacity z-10"
             >
               <ChevronRight size={20} />
             </button>
@@ -177,7 +179,7 @@ export default function ProductSliderSection({
         {buttonText && buttonLink && (
           <div className="text-center mt-12">
             <Link href={buttonLink}>
-              <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#ef8172] hover:text-white hover:border-[#ef8172] transition-all cursor-pointer">
+              <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#FF671F] hover:text-white hover:border-[#FF671F] transition-all cursor-pointer">
                 {buttonText || t('defaultButtonText')}
               </span>
             </Link>

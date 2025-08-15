@@ -1,34 +1,37 @@
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import ProductCard from '../ui/ProductCard.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import useProductsQuery from '../../../../hooks/useProductsQuery';
+import useProductsQuery from '../../../../hooks/useProductsQuery.js';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-// Mock hook for demonstration purposes
 const useOnScreen = (options) => {
   const ref = useRef(null);
-  const [isVisible, setIsVisible] = useState(true); // Default to true for demo
+  const [isVisible, setIsVisible] = useState(true);
   return [ref, isVisible];
 };
 
-
-export default function LatestProductsSlider() {
+export default function ProductSliderSection({
+  title,
+  subtitle,
+  buttonText,
+  buttonLink,
+}) {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
   const sliderRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const locale = useLocale();
   const t = useTranslations('productSlider');
+  const { products, isLoading, error } = useProductsQuery();
   const router = useRouter();
 
-  // Fetch latest products by created_at
-  const { products, isLoading, error } = useProductsQuery({
-    sortBy: 'created_at',
-    order: 'desc',
-    limit: 15,
-  });
+  // ترتيب المنتجات حسب sold_count من الأعلى للأقل
+  const bestSellers = useMemo(() => {
+    if (!products) return [];
+    return [...products].sort((a, b) => b.sold_count - a.sold_count).slice(0, 8);
+  }, [products]);
 
   const scroll = (direction) => {
     if (sliderRef.current) {
@@ -57,6 +60,7 @@ export default function LatestProductsSlider() {
       </section>
     );
   }
+console.log('Best Sellers:', bestSellers);
 
   return (
     <section
@@ -66,9 +70,9 @@ export default function LatestProductsSlider() {
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <p className="text-gray-500 mb-1.5">{t('latestSubtitle') || 'وصل حديثاً'}</p>
-          <h2 className="text-3xl md:text-4xl font-semibold text-gray-800">{t('latestTitle') || 'أجدد المنتجات'}</h2>
+        <div className="text-center mb-8">
+          <p className="text-gray-500 mb-1.5">{subtitle || t('defaultSubtitle')}</p>
+          <h2 className="text-3xl md:text-4xl font-semibold text-gray-800">{title}</h2>
         </div>
 
         <div
@@ -86,12 +90,11 @@ export default function LatestProductsSlider() {
             </button>
           )}
 
-          {/* ===== تم إخفاء شريط التمرير هنا ===== */}
-         <div
+           <div
   ref={sliderRef}
   className="grid grid-cols-2 gap-4 md:flex md:gap-8 md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4 no-scrollbar"
 >
-            {products.map((product) => (
+            {bestSellers.map((product) => (
               <div
                 key={product.id}
                 className="md:snap-start md:flex-shrink-0 md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.33rem)] xl:w-[calc(25%-1.5rem)]"
@@ -102,7 +105,7 @@ export default function LatestProductsSlider() {
               </div>
             ))}
           </div>
-          
+
           {isHovered && (
             <button
               onClick={() => scroll('next')}
@@ -114,13 +117,15 @@ export default function LatestProductsSlider() {
           )}
         </div>
 
-        <div className="text-center mt-12">
-          <Link href={`/${locale}/subcategory`}>
-            <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#FF671F] hover:text-white hover:border-[#FF671F] transition-all cursor-pointer">
-              {t('browseProducts') || 'تصفح كل المنتجات'}
-            </span>
-          </Link>
-        </div>
+        {buttonText && buttonLink && (
+          <div className="text-center mt-12">
+            <Link href={buttonLink}>
+              <span className="inline-block bg-gray-100 text-gray-800 font-semibold py-3.5 px-8 rounded-full border border-gray-300 hover:bg-[#FF671F] hover:text-white hover:border-[#FF671F] transition-all cursor-pointer">
+                {buttonText || t('defaultButtonText')}
+              </span>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -20,12 +20,13 @@ const useFavoritesQuery = () => {
       setIsLoading(true);
       try {
         const result = await BackendConnector.fetchFavorites();
+        const data = result.data || result;
 
-        if (!Array.isArray(result)) {
-          throw new Error(result?.message || 'Invalid data');
+        if (!Array.isArray(data.favorites)) {
+          throw new Error(data?.message || 'Invalid data');
         }
 
-        setFavorites(result);
+        setFavorites(data.favorites);
         setError(null);
       } catch (err) {
         console.error('Favorites fetch error:', err);
@@ -37,9 +38,10 @@ const useFavoritesQuery = () => {
     };
 
     fetchFavorites();
-  }, []); // لا تضف getUserInfo هنا
+  }, []);
 
-  return { favorites, isLoading, error };
+  // ✅ أرجعي setFavorites حتى نقدر نحدث state من الخارج
+  return { favorites, setFavorites, isLoading, error };
 };
 
 export default useFavoritesQuery;

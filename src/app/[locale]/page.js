@@ -14,6 +14,7 @@ import BrandsSection from './components/sections/BrandsSection';
 import CategoriesSection from './components/sections/CategoriesSection'; 
 import PromoSection from './components/sections/PromoSection'; 
 import ProductSliderSection from './components/sections/ProductSliderSection'; 
+import BestSellers from './components/sections/bestSellers'; 
 import AllProductSliderSection from './components/sections/allProductSliderSection'; 
 import DealOfTheDaySection from './components/sections/DealOfTheDaySection'; 
 import DiscoverSection from './components/sections/DiscoverSection'; 
@@ -53,7 +54,10 @@ export default function HomePage() {
   <BrandsSection />
   <div className="h-20" />
 
-  
+  <CategoriesSection />
+  <div className="h-20" />
+
+
     <AllProductSliderSection
       title="Products"
       subtitle="Our Products"
@@ -62,13 +66,13 @@ export default function HomePage() {
       buttonText="View all"
   buttonLink={`/${locale}/subcategory`}
     />
-  <CategoriesSection />
-  <div className="h-20" />
+    <div className="h-20" />
+
 
   <PromoSection />
   <div className="h-20" />
 
-  <ProductSliderSection
+  <BestSellers
     title="Trending Products"
     subtitle="Discover Our Products"
     products={trendingProducts}

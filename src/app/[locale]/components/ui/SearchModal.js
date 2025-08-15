@@ -25,6 +25,7 @@ const SearchResultCard = ({ product }) => {
       : '/fallback.jpg';
 
   const productName = locale === 'ar' && product.name_ar ? product.name_ar : product.name;
+  const productCode = product.code || '';
 
   return (
     <Link
@@ -37,8 +38,15 @@ const SearchResultCard = ({ product }) => {
         className="w-16 h-16 object-cover rounded-md border border-gray-200"
       />
       <div className="flex-grow">
-        <p className="font-semibold text-sm text-gray-800">{productName}</p>
-        <p className="text-sm text-[#ef8172]">${product.price?.toFixed(2)}</p>
+        <p className="font-semibold text-sm text-gray-800 flex items-center gap-2">
+          <span>{productName}</span>
+          {productCode && (
+            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+              {productCode}
+            </span>
+          )}
+        </p>
+        <p className="text-sm text-[#FF671F]">${product.price?.toFixed(2)}</p>
       </div>
     </Link>
   );
@@ -71,11 +79,10 @@ export default function SearchModal({ isOpen, onClose }) {
 
   const filteredProducts = query
     ? products.filter(p => {
-        if (containsArabic(query)) {
-          return p.name_ar?.toLowerCase().includes(query.toLowerCase());
-        } else {
-          return p.name?.toLowerCase().includes(query.toLowerCase());
-        }
+        const nameToCheck = locale === 'ar' && p.name_ar ? p.name_ar.toLowerCase() : p.name.toLowerCase();
+        const codeToCheck = p.code?.toLowerCase() || '';
+        const q = query.toLowerCase();
+        return nameToCheck.includes(q) || codeToCheck.includes(q);
       })
     : [];
 
@@ -90,7 +97,7 @@ export default function SearchModal({ isOpen, onClose }) {
               ref={inputRef}
               type="text"
               placeholder={t('placeholder')}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#ef8172] transition-colors mt-7 text-black"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#FF671F] transition-colors mt-7 text-black"
               value={query}
               onChange={e => setQuery(e.target.value)}
             />

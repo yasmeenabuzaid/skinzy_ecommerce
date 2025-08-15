@@ -10,8 +10,7 @@ import { useCartContext } from "../../../context/CartContext";
 import StripePayment from "./StripePayment.js";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-
-const FREE_SHIPPING_THRESHOLD = 15;
+const FREE_SHIPPING_THRESHOLD = 20;
 
 const FormInput = ({ id, label, type = "text", optional = false }) => (
   <div className="relative mb-4">
@@ -69,6 +68,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentProof, setPaymentProof] = useState(null);
   const [stripeData, setStripeData] = useState({});
+const { fetchCart, fetchCartCount } = useCartContext();
 
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [shippingMethod, setShippingMethod] = useState("");
@@ -132,25 +132,30 @@ export default function CheckoutPage() {
       }
     });
 
-    try {
-      await BackendConnector.handleCheckout(formData);
-      Swal.fire({
-        icon: "success",
-        title: t("orderSuccessTitle"),
-        text: t("orderSuccessText"),
-        confirmButtonText: t("orderSuccessBtn"),
-      }).then(() => router.push("/"));
-    } catch (error) {
-      console.error(t("orderFailText"), error);
-      Swal.fire({
-        icon: "error",
-        title: t("orderFailTitle"),
-        text: t("orderFailText"),
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+   try {
+  await BackendConnector.handleCheckout(formData);
+
+  // تحديث السلة وعدد العناصر قبل التحويل للصفحة الرئيسية
+  await fetchCart();
+  await fetchCartCount();
+
+  Swal.fire({
+    icon: "success",
+    title: t("orderSuccessTitle"),
+    text: t("orderSuccessText"),
+    confirmButtonText: t("orderSuccessBtn"),
+  }).then(() => router.push("/"));
+} catch (error) {
+  console.error(t("orderFailText"), error);
+  Swal.fire({
+    icon: "error",
+    title: t("orderFailTitle"),
+    text: t("orderFailText"),
+  });
+} finally {
+  setSubmitting(false);
+}
+}
 
   return (
     <div className="text-gray-800">
@@ -182,12 +187,17 @@ export default function CheckoutPage() {
                   label={t("chooseShippingMethod")}
                   options={[
                     { value: "home_delivery", label: t("homeDelivery") },
-                    { value: "pickup", label: t("pickup") },
+                    // { value: "pickup", label: t("pickup") },
                   ]}
                   value={shippingMethod}
                   onChange={(e) => setShippingMethod(e.target.value)}
                 />
+ <p className="text-sm text-gray-500 mt-1">
+    {t("note")}: {t("homeDeliveryOnlyNoPickup")}
+  </p>
               </div>
+
+
 
               <div className="mb-8">
                 <h2 className="text-lg font-medium mb-4">{t("shippingAddress")}</h2>
@@ -255,16 +265,19 @@ export default function CheckoutPage() {
                 />
               )}
 
-              <button
-                type="submit"
-                disabled={submitting || cart.length === 0}
-                className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition-colors disabled:bg-gray-400"
-              >
-                {submitting ? t("submittingOrder") : t("placeOrder")}
-              </button>
+          <button
+  type="submit"
+  disabled={submitting || cart.length === 0}
+  className={`bg-[#FF671F] text-white px-6 py-3 rounded-md 
+    hover:bg-[#FF671F]/90 transition-colors 
+    ${submitting || cart.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'cursor-pointer'}`}
+>
+  {submitting ? t("submittingOrder") : t("placeOrder")}
+</button>
+
 
               {cart.length === 0 && (
-                <p className="mt-2 text-red-600 font-semibold">{t("cartEmpty")}</p>
+                <p className="mt-2 text-[#FF671F] font-semibold">{t("cartEmpty")}</p>
               )}
             </div>
           </div>

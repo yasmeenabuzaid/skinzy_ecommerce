@@ -1,10 +1,12 @@
 "use client";
 import { useCartContext } from "@/context/CartContext";
-import { Star, Heart, Minus, Plus } from "lucide-react";
+import { Heart, Minus, Plus } from "lucide-react";
 import Swal from "sweetalert2";
 import { useRouter, useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import storageService from "@/services/storage/storageService";
 import BackendConnector from "@/services/connectors/BackendConnector";
+import AuthModal from "../../components/auth/AuthModal"; // تأكد من أن المسار صحيح
 
 const formatPrice = (price) =>
   typeof price === "number" ? `$${price.toFixed(2)}` : "السعر غير متوفر";
@@ -19,7 +21,14 @@ export default function ProductDetails({
   const { addCart } = useCartContext();
   const router = useRouter();
   const { locale } = useParams();
-  const userInfo = storageService.getUserInfo();
+
+  const [userInfo, setUserInfo] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+
+  useEffect(() => {
+    setUserInfo(storageService.getUserInfo());
+  }, []);
 
   const translations = {
     ar: {
@@ -63,64 +72,6 @@ export default function ProductDetails({
   const isVariation = product.type === "variation";
   const mainProduct = isVariation ? product.parent_product : product;
 
-  const handleAddToCart = () => {
-    if (!userInfo?.accessToken) {
-      Swal.fire(t.warningTitle, t.favoriteError, "error");
-      return;
-    }
-
-    if (!activeSize) {
-      Swal.fire({
-        title: t.warningTitle,
-        text: t.alertSelectSize,
-        icon: "warning",
-        confirmButtonText: t.okBtn,
-      });
-      return;
-    }
-
-    if (quantity < 1) {
-      Swal.fire({
-        title: t.warningTitle,
-        text: t.alertQuantityOne,
-        icon: "warning",
-        confirmButtonText: t.okBtn,
-      });
-      return;
-    }
-
-    addCart({ productId: product.id, quantity, size: activeSize });
-
-    Swal.fire({
-      title: t.addedToCart,
-      icon: "success",
-      confirmButtonText: t.continueBtn,
-    });
-  };
-
-  const addToFavorites = async () => {
-    if (!userInfo?.accessToken) {
-      Swal.fire(t.warningTitle, t.favoriteError, "error");
-      return;
-    }
-
-    try {
-      const response = await BackendConnector.addToFavorites({
-        product_id: product.id,
-        user_id: userInfo.id,
-      });
-
-      if (response?.favorite) {
-        Swal.fire(t.warningTitle, response.message || t.favoriteAdded, "success");
-      } else {
-        Swal.fire(t.warningTitle, response?.message || t.favoriteFailed, "error");
-      }
-    } catch (error) {
-      console.error("Add to favorites error:", error);
-      Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
-    }
-  };
-
   const variationOptions = isVariation
     ? [mainProduct, ...(mainProduct.variations || [])]
     : [product, ...(product.variations || [])];
@@ -132,130 +83,235 @@ export default function ProductDetails({
     image: v.images?.[0]?.image,
   }));
 
+  const _performAddToCart = () => {
+    if (!activeSize) {
+      Swal.fire({
+        title: t.warningTitle,
+        text: t.alertSelectSize,
+        icon: "warning",
+        confirmButtonText: t.okBtn,
+      });
+      return;
+    }
+    if (quantity < 1) {
+      Swal.fire({
+        title: t.warningTitle,
+        text: t.alertQuantityOne,
+        icon: "warning",
+        confirmButtonText: t.okBtn,
+      });
+      return;
+    }
+    addCart({ productId: product.id, quantity, size: activeSize });
+    Swal.fire({
+      title: t.addedToCart,
+      icon: "success",
+      confirmButtonText: t.continueBtn,
+    });
+  };
+
+  const _performAddToFavorites = async () => {
+    const currentUserInfo = storageService.getUserInfo();
+    if (!currentUserInfo?.id) return;
+
+    try {
+      const response = await BackendConnector.addToFavorites({
+        product_id: product.id,
+        user_id: currentUserInfo.id,
+      });
+
+      if (response?.favorite) {
+        Swal.fire(
+          t.warningTitle,
+          response.message || t.favoriteAdded,
+          "success"
+        );
+      } else {
+        Swal.fire(
+          t.warningTitle,
+          response?.message || t.favoriteFailed,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Add to favorites error:", error);
+      Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
+    }
+  };
+
+  const handleAuthRequired = (action) => {
+    setPendingAction(() => action);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAddToCart = () => {
+    if (!userInfo?.accessToken) {
+      handleAuthRequired(_performAddToCart);
+    } else {
+      _performAddToCart();
+    }
+  };
+
+  const addToFavorites = () => {
+    if (!userInfo?.accessToken) {
+      handleAuthRequired(_performAddToFavorites);
+    } else {
+      _performAddToFavorites();
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+    setUserInfo(storageService.getUserInfo());
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  };
+
   return (
-    <div className="flex flex-col space-y-6">
-      <div>
-        <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">
-          {mainProduct.name}
-        </h1>
-        <p className="mt-2 text-lg text-gray-500">{mainProduct.small_description}</p>
-      </div>
+    <>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setPendingAction(null);
+        }}
+        onAuthSuccess={handleAuthSuccess}
+      />
 
-      <p className="text-3xl font-bold text-gray-800">
-        {product.price_after_discount ? (
-          <>
-            <span className="text-xl font-semibold text-red-600 mr-3">
-              {formatPrice(product.price_after_discount)}
-            </span>
-            <span className="text-lg text-gray-400 line-through font-medium">
-              {formatPrice(product.price)}
-            </span>
-          </>
-        ) : (
-          formatPrice(product.price)
-        )}
-
-        {mainProduct.originalPrice && !product.priceAfterDiscount && (
-          <span className="text-lg text-gray-400 line-through ml-3 font-medium">
-            {formatPrice(mainProduct.originalPrice)}
-          </span>
-        )}
-      </p>
-
-      <div>
-        <h3 className="text-sm font-semibold text-gray-800 mb-3">{t.chooseVariant}</h3>
-        <div className="flex flex-wrap gap-3">
-          {sizeOptions.length > 0 ? (
-            sizeOptions.map((option) => {
-              const isCurrent = product.id === option.id;
-              const isActive = activeSize === option.name;
-
-              return (
-                <div
-                  key={option.id}
-                  onClick={() => {
-                    if (!isCurrent) {
-                      router.push(`/${locale}/products/${option.id}`);
-                    }
-                    setActiveSize(option.name);
-                  }}
-                  className={`border rounded-lg p-2 cursor-pointer transition-all duration-200 flex items-center gap-3 w-full sm:w-auto ${
-                    isActive
-                      ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F]"
-                      : "border-gray-300 hover:border-[#FF671F]"
-                  }`}
-                >
-                  {option.image ? (
-                    <img
-                      src={option.image}
-                      alt={option.name}
-                      className="w-14 h-14 object-cover rounded-md"
-                    />
-                  ) : (
-                    <div className="w-14 h-14 bg-gray-100 rounded-md"></div>
-                  )}
-                  <div>
-                    <span className="font-semibold text-gray-800 text-sm block">{option.name}</span>
-                    <span className="text-xs text-gray-600 mt-1">{formatPrice(option.price)}</span>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <p>{t.noOptions}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-8">
+      <div className="flex flex-col space-y-6">
         <div>
-          <label className="font-semibold text-gray-800 mb-2 block text-sm">{t.quantity}</label>
-          <div className="flex items-center border border-gray-300 rounded-lg">
-            <button
-              onClick={() => handleQuantityChange(-1)}
-              className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-l-lg"
-              aria-label="Decrease quantity"
-            >
-              <Minus size={16} />
-            </button>
+          <h1 className="text-4xl font-extrabold text-gray-900 leading-tight flex items-center gap-3">
+            <span>{mainProduct.name}</span>
+            <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+              {mainProduct.code}
+            </span>
+          </h1>
+          <p className="mt-2 text-lg text-gray-500">
+            {mainProduct.small_description}
+          </p>
+        </div>
 
-            <input
-              type="number"
-              min={1}
-              value={quantity}
-              onChange={(e) => {
-                const val = Math.max(1, Number(e.target.value));
-                handleQuantityChange(val - quantity);
-              }}
-              className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2"
-            />
+        <p className="text-3xl font-bold text-gray-800">
+          {product.price_after_discount ? (
+            <>
+              <span className="text-xl font-semibold text-red-600 mr-3">
+                {formatPrice(product.price_after_discount)}
+              </span>
+              <span className="text-lg text-gray-400 line-through font-medium">
+                {formatPrice(product.price)}
+              </span>
+            </>
+          ) : (
+            formatPrice(product.price)
+          )}
+          {mainProduct.originalPrice && !product.price_after_discount && (
+            <span className="text-lg text-gray-400 line-through ml-3 font-medium">
+              {formatPrice(mainProduct.originalPrice)}
+            </span>
+          )}
+        </p>
 
-            <button
-              onClick={() => handleQuantityChange(1)}
-              className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-r-lg"
-              aria-label="Increase quantity"
-            >
-              <Plus size={16} />
-            </button>
+        <div>
+          <h3 className="text-sm font-semibold text-gray-800 mb-3">
+            {t.chooseVariant}
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {sizeOptions.length > 0 ? (
+              sizeOptions.map((option) => {
+                const isCurrent = product.id === option.id;
+                const isActive = activeSize === option.name;
+
+                return (
+                  <div
+                    key={option.id}
+                    onClick={() => {
+                      if (!isCurrent) {
+                        router.push(`/${locale}/products/${option.id}`);
+                      }
+                      setActiveSize(option.name);
+                    }}
+                    className={`border rounded-lg p-2 cursor-pointer transition-all duration-200 flex items-center gap-3 w-full sm:w-auto ${
+                      isActive
+                        ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F]"
+                        : "border-gray-300 hover:border-[#FF671F]"
+                    }`}
+                  >
+                    {option.image ? (
+                      <img
+                        src={option.image}
+                        alt={option.name}
+                        className="w-14 h-14 object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 bg-gray-100 rounded-md"></div>
+                    )}
+                    <div>
+                      <span className="font-semibold text-gray-800 text-sm block">
+                        {option.name}
+                      </span>
+                      <span className="text-xs text-gray-600 mt-1">
+                        {formatPrice(option.price)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p>{t.noOptions}</p>
+            )}
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
-        <button
-          onClick={handleAddToCart}
-          className="w-full bg-gradient-to-r from-[#FF671F] to-[#FF671F] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-        >
-          {t.addToCart}
-        </button>
-        <button
-          onClick={addToFavorites}
-          className="w-full sm:w-auto bg-white border-2 border-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:border-[#FF671F] hover:text-[#FF671F] hover:bg-[#FFF1E6] flex items-center justify-center gap-2 text-gray-700"
-          aria-label={t.addToFavoritesAria}
-        >
-          <Heart size={20} />
-        </button>
+        <div className="flex items-center gap-8">
+          <div>
+            <label className="font-semibold text-gray-800 mb-2 block text-sm">
+              {t.quantity}
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-lg">
+              <button
+                onClick={() => handleQuantityChange(-1)}
+                className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-l-lg"
+              >
+                <Minus size={16} />
+              </button>
+              <input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) => {
+                  const val = Math.max(1, Number(e.target.value));
+                  handleQuantityChange(val - quantity);
+                }}
+                className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2"
+              />
+              <button
+                onClick={() => handleQuantityChange(1)}
+                className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-r-lg"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-gradient-to-r from-[#FF671F] to-[#FF671F] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            {t.addToCart}
+          </button>
+          <button
+            onClick={addToFavorites}
+            className="w-full sm:w-auto bg-white border-2 border-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:border-[#FF671F] hover:text-[#FF671F] hover:bg-[#FFF1E6] flex items-center justify-center gap-2 text-gray-700"
+            aria-label={t.addToFavoritesAria}
+          >
+            <Heart size={20} />
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
