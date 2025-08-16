@@ -49,13 +49,13 @@ export default function HomePage() {
 
            <main>
   <HeroSection />
-  <div className="h-20" /> 
+  <div className="h-10" /> 
   
   <BrandsSection />
-  <div className="h-20" />
+  <div className="h-10" />
 
   <CategoriesSection />
-  <div className="h-20" />
+  <div className="h-10" />
 
 
     <AllProductSliderSection
@@ -66,11 +66,11 @@ export default function HomePage() {
       buttonText="View all"
   buttonLink={`/${locale}/subcategory`}
     />
-    <div className="h-20" />
+    <div className="h-10" />
 
 
   <PromoSection />
-  <div className="h-20" />
+  <div className="h-10" />
 
   <BestSellers
     title="Trending Products"
@@ -80,10 +80,10 @@ export default function HomePage() {
     buttonText="View all"
 buttonLink={`/${locale}/subcategory`}
   />
-  <div className="h-20" />
+  <div className="h-10" />
 
   <DealOfTheDaySection />
-  <div className="h-20" />
+  <div className="h-10" />
 
   <ProductSliderSection
     title="This Week's Highlights"
@@ -92,10 +92,10 @@ buttonLink={`/${locale}/subcategory`}
     buttonText="View all"
 buttonLink={`/${locale}/subcategory`}
   />
-  <div className="h-20" />
+  <div className="h-10" />
 
   <DiscoverSection />
-  <div className="h-20" />
+  <div className="h-10" />
 
   <TestimonialSection />
 </main>
