@@ -16,7 +16,16 @@ class StorageService {
         return localStorageService.saveObject(key, data);
     };
 
-    // SESSION STORAGE
+    removeUserInfo = () => {
+        const key = this.ENUM.CUSTOMER_INFO;
+        return localStorageService.remove(key);
+    };
+
+    // إضافة دالة لمسح كل التخزين
+    deleteAll = () => {
+        localStorage.clear();   // بتمسح كل الـ localStorage
+        sessionStorage.clear(); // لو بدك كمان تمسح الـ sessionStorage
+    };
 }
 
 export default new StorageService();
