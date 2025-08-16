@@ -31,7 +31,7 @@ export default function TestimonialSection() {
         name: 'Jane Doe',
         title: 'Beauty Blogger',
         avatar:
-          'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          '/profile.jfif',
       },
       {
         quote:
@@ -39,7 +39,7 @@ export default function TestimonialSection() {
         name: 'Sarah Smith',
         title: 'Satisfied Customer',
         avatar:
-          'https://images.pexels.com/photos/3772510/pexels-photo-3772510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          '/profile.jfif',
       },
       {
         quote:
@@ -47,7 +47,7 @@ export default function TestimonialSection() {
         name: 'Emily Johnson',
         title: 'Skincare Enthusiast',
         avatar:
-          'https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          '/profile.jfif',
       },
     ],
     ar: [
@@ -57,7 +57,7 @@ export default function TestimonialSection() {
         name: 'هند علي',
         title: 'مدونة جمال',
         avatar:
-          'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          '/profile.jfif',
       },
       {
         quote:
@@ -65,7 +65,7 @@ export default function TestimonialSection() {
         name: 'ليلى أحمد',
         title: 'زبونة راضية',
         avatar:
-          'https://images.pexels.com/photos/3772510/pexels-photo-3772510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          '/profile.jfif',
       },
       {
         quote:
@@ -73,7 +73,7 @@ export default function TestimonialSection() {
         name: 'سارة محمد',
         title: 'مهتمة بالعناية بالبشرة',
         avatar:
-          'https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          '/profile.jfif',
       },
     ],
   };
