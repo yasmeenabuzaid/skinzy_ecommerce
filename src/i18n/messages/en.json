@@ -373,5 +373,23 @@
     "description": "At Skinzy Care, our journey began with a simple passion: making authentic, luxury beauty products accessible to everyone. We carefully curate every item, from rare perfumes to the latest in skincare, ensuring you receive unparalleled quality. Our mission is to make your beauty experience effortless, reliable, and enjoyable.",
     "buttonText": "Learn More",
     "imageAlt": "A collection of luxury skincare products"
+  },
+  "services": {
+    "title": "Why Shop With Skinzy Care?",
+    "subtitle": "A Unique & Trustworthy Shopping Experience",
+    "items": [
+      {
+        "title": "100% Authentic Products",
+        "description": "We guarantee that all our products are authentic and sourced directly from authorized suppliers, so you can shop with confidence."
+      },
+      {
+        "title": "Fast & Reliable Delivery",
+        "description": "Your orders arrive at your doorstep quickly and in perfect condition, thanks to our premium packaging."
+      },
+      {
+        "title": "Expert Customer Support",
+        "description": "Our team is ready to assist you and answer all your inquiries to ensure the best possible shopping experience."
+      }
+    ]
   }
 }
