@@ -21,9 +21,9 @@ export default function Footer() {
         checkout: 'Checkout',
         company: 'Company',
         // addressLine: '99 New Theme St. XY, USA 12345',
-        email: 'demo@example.com',
+        email: 'info@skinzycare.com',
         phone: '0793053337 - 0793053338',
-        about: 'We are a company dedicated to providing high-quality skincare products to help you look and feel your best.',
+about: 'Skinzy Care is committed to offering professional skincare solutions with natural ingredients, ensuring healthy and glowing skin for everyone.',
         copyright: '© Skinzy Care. All Rights Reserved.',
     },
     ar: {
@@ -36,9 +36,9 @@ export default function Footer() {
         checkout: 'الدفع',
         company: 'الشركة',
         // addressLine: '٩٩ شارع نيو ثيم، XY، الولايات المتحدة 12345',
-        email: 'demo@example.com',
+        email: 'info@skinzycare.com',
         phone: '0793053337 - 0793053338',
-        about: 'نحن مؤسسة متخصصة في تقديم منتجات عناية بالبشرة عالية الجودة لمساعدتك على الظهور والشعور بأفضل حال.',
+about: 'Skinzy Care ملتزمة بتقديم حلول عناية احترافية بالبشرة بمكونات طبيعية، لضمان بشرة صحية ومشرقة للجميع.',
         copyright: '© Skinzy Care. جميع الحقوق محفوظة.',
     }
   };

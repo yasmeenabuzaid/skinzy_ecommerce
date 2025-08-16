@@ -227,7 +227,7 @@
   "paymentMethod": "طريقة الدفع",
   "choosePaymentMethod": "اختر طريقة الدفع",
   "cashOnDelivery": "الدفع عند الاستلام",
-  "creditCardStripe": "بطاقة ائتمان (Stripe)",
+  "creditCardStripe": "نظام الدفع الفوري (cliq)",
   "freeShippingMessage": "✅ التوصيل مجاني لأن إجمالي الطلب أكثر من {amount} دينار",
   "deliveryFeeMessage": "رسوم التوصيل: {fee} دينار",
   "loadingAddresses": "جاري تحميل العناوين...",
@@ -272,6 +272,57 @@
     "registerSuccess": "تم إنشاء حسابك بنجاح. يرجى تسجيل الدخول الآن.",
     "loginFail": "فشل تسجيل الدخول",
     "registerFail": "فشل إنشاء الحساب"
+  },
+   "ProfilePage": {
+    "logoutConfirmTitle": "هل أنت متأكد؟",
+    "logoutConfirmText": "سيتم تسجيل خروجك من الحساب.",
+    "logoutConfirmButton": "نعم، تسجيل الخروج",
+    "cancel": "إلغاء",
+    "mainTitle": "حسابي",
+    "welcomeMessage": "أهلاً بعودتك! قم بإدارة تفاصيلك وعناوينك هنا.",
+    "navAccountDetails": "تفاصيل الحساب",
+    "navMyAddresses": "عناويني",
+    "navLogout": "تسجيل الخروج"
+  },
+  "AccountDetailsView": {
+    "noAddress": "لا يوجد عنوان",
+    "loadError": "خطأ في تحميل العنوان",
+    "account": "الحساب",
+    "logout": "تسجيل الخروج",
+    "accountDetails": "تفاصيل الحساب",
+    "loadingUser": "جاري تحميل المستخدم...",
+    "loadingAddress": "جاري تحميل العنوان...",
+    "viewAddresses": "عرض العناوين ({count})"
+  },
+  "AddressesView": {
+    "deleteConfirmTitle": "هل أنت متأكد؟",
+    "deleteConfirmButton": "نعم، حذف",
+    "cancel": "إلغاء",
+    "deleteSuccessTitle": "تم الحذف!",
+    "deleteSuccessText": "تم حذف العنوان بنجاح.",
+    "deleteErrorTitle": "خطأ",
+    "defaultTitle": "العنوان الرئيسي",
+    "defaultBadge": "الافتراضي",
+    "deleteButton": "حذف",
+    "title": "عناويني",
+    "addNewAddress": "إضافة عنوان جديد",
+    "loading": "جاري التحميل...",
+    "noAddresses": "لم تقم بإضافة أي عناوين بعد."
+  },
+  "AddAddressView": {
+    "error": "خطأ",
+    "fillFields": "يرجى تعبئة العنوان الكامل واختيار المدينة.",
+    "success": "نجاح",
+    "addressAdded": "تم إضافة العنوان بنجاح.",
+    "failed": "فشل",
+    "addressFailed": "حدث خطأ أثناء إضافة العنوان.",
+    "addTitle": "إضافة عنوان جديد",
+    "titlePlaceholder": "العنوان (مثال: المنزل، العمل)",
+    "fullAddressPlaceholder": "العنوان الكامل",
+    "selectCity": "اختر المدينة",
+    "saving": "جاري الحفظ...",
+    "addAddress": "إضافة عنوان",
+    "cancel": "أو إلغاء"
   }
 
 }

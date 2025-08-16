@@ -124,7 +124,7 @@
   "paymentMethod": "Payment Method",
   "choosePaymentMethod": "Choose payment method",
   "cashOnDelivery": "Cash on Delivery",
-  "creditCardStripe": "Credit Card (Stripe)",
+  "creditCardStripe": "Instant payment system (CliQ)",
   "freeShippingMessage": "✅ Free shipping because order total is over {amount} JOD",
   "deliveryFeeMessage": "Delivery fee: {fee} JOD",
   "loadingAddresses": "Loading addresses...",
@@ -271,6 +271,7 @@
   },
   "AddressesView": {
     "title": "Addresses",
+    "addButton": "add Button",
     "returnToAccount": "Return to Account details",
     "addNewAddress": "Add a new address",
     "loadingAddresses": "Loading addresses...",
@@ -307,5 +308,56 @@
     "registerSuccess": "Your account has been created. Please login now.",
     "loginFail": "Login failed",
     "registerFail": "Registration failed"
+  },
+    "ProfilePage": {
+    "logoutConfirmTitle": "Are you sure?",
+    "logoutConfirmText": "You will be logged out of your account.",
+    "logoutConfirmButton": "Yes, log out",
+    "cancel": "Cancel",
+    "mainTitle": "My Account",
+    "welcomeMessage": "Welcome back! Manage your details and addresses here.",
+    "navAccountDetails": "Account Details",
+    "navMyAddresses": "My Addresses",
+    "navLogout": "Logout"
+  },
+  "AccountDetailsView": {
+    "noAddress": "No address found",
+    "loadError": "Error loading address",
+    "account": "Account",
+    "logout": "Log out",
+    "accountDetails": "Account Details",
+    "loadingUser": "Loading user...",
+    "loadingAddress": "Loading address...",
+    "viewAddresses": "View addresses ({count})"
+  },
+  "AddressesView": {
+    "deleteConfirmTitle": "Are you sure?",
+    "deleteConfirmButton": "Yes, delete",
+    "cancel": "Cancel",
+    "deleteSuccessTitle": "Deleted!",
+    "deleteSuccessText": "The address has been successfully deleted.",
+    "deleteErrorTitle": "Error",
+    "defaultTitle": "Main Address",
+    "defaultBadge": "Default",
+    "deleteButton": "Delete",
+    "title": "My Addresses",
+    "addNewAddress": "Add New Address",
+    "loading": "Loading...",
+    "noAddresses": "You haven't added any addresses yet."
+  },
+  "AddAddressView": {
+    "error": "Error",
+    "fillFields": "Please fill in the full address and select a city.",
+    "success": "Success",
+    "addressAdded": "Address added successfully.",
+    "failed": "Failed",
+    "addressFailed": "An error occurred while adding the address.",
+    "addTitle": "Add a New Address",
+    "titlePlaceholder": "Title (e.g., Home, Work)",
+    "fullAddressPlaceholder": "Full Address",
+    "selectCity": "Select City",
+    "saving": "Saving...",
+    "addAddress": "Add Address",
+    "cancel": "or Cancel"
   }
 }

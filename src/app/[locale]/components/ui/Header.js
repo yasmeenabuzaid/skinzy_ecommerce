@@ -8,12 +8,10 @@ import { usePathname, useRouter } from "next/navigation";
 import useCategoryQuery from "../../../../hooks/useSubCategoryQuery";
 import CartDrawer from "../cart/CartDrawer";
 import { useCartContext } from "../../../../context/CartContext";
-// import SearchBar from "./SearchBar"; // The SearchBar component is now defined below
 import SearchModal from "./SearchModal";
 import { useLocale, useTranslations } from "next-intl";
 
 // --- Mock Storage Service for demonstration ---
-// This service simulates checking the user's login status.
 const StorageService = {
   getUserInfo: () => {
     try {
@@ -28,6 +26,24 @@ const StorageService = {
 
 // --- SVG Icons ---
 
+// ✨ أيقونة البروفايل الجديدة
+const UserCircleIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="10" r="4" />
+        <path d="M6.3 20.7c1.5-2.5 4.3-4.2 7.7-4.2s6.2 1.7 7.7 4.2" />
+    </svg>
+);
+
+// ✨ أيقونة تسجيل الدخول الجديدة
+const LoginIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+        <polyline points="10 17 15 12 10 7" />
+        <line x1="15" y1="12" x2="3" y2="12" />
+    </svg>
+);
+
 const Heart = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
 );
@@ -36,9 +52,6 @@ const ChevronDown = (props) => (
 );
 const Menu = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
-);
-const User = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
 );
 const ShoppingBag = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" x2="21" y1="6" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
@@ -55,9 +68,6 @@ const Facebook = (props) => (
 const Instagram = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.5A4.25 4.25 0 003.5 7.75v8.5A4.25 4.25 0 007.75 20.5h8.5a4.25 4.25 0 004.25-4.25v-8.5A4.25 4.25 0 0016.25 3.5h-8.5zm8.75 2a1 1 0 110 2 1 1 0 010-2zm-4.25 1.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 1.5a3 3 0 100 6 3 3 0 000-6z" /></svg>
 );
-const LogIn = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" /></svg>
-);
 const SearchIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" {...props}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
 );
@@ -65,7 +75,6 @@ const SearchIcon = (props) => (
 
 // --- Components ---
 
-// SearchBar component is now simplified and defined here
 function SearchBar({ onSearchClick }) {
   return (
     <button
@@ -235,15 +244,17 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
             <LanguageSwitcher />
           </div>
           
+          {/* ✨ --- START: Icon Update --- ✨ */}
           {isLoggedIn ? (
             <Link href={`/${locale}/profile`} aria-label="User Account" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
-              <User className="w-5 h-5 md:w-6 md:h-6" />
+              <UserCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           ) : (
             <Link href={`/${locale}/auth/login`} aria-label="Login" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
-              <LogIn className="w-5 h-5 md:w-6 md:h-6" />
+              <LoginIcon className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           )}
+          {/* ✨ --- END: Icon Update --- ✨ */}
           
           <Link href={`/${locale}/favorite`} aria-label="favorite" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
             <Heart className="w-5 h-5 md:w-6 md:h-6" />
@@ -291,7 +302,13 @@ const MobileNav = ({ isOpen, onClose }) => {
       <div className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`} onClick={onClose}></div>
       <div className={`fixed top-0 left-0 h-full w-72 max-w-[80%] bg-white z-50 shadow-xl transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex justify-between items-center p-5 border-b border-gray-200">
-          <Link href={`/${locale}/`} className="text-2xl font-bold text-gray-800">Essentia</Link>
+          
+          {/* ✨ --- START: Logo Update --- ✨ */}
+          <Link href={`/${locale}/`} className="block w-[120px] h-auto">
+             <Image src="/logo.png" alt="Essentia Logo" width={150} height={60} priority />
+          </Link>
+          {/* ✨ --- END: Logo Update --- ✨ */}
+
           <button onClick={onClose} aria-label="Close navigation menu"><X size={28} /></button>
         </div>
         <div className="p-5 overflow-y-auto">
@@ -344,17 +361,17 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { cart, updateCart } = useCartContext() || { cart: [], updateCart: () => {} };
-  const { cartCount } = useCartContext(); // <-- هنا جلبنا العدد مباشرة
-  const totalCartItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-console.log("cartCount",cartCount)
+  const { cartCount } = useCartContext();
+  
   return (
     <div className="font-sans" style={{ fontFamily: "'Poppins', sans-serif" }}>
-<Header 
-  onMenuToggle={() => setIsMenuOpen(true)} 
-  onCartToggle={() => setIsCartOpen(true)} 
-  cartItemCount={cartCount}  // <-- هنا بدل totalCartItems
-  onSearchClick={() => setIsSearchOpen(true)} 
-/>      <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <Header 
+        onMenuToggle={() => setIsMenuOpen(true)} 
+        onCartToggle={() => setIsCartOpen(true)} 
+        cartItemCount={cartCount}
+        onSearchClick={() => setIsSearchOpen(true)} 
+      />
+      <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} items={cart} onRemoveItem={updateCart} />
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
