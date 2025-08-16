@@ -3,27 +3,17 @@ import React, { useState, useRef } from 'react';
 import ProductCard from '../ui/ProductCard.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../../hooks/useProductsQuery';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation'; // <-- تم حذفه لأنه غير مستخدم
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-// Mock hook for demonstration purposes
-const useOnScreen = (options) => {
-  const ref = useRef(null);
-  const [isVisible, setIsVisible] = useState(true); // Default to true for demo
-  return [ref, isVisible];
-};
-
-
 export default function LatestProductsSlider() {
-  const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
   const sliderRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const locale = useLocale();
   const t = useTranslations('productSlider');
-  const router = useRouter();
 
-  // Fetch latest products by created_at
+  // Fetch latest products
   const { products, isLoading, error } = useProductsQuery({
     sortBy: 'created_at',
     order: 'desc',
@@ -58,13 +48,9 @@ export default function LatestProductsSlider() {
     );
   }
 
+  // تم حذف ref و isVisible من هنا لأنهما كانا يعتمدان على useOnScreen
   return (
-    <section
-      ref={ref}
-      className={`py-20 transition-all duration-700 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
-    >
+    <section className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <p className="text-gray-500 mb-1.5">{t('latestSubtitle') || 'وصل حديثاً'}</p>
@@ -86,23 +72,21 @@ export default function LatestProductsSlider() {
             </button>
           )}
 
-          {/* ===== تم إخفاء شريط التمرير هنا ===== */}
-         <div
-  ref={sliderRef}
-  className="grid grid-cols-2 gap-4 md:flex md:gap-8 md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4 no-scrollbar"
->
+          <div
+            ref={sliderRef}
+            className="grid grid-cols-2 gap-4 md:flex md:gap-8 md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4 no-scrollbar"
+          >
             {products.map((product) => (
               <div
                 key={product.id}
                 className="md:snap-start md:flex-shrink-0 md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.33rem)] xl:w-[calc(25%-1.5rem)]"
               >
-                <Link href={`/${locale}/products/${product.id}`} className="block h-full">
-                  <ProductCard product={product} />
-                </Link>
+                {/* تم تعديل هذا الجزء ليعمل بدون مشاكل */}
+                <ProductCard product={product} />
               </div>
             ))}
           </div>
-          
+
           {isHovered && (
             <button
               onClick={() => scroll('next')}

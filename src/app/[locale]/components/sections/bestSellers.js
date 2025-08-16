@@ -60,8 +60,6 @@ export default function ProductSliderSection({
       </section>
     );
   }
-console.log('Best Sellers:', bestSellers);
-
   return (
     <section
       ref={ref}
@@ -94,16 +92,15 @@ console.log('Best Sellers:', bestSellers);
   ref={sliderRef}
   className="grid grid-cols-2 gap-4 md:flex md:gap-8 md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4 no-scrollbar"
 >
-            {bestSellers.map((product) => (
-              <div
-                key={product.id}
-                className="md:snap-start md:flex-shrink-0 md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.33rem)] xl:w-[calc(25%-1.5rem)]"
-              >
-                <Link href={`/${locale}/products/${product.id}`} className="block h-full">
-                  <ProductCard product={product} />
-                </Link>
-              </div>
-            ))}
+           {bestSellers.map((product) => (
+  <div
+    key={product.id}
+    className="md:snap-start md:flex-shrink-0 md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.33rem)] xl:w-[calc(25%-1.5rem)]"
+  >
+    <ProductCard product={product} />
+  </div>
+))}
+
           </div>
 
           {isHovered && (
