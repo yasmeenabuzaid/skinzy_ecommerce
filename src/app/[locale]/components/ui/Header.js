@@ -11,7 +11,8 @@ import { useCartContext } from "../../../../context/CartContext";
 import SearchModal from "./SearchModal";
 import { useLocale, useTranslations } from "next-intl";
 
-// --- Mock Storage Service for demonstration ---
+// This is a mock/example service. The runtime error you're seeing is likely
+// because your actual 'storageService.js' file is missing a 'deleteAll' function.
 const StorageService = {
   getUserInfo: () => {
     try {
@@ -26,7 +27,7 @@ const StorageService = {
 
 // --- SVG Icons ---
 
-// ✨ أيقونة البروفايل الجديدة
+// ✨ أيقونة البروفايل (عندما يكون مسجلاً دخوله)
 const UserCircleIcon = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
         <circle cx="12" cy="12" r="10" />
@@ -35,14 +36,14 @@ const UserCircleIcon = (props) => (
     </svg>
 );
 
-// ✨ أيقونة تسجيل الدخول الجديدة
-const LoginIcon = (props) => (
+// ✨ أيقونة تسجيل الدخول الجديدة (أكثر وضوحاً)
+const UserIcon = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-        <polyline points="10 17 15 12 10 7" />
-        <line x1="15" y1="12" x2="3" y2="12" />
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
     </svg>
 );
+
 
 const Heart = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
@@ -244,17 +245,15 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
             <LanguageSwitcher />
           </div>
           
-          {/* ✨ --- START: Icon Update --- ✨ */}
           {isLoggedIn ? (
             <Link href={`/${locale}/profile`} aria-label="User Account" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
               <UserCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           ) : (
             <Link href={`/${locale}/auth/login`} aria-label="Login" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
-              <LoginIcon className="w-5 h-5 md:w-6 md:h-6" />
+              <UserIcon className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           )}
-          {/* ✨ --- END: Icon Update --- ✨ */}
           
           <Link href={`/${locale}/favorite`} aria-label="favorite" className="text-gray-700 hover:text-black transition-transform hover:scale-110 cursor-pointer">
             <Heart className="w-5 h-5 md:w-6 md:h-6" />
@@ -303,11 +302,9 @@ const MobileNav = ({ isOpen, onClose }) => {
       <div className={`fixed top-0 left-0 h-full w-72 max-w-[80%] bg-white z-50 shadow-xl transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex justify-between items-center p-5 border-b border-gray-200">
           
-          {/* ✨ --- START: Logo Update --- ✨ */}
           <Link href={`/${locale}/`} className="block w-[120px] h-auto">
              <Image src="/logo.png" alt="Essentia Logo" width={150} height={60} priority />
           </Link>
-          {/* ✨ --- END: Logo Update --- ✨ */}
 
           <button onClick={onClose} aria-label="Close navigation menu"><X size={28} /></button>
         </div>
@@ -348,8 +345,10 @@ const MobileNav = ({ isOpen, onClose }) => {
   );
 };
 
-const Header = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) => (
-  <header className="relative z-30">
+// ✨ --- START: Sticky Header Logic --- ✨
+const Header = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick, isSticky }) => (
+  // Use the isSticky prop to apply classes
+  <header className={`z-30 transition-all duration-300 ${isSticky ? 'fixed top-0 left-0 w-full bg-white shadow-lg' : 'relative'}`}>
     <TopBar />
     <MainNav onCartToggle={onCartToggle} onMenuToggle={onMenuToggle} cartItemCount={cartItemCount} onSearchClick={onSearchClick} />
   </header>
@@ -359,21 +358,39 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false); // State to track sticky status
 
   const { cart, updateCart } = useCartContext() || { cart: [], updateCart: () => {} };
   const { cartCount } = useCartContext();
+
+  // Effect to listen for scroll events
+  useEffect(() => {
+    const handleScroll = () => {
+      // Set sticky to true if user scrolls more than 10px
+      setIsSticky(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    
+    // Cleanup function to remove the listener
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   return (
     <div className="font-sans" style={{ fontFamily: "'Poppins', sans-serif" }}>
       <Header 
+        isSticky={isSticky} // Pass state down to Header
         onMenuToggle={() => setIsMenuOpen(true)} 
         onCartToggle={() => setIsCartOpen(true)} 
         cartItemCount={cartCount}
         onSearchClick={() => setIsSearchOpen(true)} 
       />
+      {/* This placeholder prevents page content from jumping when the header becomes sticky */}
+      {isSticky && <div style={{ height: '136px' }} />}
+
       <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} items={cart} onRemoveItem={updateCart} />
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );
 }
+// ✨ --- END: Sticky Header Logic --- ✨
