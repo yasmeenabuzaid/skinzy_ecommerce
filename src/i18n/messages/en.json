@@ -366,5 +366,12 @@
     "defaultButtonText": "Browse All Products",
     "error": "Something went wrong",
     "brandDescription": "Skinzy Care is your trusted online beauty hub, bringing you authentic perfumes, luxury skincare, and must-have makeup. We believe beauty should be effortless, original, and always within your reach."
+  },
+   "AboutSection": {
+    "subtitle": "Who We Are?",
+    "title": "Your First Destination for Authentic Beauty",
+    "description": "At Skinzy Care, our journey began with a simple passion: making authentic, luxury beauty products accessible to everyone. We carefully curate every item, from rare perfumes to the latest in skincare, ensuring you receive unparalleled quality. Our mission is to make your beauty experience effortless, reliable, and enjoyable.",
+    "buttonText": "Learn More",
+    "imageAlt": "A collection of luxury skincare products"
   }
 }

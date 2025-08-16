@@ -15,15 +15,15 @@ const LoadingState = () => (
     <section className="py-20 md:py-28 bg-orange-50">
         <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-                <div className="h-4 bg-orange-200 rounded-md w-1/4 mx-auto mb-3 animate-pulse"></div>
-                <div className="h-10 bg-orange-200 rounded-md w-1/2 mx-auto animate-pulse"></div>
+                <div className="h-4 bg-orange-400 rounded-md w-1/4 mx-auto mb-3 animate-pulse"></div>
+                <div className="h-10 bg-orange-400 rounded-md w-1/2 mx-auto animate-pulse"></div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className="animate-pulse">
-                        <div className="bg-orange-200 rounded-lg h-56 w-full mb-4"></div>
-                        <div className="h-4 bg-orange-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-4 bg-orange-200 rounded w-1/2"></div>
+                        <div className="bg-orange-400 rounded-lg h-56 w-full mb-4"></div>
+                        <div className="h-4 bg-orange-400 rounded w-3/4 mb-2"></div>
+                        <div className="h-4 bg-orange-400 rounded w-1/2"></div>
                     </div>
                 ))}
             </div>
