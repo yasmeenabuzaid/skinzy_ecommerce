@@ -391,5 +391,17 @@
         "description": "Our team is ready to assist you and answer all your inquiries to ensure the best possible shopping experience."
       }
     ]
+  },
+  "ProductPage": {
+    "home": "Home",
+    "products": "Products",
+    "ourProducts": "Our Products",
+    "loading": "Loading products...",
+    "showing": "Showing",
+    "sort": {
+      "bestSelling": "Best selling",
+      "lowToHigh": "Price: Low to High",
+      "highToLow": "Price: High to Low"
+    }
   }
 }

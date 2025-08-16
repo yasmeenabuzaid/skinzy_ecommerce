@@ -1,103 +1,113 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
-import { LayoutGrid, Rows3, List } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { LayoutGrid, Rows3, List, ChevronRight } from 'lucide-react';
 import useProductsQuery from '../../../hooks/useProductsQuery';
-import Header from "../components/ui/Header";
-import Footer from "../components/ui/Footer";
 import ProductCard from '../components/ui/ProductCard';
-import FilterAccordion from '../components/products/FilterAccordion';
+import Link from 'next/link';
+
+import Header from '../components/ui/Header';
+import Footer from '../components/ui/Footer';
+// ✨ قمت بحذف Header و Footer من هنا لأنه من الأفضل إضافتهم في ملف layout.js
+// يمكنك إعادتهم إذا كان تصميمك يتطلب ذلك
+
+// ✨ مكون بسيط لمسار التنقل (Breadcrumbs)
+const Breadcrumbs = ({ t, locale }) => (
+    <nav className="flex items-center text-sm text-gray-500">
+        <Link href={`/${locale}`} className="hover:text-orange-500">{t('home')}</Link>
+        <ChevronRight size={16} className="mx-1" />
+        <span className="font-medium text-gray-700">{t('products')}</span>
+    </nav>
+);
+
 
 export default function ProductListPage() {
-  const [view, setView] = useState(3);
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const selectedBrandId = searchParams.get("brand");
-  const router = useRouter();
-  const locale = useLocale();
+    // ✨ تم تغيير الحالة الافتراضية إلى 4 أعمدة على الشاشات الكبيرة
+    const [view, setView] = useState(4);
+    const params = useParams();
+    const searchParams = useSearchParams();
+    const selectedBrandId = searchParams.get("brand");
+    const router = useRouter();
+    const locale = useLocale();
+    const t = useTranslations('ProductPage');
 
-  const { products, isLoading, error } = useProductsQuery();
+    const { products, isLoading, error } = useProductsQuery();
 
-  const filteredProducts = selectedBrandId
-    ? products.filter(product => String(product.brand?.id) === selectedBrandId)
-    : products;
+    // ✨ أصبح useMemo أفضل هنا لتحسين الأداء عند الفلترة
+    const filteredProducts = useMemo(() => {
+        if (!products) return [];
+        return selectedBrandId
+            ? products.filter(product => String(product.brand?.id) === selectedBrandId)
+            : products;
+    }, [products, selectedBrandId]);
 
-  if (isLoading) {
-    return <div className="text-center p-10 text-gray-500">Loading products...</div>;
-  }
+    if (isLoading) {
+        return <div className="text-center p-20 text-gray-500">{t('loading')}</div>;
+    }
 
-  if (error) {
-    return <div className="text-center p-10 text-red-500">Error: {error}</div>;
-  }
+    if (error) {
+        return <div className="text-center p-20 text-red-500">Error: {error.message}</div>;
+    }
 
-  return (
-    <div className="text-gray-800">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    // ✨ تحديد الكلاسات الخاصة بالشبكة بناءً على حالة العرض
+    const gridClasses = {
+        4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4', // 4 أعمدة
+        3: 'grid-cols-2 md:grid-cols-3',             // 3 أعمدة
+        'list': 'grid-cols-1',                       // عرض القائمة
+    }[view] || 'grid-cols-2 md:grid-cols-3';
 
-          {/* Sidebar */}
-          <aside className="lg:col-span-1 border-r pr-8">
-            <h2 className="text-xl font-bold mb-2">Filter</h2>
-            <FilterAccordion title="Availability">
-              <label className="flex items-center text-gray-600">
-                <input type="checkbox" className="h-4 w-4" />
-                <span className="ml-3">In Stock</span>
-              </label>
-            </FilterAccordion>
-            <FilterAccordion title="Price">
-              <div className="flex items-center gap-4">
-                <input type="text" placeholder="From" className="w-1/2 border rounded-md p-2 text-sm" />
-                <input type="text" placeholder="To" className="w-1/2 border rounded-md p-2 text-sm" />
-              </div>
-            </FilterAccordion>
-          </aside>
 
-          {/* Main content */}
-          <main className="lg:col-span-3">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-[#f9f9f9] p-4 rounded-md">
-              <p className="text-gray-600">{filteredProducts.length} products</p>
-              <div className="flex items-center gap-3 mt-3 md:mt-0">
-                {/* <select className="border rounded-md p-2 text-sm">
-                  <option>Best selling</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                </select> */}
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setView(2)} className={`p-2 rounded-md ${view === 2 ? 'bg-black text-white' : 'bg-white border'}`}>
-                    <LayoutGrid size={20} />
-                  </button>
-                  <button onClick={() => setView(3)} className={`p-2 rounded-md ${view === 3 ? 'bg-black text-white' : 'bg-white border'}`}>
-                    <Rows3 size={20} />
-                  </button>
-                  <button onClick={() => setView('list')} className={`p-2 rounded-md ${view === 'list' ? 'bg-black text-white' : 'bg-white border'}`}>
-                    <List size={20} />
-                  </button>
+    return (
+        <div className="text-gray-800 bg-white">
+           <Header />
+            <div className="container mx-auto px-4 py-8">
+                
+                {/* ✨ --- Section Header --- ✨ */}
+                <div className="py-8 bg-gray-50 rounded-lg mb-8 text-center">
+                    <h1 className="text-4xl font-bold text-gray-800">{t('ourProducts')}</h1>
+                    <div className="mt-4 flex justify-center">
+                        <Breadcrumbs t={t} locale={locale} />
+                    </div>
                 </div>
-              </div>
-            </div>
 
-            <div className={`grid gap-6 ${
-              view === 2 ? 'grid-cols-2' :
-              view === 3 ? 'grid-cols-3' :
-              'grid-cols-1'
-            }`}>
-              {filteredProducts.map(product => (
-                <div
-                  key={product.id}
-                  onClick={() => router.push(`/${locale}/products/${product.id}`)}
-                  className="cursor-pointer"
-                >
-                  <ProductCard product={product} />
+                {/* ✨ --- Control Bar --- ✨ */}
+                <div className="flex flex-col md:flex-row items-center justify-between mb-6 border-b pb-4 gap-4">
+                    <p className="text-gray-600 font-medium">
+                        {t('showing')} {filteredProducts.length} {t('products')}
+                    </p>
+                    <div className="flex items-center gap-4">
+                        <select className="border border-gray-300 rounded-md p-2 text-sm focus:ring-orange-500 focus:border-orange-500">
+                            <option>{t('sort.bestSelling')}</option>
+                            <option>{t('sort.lowToHigh')}</option>
+                            <option>{t('sort.highToLow')}</option>
+                        </select>
+                        <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-md">
+                            <button onClick={() => setView(4)} className={`p-2 rounded ${view === 4 ? 'bg-orange-500 text-white shadow' : 'text-gray-600 hover:bg-gray-200'}`} aria-label="4 columns">
+                                <LayoutGrid size={20} />
+                            </button>
+                            <button onClick={() => setView(3)} className={`p-2 rounded ${view === 3 ? 'bg-orange-500 text-white shadow' : 'text-gray-600 hover:bg-gray-200'}`} aria-label="3 columns">
+                                <Rows3 size={20} />
+                            </button>
+                            <button onClick={() => setView('list')} className={`p-2 rounded ${view === 'list' ? 'bg-orange-500 text-white shadow' : 'text-gray-600 hover:bg-gray-200'}`} aria-label="List view">
+                                <List size={20} />
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              ))}
+
+                {/* ✨ --- Products Grid --- ✨ */}
+                <div className={`grid gap-6 ${gridClasses}`}>
+                    {filteredProducts.map(product => (
+                        // ✨ تم حذف الـ div الإضافي، لأن ProductCard هو الرابط نفسه
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+
             </div>
-          </main>
+                  <Footer />
         </div>
-      </div>
-      <Footer />
-    </div>
-  );
+    );
 }
+
