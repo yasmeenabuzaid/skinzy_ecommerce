@@ -139,14 +139,19 @@ export default function ProductDetails({
         <div>
           {/* ✨ --- قسم الفئة والماركة الجديد --- ✨ */}
           <div className="flex items-center gap-3 mb-3 text-sm font-semibold">
-            {subCategoryName && (
-                {subCategoryName}
-            )}
-            {subCategoryName && brandName && <span className="text-gray-300">|</span>}
-            {brandName && (
-                {brandName}
-            )}
-          </div>
+  {subCategoryName && (
+    <span className="text-orange-600">
+      {subCategoryName}
+    </span>
+  )}
+  {subCategoryName && brandName && <span className="text-gray-300">|</span>}
+  {brandName && (
+    <span className="text-gray-500">
+      {brandName}
+    </span>
+  )}
+</div>
+
           {/* --- نهاية القسم الجديد --- */}
 
           <h1 className="text-4xl font-extrabold text-gray-900 leading-tight flex items-center gap-3">
