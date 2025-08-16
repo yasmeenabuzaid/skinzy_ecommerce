@@ -1,11 +1,7 @@
 'use client';
-// ✨ --- START: Correction --- ✨
-// The missing hooks (useRef, useState, etc.) have been added to the import statement.
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
-// ✨ --- END: Correction --- ✨
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // --- Custom Hooks & Components ---
 import useProductsQuery from '../../../../hooks/useProductsQuery';
@@ -14,22 +10,6 @@ import ProductCard from '../ui/ProductCard.js';
 // ====================================================================
 // 1. Helper Components (مكونات مساعدة)
 // ====================================================================
-
-/**
- * زر التنقل للسلايدر (يمين ويسار)
- */
-const SliderButton = ({ direction, onClick, 'aria-label': ariaLabel, disabled }) => (
-  <button
-    onClick={onClick}
-    aria-label={ariaLabel}
-    disabled={disabled}
-    className={`absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm text-gray-900 rounded-full shadow-lg hidden md:flex items-center justify-center hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 z-10 disabled:opacity-0 disabled:cursor-not-allowed ${
-      direction === 'prev' ? 'left-0' : 'right-0'
-    }`}
-  >
-    {direction === 'prev' ? <ChevronLeft size={28} /> : <ChevronRight size={28} />}
-  </button>
-);
 
 /**
  * حالة التحميل (Loading Skeleton)
@@ -75,22 +55,20 @@ const ErrorState = ({ t, error }) => (
 
 
 // ====================================================================
-// 2. Main Component (المكون الرئيسي)
+// 2. Main Component (المكون الرئيسي بتصميم Grid)
 // ====================================================================
 
-export default function ProductSliderSection({
+// ✨ تم تغيير اسم المكون ليعكس التصميم الجديد
+export default function FeaturedProductsGrid({
   title,
   subtitle,
   buttonText,
   buttonLink,
 }) {
-  const sliderRef = useRef(null);
   const [activeFilter, setActiveFilter] = useState('');
-  const [canScroll, setCanScroll] = useState({ prev: false, next: true });
   const locale = useLocale();
-  const t = useTranslations('productSlider');
+  const t = useTranslations('productSlider'); // يمكنك تغيير الاسم لاحقاً
 
-  // جلب كل المنتجات (للفلترة)
   const { products, isLoading, error } = useProductsQuery();
 
   // استخلاص الفلاتر الأكثر شيوعاً
@@ -122,45 +100,9 @@ export default function ProductSliderSection({
     const allProducts = activeFilter
       ? products.filter(p => p.sub_category_id?.toString() === activeFilter?.toString())
       : products;
-    return allProducts.slice(0, 15); // عرض 15 منتج كحد أقصى
+    // ✨ يمكنك التحكم بعدد المنتجات المعروضة هنا
+    return allProducts.slice(0, 8); 
   }, [products, activeFilter]);
-
-  // دالة للتحقق من إمكانية التحريك
-  const checkScrollability = useCallback(() => {
-    const el = sliderRef.current;
-    if (el) {
-      const isAtStart = el.scrollLeft <= 0;
-      const isAtEnd = el.scrollWidth - el.scrollLeft - el.clientWidth <= 1;
-      setCanScroll({ prev: !isAtStart, next: !isAtEnd });
-    }
-  }, []);
-
-  // إضافة مستمع للتحقق من التحريك
-  useEffect(() => {
-    const el = sliderRef.current;
-    if (el && filteredProducts.length > 0) {
-      el.addEventListener('scroll', checkScrollability, { passive: true });
-      window.addEventListener('resize', checkScrollability);
-      checkScrollability();
-    }
-    return () => {
-      if (el) {
-        el.removeEventListener('scroll', checkScrollability);
-        window.removeEventListener('resize', checkScrollability);
-      }
-    };
-  }, [filteredProducts, checkScrollability]);
-  
-  // دالة لتحريك السلايدر
-  const scroll = (direction) => {
-    if (sliderRef.current) {
-      const scrollAmount = sliderRef.current.clientWidth;
-      sliderRef.current.scrollBy({
-        left: direction === 'next' ? scrollAmount : -scrollAmount,
-        behavior: 'smooth',
-      });
-    }
-  };
 
   // دالة لجلب اسم الفئة الفرعية
   const getSubCategoryNameById = (id) => {
@@ -205,22 +147,14 @@ export default function ProductSliderSection({
           </div>
         )}
 
-        {/* --- Slider Container --- */}
-        <div className="relative px-0 md:px-8">
-          <SliderButton direction="prev" onClick={() => scroll('prev')} aria-label="Previous products" disabled={!canScroll.prev} />
-
-          <div
-            ref={sliderRef}
-            className="grid grid-flow-col auto-cols-[calc(50%-0.5rem)] sm:auto-cols-[calc(33.33%-0.66rem)] lg:auto-cols-[calc(25%-0.75rem)] gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-6 no-scrollbar"
-          >
-            {filteredProducts.map((product) => (
-              <div key={product.id} className="snap-start">
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-
-          <SliderButton direction="next" onClick={() => scroll('next')} aria-label="Next products" disabled={!canScroll.next} />
+        {/* ✨ --- Products Grid Container (تم التعديل هنا) --- ✨ */}
+        {/* تم استبدال السلايدر بشبكة متجاوبة */}
+        <div
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+        >
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
 
         {/* --- "Browse All" Button --- */}

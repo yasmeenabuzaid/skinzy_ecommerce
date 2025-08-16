@@ -29,19 +29,20 @@ function HeroSection() {
 
   const heroSlides = [
     {
-      image: 'https://images.pexels.com/photos/3609620/pexels-photo-3609620.jpeg',
+      image: '/hero1.png',
       offer: t("slides.0.offer"),
       title: t("slides.0.title"),
       description: t("slides.0.description"),
       buttonText: t("slides.0.buttonText"),
     },
-    // {
-    //   image: 'https://images.pexels.com/photos/7290687/pexels-photo-7290687.jpeg',
-    //   offer: t("slides.1.offer"),
-    //   title: t("slides.1.title"),
-    //   description: t("slides.1.description"),
-    //   buttonText: t("slides.1.buttonText"),
-    // },
+    {
+      image: '/hero2.png',
+      offer: t("slides.1.offer"),
+      title: t("slides.1.title"),
+      description: t("slides.1.description"),
+      buttonText: t("slides.1.buttonText"),
+    },
+    
   ];
   
   const nextSlide = React.useCallback(() => {
