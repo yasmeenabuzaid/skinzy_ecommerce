@@ -28,13 +28,13 @@ function HeroSection() {
   const isRTL = locale === 'ar';
 
   const heroSlides = [
-    {
-      image: '/hero1.png',
-      offer: t("slides.0.offer"),
-      title: t("slides.0.title"),
-      description: t("slides.0.description"),
-      buttonText: t("slides.0.buttonText"),
-    },
+    // {
+    //   image: '/hero1.png',
+    //   offer: t("slides.0.offer"),
+    //   title: t("slides.0.title"),
+    //   description: t("slides.0.description"),
+    //   buttonText: t("slides.0.buttonText"),
+    // },
     {
       image: '/hero2.png',
       offer: t("slides.1.offer"),
@@ -42,7 +42,13 @@ function HeroSection() {
       description: t("slides.1.description"),
       buttonText: t("slides.1.buttonText"),
     },
-    
+    {
+      image: '/hero3.png',
+      offer: t("slides.0.offer"),
+      title: t("slides.0.title"),
+      description: t("slides.0.description"),
+      buttonText: t("slides.0.buttonText"),
+    },
   ];
   
   const nextSlide = React.useCallback(() => {
