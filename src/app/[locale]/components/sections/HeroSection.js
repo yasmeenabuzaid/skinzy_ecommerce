@@ -71,7 +71,7 @@ function HeroSection() {
           }`}
           style={{ backgroundImage: `url(${slide.image})` }}
         >
-          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute inset-0 bg-black/30"></div>
 
           <div className="container mx-auto px-4 h-full flex items-center relative z-10">
             <div
