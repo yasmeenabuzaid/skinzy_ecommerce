@@ -12,7 +12,6 @@ const useProductsQuery = () => {
       setIsLoading(true);
       try {
         const result = await BackendConnector.fetchProducts();
-       console.log("single product",result)
 
         if (Array.isArray(result)) {
           setProducts(result);
