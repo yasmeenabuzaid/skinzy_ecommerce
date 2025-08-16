@@ -28,19 +28,12 @@ function HeroSection() {
   const isRTL = locale === 'ar';
 
   const heroSlides = [
-    // {
-    //   image: '/hero1.png',
-    //   offer: t("slides.0.offer"),
-    //   title: t("slides.0.title"),
-    //   description: t("slides.0.description"),
-    //   buttonText: t("slides.0.buttonText"),
-    // },
     {
       image: '/hero2.png',
       offer: t("slides.1.offer"),
       title: t("slides.1.title"),
       description: t("slides.1.description"),
-      buttonText: t("slides.1.buttonText"),
+      buttonText: t("slides.0.buttonText"),
     },
     {
       image: '/hero3.png',
@@ -78,30 +71,32 @@ function HeroSection() {
           }`}
           style={{ backgroundImage: `url(${slide.image})` }}
         >
-          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-black/50"></div>
 
           <div className="container mx-auto px-4 h-full flex items-center relative z-10">
             <div
               className={`max-w-lg transition-all duration-1000 ease-in-out text-center ${
                 index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-              } ${
-                isRTL
-                  ? 'lg:mr-[12%] lg:text-right' 
-                  : 'lg:ml-[12%] lg:text-left'
-              }`}
+              } ${isRTL ? 'lg:mr-[12%] lg:text-right' : 'lg:ml-[12%] lg:text-left'}`}
             >
-              {/* الخط أسود بدرجات راقية */}
-              <p className="text-[#444444] font-medium mb-2 text-lg">{slide.offer}</p>
+              {/* الخط أسود بدرجات خفيفة */}
+              <p className="text-white font-medium mb-2 text-lg" style={{ textShadow: "0 0 1px rgba(0,0,0,0.3)" }}>
+                {slide.offer}
+              </p>
               
-              <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-black mb-5 tracking-wide">
+              <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-white mb-5 tracking-wide" 
+                  style={{ textShadow: "0 0 2px rgba(0,0,0,0.3)" }}>
                 {slide.title}
               </h1>
               
-              <p className="text-gray-700 mb-8 text-base leading-relaxed">{slide.description}</p>
+              <p className="text-white mb-8 text-base leading-relaxed" style={{ textShadow: "0 0 1px rgba(0,0,0,0.3)" }}>
+                {slide.description}
+              </p>
               
               <a
                 href={`/${locale}/subcategory`}
-                className="inline-block bg-white text-black font-semibold py-3 px-8 rounded-full border border-black hover:bg-black hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                className="inline-block bg-[#FF671F] text-white font-semibold py-3 px-8 transition-all duration-300 shadow-md hover:shadow-lg"
+                style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.2)" }}
               >
                 {slide.buttonText}
               </a>
