@@ -1,6 +1,7 @@
 import { Poppins, Noto_Kufi_Arabic } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { CartContextProvider } from '@/context/CartContext';
+import NextTopLoader from 'nextjs-toploader';
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -20,7 +21,7 @@ const notoKufi = Noto_Kufi_Arabic({
 
 export const metadata = {
   title: 'Skinzy Care',
-  description: 'High-quality products.',
+  description: 'Your trusted online beauty hub',
 };
 
 export default async function RootLayout({ children, params }) {
@@ -35,6 +36,17 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <body className={`${poppins.variable} ${notoKufi.variable} font-sans`}>
+         <NextTopLoader
+          color="#FF671F" // هذا هو اللون البرتقالي الخاص بعلامتك التجارية
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false} // لإخفاء الدائرة الدوارة التي تأتي معه
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #FF671F, 0 0 5px #FF671F"
+        />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <CartContextProvider>
             {children}
