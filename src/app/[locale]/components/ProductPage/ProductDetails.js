@@ -66,11 +66,11 @@ export default function ProductDetails({
   }));
 
   const _performAddToCart = () => {
-    // ... (logic)
+    // Logic for adding to cart
   };
 
   const _performAddToFavorites = async () => {
-    // ... (logic)
+    // Logic for adding to favorites
   };
 
   const handleAuthRequired = (action) => {
@@ -112,14 +112,12 @@ export default function ProductDetails({
       />
 
       {/* ✨ --- START: The Fix --- ✨ */}
-      {/* By adding `relative` and `z-10`, we lift this entire component above other elements on the page, */}
-      {/* ensuring that the buttons are always clickable, especially on mobile. */}
+      {/* بإضافة `relative` و `z-10`، نضمن أن هذا القسم بأكمله سيكون فوق أي عناصر أخرى قد تتداخل معه في عرض الموبايل */}
       <div className="flex flex-col space-y-6 relative z-10">
       {/* ✨ --- END: The Fix --- ✨ */}
         
         <div>
           <div className="flex items-center gap-3 mb-3 text-sm font-semibold">
-            {/* ✨ قمت بإعادة الروابط هنا لتحسين تجربة المستخدم */}
             {subCategoryName && (
               <Link href={`/${locale}/subcategory/${mainProduct.sub_category?.id}`} className="text-orange-600 hover:underline">
                 {subCategoryName}
