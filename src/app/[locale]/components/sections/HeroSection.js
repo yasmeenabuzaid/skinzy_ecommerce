@@ -93,13 +93,14 @@ function HeroSection() {
                 {slide.description}
               </p>
               
-              <a
-                href={`/${locale}/subcategory`}
-                className="inline-block bg-[#FF671F] text-white font-semibold py-3 px-8 transition-all duration-300 shadow-md hover:shadow-lg"
-                style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.2)" }}
-              >
-                {slide.buttonText}
-              </a>
+         <a
+  href={`/${locale}/subcategory`}
+  className="inline-block bg-[#FF671F] text-white font-semibold py-3 px-8 transition-all duration-300 shadow-md hover:shadow-lg rounded-md"
+  style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.2)" }}
+>
+  {slide.buttonText}
+</a>
+
             </div>
           </div>
         </div>
