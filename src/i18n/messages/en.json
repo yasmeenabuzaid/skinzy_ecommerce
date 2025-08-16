@@ -360,4 +360,11 @@
     "addAddress": "Add Address",
     "cancel": "or Cancel"
   }
+  ,
+  "FeaturedProducts": {
+    "defaultSubtitle": "Special Offers",
+    "defaultButtonText": "Browse All Products",
+    "error": "Something went wrong",
+    "brandDescription": "Skinzy Care is your trusted online beauty hub, bringing you authentic perfumes, luxury skincare, and must-have makeup. We believe beauty should be effortless, original, and always within your reach."
+  }
 }

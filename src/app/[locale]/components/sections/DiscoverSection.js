@@ -1,109 +1,116 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 
-const useOnScreen = (options) => {
-    const ref = useRef(null);
-    const [hasBeenVisible, setHasBeenVisible] = useState(false);
+// --- Custom Hooks & Components ---
+import useProductsQuery from '../../../../hooks/useProductsQuery';
+import ProductCard from '../ui/ProductCard.js';
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting && !hasBeenVisible) {
-                setHasBeenVisible(true);
-                observer.unobserve(entry.target);
-            }
-        }, options);
+// ====================================================================
+// 1. Helper Components (No changes here)
+// ====================================================================
 
-        const currentRef = ref.current;
-        if (currentRef) observer.observe(currentRef);
+const LoadingState = () => (
+    <section className="py-20 md:py-28 bg-orange-50">
+        <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+                <div className="h-4 bg-orange-200 rounded-md w-1/4 mx-auto mb-3 animate-pulse"></div>
+                <div className="h-10 bg-orange-200 rounded-md w-1/2 mx-auto animate-pulse"></div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="animate-pulse">
+                        <div className="bg-orange-200 rounded-lg h-56 w-full mb-4"></div>
+                        <div className="h-4 bg-orange-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-4 bg-orange-200 rounded w-1/2"></div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </section>
+);
 
-        return () => {
-            if (currentRef) observer.unobserve(currentRef);
-        };
-    }, [options, hasBeenVisible]);
+const ErrorState = ({ t, error }) => (
+    <section className="py-20 bg-orange-50">
+        <div className="container mx-auto px-4">
+            <div className="text-center text-red-800 bg-red-100 border border-red-300 p-8 rounded-lg">
+                <h3 className="text-xl font-semibold mb-2">{t('error')}</h3>
+                <p>{error.message}</p>
+            </div>
+        </div>
+    </section>
+);
 
-    return [ref, hasBeenVisible];
-};
+// ====================================================================
+// 2. Main Component (تم تطبيق التعديلات هنا)
+// ====================================================================
 
-const AnimatedSection = ({ children, className = '' }) => {
-    const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
-    return (
-        <section
-            ref={ref}
-            className={`${className} transition-all duration-700 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-        >
-            {children}
-        </section>
-    );
-};
-
-const DiscoverSection = () => {
+export default function FeaturedProductsSection({
+    title,
+    subtitle,
+    buttonText,
+    buttonLink,
+}) {
     const locale = useLocale();
-    const t = useTranslations('discoverSection');
+    const t = useTranslations('FeaturedProducts');
 
-    // نصوص وصور عربية وإنجليزية
-    const content = [
-        {
-            image:
-                locale === 'ar'
-                    ? 'https://images.pexels.com/photos/26570965/pexels-photo-26570965.jpeg'
-                    : 'https://images.pexels.com/photos/26570965/pexels-photo-26570965.jpeg', 
-            alt: locale === 'ar' ? 'امرأة تمسك عبوة تجميل' : 'Woman holding a cosmetic jar',
-            title: locale === 'ar' ? 'جودة وراحة لأطفالك.' : 'Quality and comfort for your kids.',
-            linkText: t('shopToLook'),
-        },
-        {
-            image:
-                locale === 'ar'
-                    ? 'https://images.pexels.com/photos/12323055/pexels-photo-12323055.jpeg'
-                    : 'https://images.pexels.com/photos/12323055/pexels-photo-12323055.jpeg', 
-            alt: locale === 'ar' ? 'امرأة تضع منتج تجميل' : 'Woman applying a cosmetic product',
-            title: locale === 'ar' ? 'حقق أماني أطفالك.' : 'Make the wishes of your babies a reality.',
-            linkText: t('shopToLook'),
-        },
-    ];
+    const { products, isLoading, error } = useProductsQuery();
+
+    const featuredProducts = useMemo(() => {
+        if (!products) return [];
+        return products
+            .filter(p => p.price_after_discount && parseFloat(p.price_after_discount) > 0)
+            .slice(0, 4);
+    }, [products]);
+
+    if (isLoading) return <LoadingState />;
+    if (error) return <ErrorState t={t} error={error} />;
+    if (!featuredProducts || featuredProducts.length === 0) return null;
 
     return (
-        <AnimatedSection className="py-20">
+        <section className="py-20 md:py-28 bg-orange-50 overflow-hidden">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-12">
-                    <p className="text-gray-500 mb-1.5">{t('latestCollection')}</p>
-                    <h2 className="text-4xl font-semibold text-gray-800">{t('moreToDiscover')}</h2>
+                {/* ✨ تعديل الحاوية: إضافة gap ودعم الاتجاهين LTR/RTL */}
+                <div className="mb-16 md:flex md:justify-between md:items-center md:gap-12">
+                    {/* Left Side: Title & Subtitle */}
+                    {/* ✨ تعديل محاذاة النص من text-left إلى text-start */}
+                    <div className="text-center md:text-start md:flex-1 mb-8 md:mb-0">
+                        <p className="text-orange-500 font-semibold mb-2 uppercase tracking-wider">
+                            {subtitle || t('defaultSubtitle')}
+                        </p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+                            {title}
+                        </h2>
+                    </div>
+
+                    {/* Right Side: Brand Description */}
+                    {/* ✨ تعديل محاذاة النص وتحديد عرض العمود ليبقى متناسقاً */}
+                    <div className="text-center md:text-start md:w-full md:max-w-md">
+                        <p className="text-gray-600 leading-relaxed">
+                            {t('brandDescription')}
+                        </p>
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {content.map(({ image, alt, title, linkText }, index) => (
-                        <div key={index} className="text-center">
-                            <Link href="/shop" className="block mb-6 group overflow-hidden rounded-lg">
-                                <img
-                                    src={image}
-                                    alt={alt}
-                                    className="w-full h-auto object-cover aspect-[16/10] transition-transform duration-300 group-hover:scale-105"
-                                />
-                            </Link>
-                            <h3 className="text-xl font-medium text-gray-800 mb-3">{title}</h3>
-                            <Link
-                                href="/shop"
-                                className="font-medium text-gray-800 underline hover:text-[#FF671F] transition-colors text-sm"
-                            >
-                                {linkText}
-                            </Link>
-                        </div>
+
+                {/* --- Product Grid --- */}
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    {featuredProducts.map((product) => (
+                        <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
-            </div>
-        </AnimatedSection>
-    );
-};
 
-export default function App() {
-    return (
-        <div className="font-sans bg-white" style={{ fontFamily: "'Poppins', sans-serif" }}>
-            <main>
-                <DiscoverSection />
-            </main>
-        </div>
+                {/* --- "Browse All" Button --- */}
+                {buttonText && buttonLink && (
+                    <div className="text-center mt-16">
+                        <Link href={buttonLink}>
+                            <span className="inline-block bg-[#FF671F] text-white font-semibold py-3 px-10 rounded-full hover:bg-opacity-90 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                {buttonText || t('defaultButtonText')}
+                            </span>
+                        </Link>
+                    </div>
+                )}
+            </div>
+        </section>
     );
 }

@@ -82,6 +82,9 @@ buttonLink={`/${locale}/subcategory`}
   />
   <div className="h-10" />
 
+
+<DiscoverSection />
+  <div className="h-10" />
   <DealOfTheDaySection />
   <div className="h-10" />
 
@@ -94,8 +97,7 @@ buttonLink={`/${locale}/subcategory`}
   />
   <div className="h-10" />
 
-  <DiscoverSection />
-  <div className="h-10" />
+  
 
   <TestimonialSection />
 </main>
