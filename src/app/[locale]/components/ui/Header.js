@@ -206,9 +206,13 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
     <nav className="bg-white border-b border-gray-200 relative">
       <div className="container mx-auto px-4 flex items-center justify-between h-24">
         <div className="flex-shrink-0">
-            <Link href={`/${locale}/`} className="block w-[140px] md:w-[160px] h-auto">
-              <Image src="/logo.png" alt="Essentia Logo" width={180} height={80} priority />
-            </Link>
+           <div className="flex-shrink-0">
+    {/* قمنا بزيادة عرض الحاوية من 160px إلى 200px للشاشات الكبيرة */}
+    <Link href={`/${locale}/`} className="block w-[400px] md:w-[400px] h-auto">
+        {/* نزيد أبعاد الصورة أيضًا لضمان جودة عالية */}
+        <Image src="/logo.png" alt="skinzy care" width={250} height={188} priority />
+    </Link>
+</div>
         </div>
 
         <ul className="hidden lg:flex items-center gap-10 mx-auto">
@@ -300,7 +304,7 @@ const MobileNav = ({ isOpen, onClose }) => {
         <div className="flex justify-between items-center p-5 border-b border-gray-200">
           
           <Link href={`/${locale}/`} className="block w-[120px] h-auto">
-             <Image src="/logo.png" alt="Essentia Logo" width={150} height={60} priority />
+             <Image src="/logo.png" alt="skinzy care" width={150} height={60} priority />
           </Link>
 
           <button onClick={onClose} aria-label="Close navigation menu"><X size={28} /></button>

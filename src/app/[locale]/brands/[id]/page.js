@@ -18,15 +18,8 @@ export default function BrandProductsPage() {
   const locale = useLocale();
   const t = useTranslations('BrandProductsPage');
 
-  const { products, isLoading, error } = useProductsByBrandQuery({ brandId });
+  const { products} = useProductsByBrandQuery({ brandId });
 
-  if (isLoading) {
-    return <div className="text-center p-10 text-gray-500">{t('loading')}</div>;
-  }
-
-  if (error) {
-    return <div className="text-center p-10 text-gray-500">{t('loading')}</div>;
-  }
 
   return (
     <div className="text-gray-800">
