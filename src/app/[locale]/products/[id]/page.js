@@ -45,17 +45,18 @@ export default function ProductPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ✅ This is the corrected useEffect hook
   useEffect(() => {
     if (product) {
       const fallbackImage = product.images?.[0]?.image || "";
       setMainImage(fallbackImage);
       setActiveSize(product.sizes?.[0] || "100g");
-      setQuantity(1);
+      // The line that reset the quantity has been removed.
     }
   }, [product]);
 
   if (isLoading) return <div className="text-center py-20">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 py-20">{error}</div>;
+  if (error) return <div className="text-center text-red-500 py-20">{error.message || "An error occurred"}</div>;
   if (!product) return <div className="text-center py-20">Product not found</div>;
 
   const translatedProduct = {
@@ -64,11 +65,11 @@ export default function ProductPage() {
     small_description: isArabic ? product.small_description_ar : product.small_description,
   };
 
-const translatedSpecifications = product.specifications?.map((spec) => ({
-  ...spec,
-  key: isArabic ? spec.key_ar : spec.key,
-  value: isArabic ? spec.value_ar : spec.value,  
-})) || [];
+  const translatedSpecifications = product.specifications?.map((spec) => ({
+    ...spec,
+    key: isArabic ? spec.key_ar : spec.key,
+    value: isArabic ? spec.value_ar : spec.value,
+  })) || [];
 
   return (
     <div className="text-gray-800 ">
