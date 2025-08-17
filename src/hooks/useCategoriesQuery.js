@@ -1,36 +1,28 @@
-import { useState, useEffect } from "react";
-import BackendConnector from "../services/connectors/BackendConnector";
+import { useQuery } from '@tanstack/react-query';
+import BackendConnector from '../services/connectors/BackendConnector';
 
 const useCategoryQuery = () => {
-  const [categories, setCategories] = useState([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  const [errorCategories, setErrorCategories] = useState(null);
+  const {
+    data: categories = [],        // Rename 'data' to 'categories' and set a default empty array
+    isLoading: isLoadingCategories, // Rename 'isLoading' for consistency
+    error: errorCategories,         // Rename 'error'
+  } = useQuery({
+    // A unique key to identify and cache this data
+    queryKey: ['categories'],
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setIsLoadingCategories(true);
-      try {
-        const result = await BackendConnector.fetchCategories(); // تأكد أن هذه الدالة موجودة
-        if (Array.isArray(result)) {
-          setCategories(result);
-          setErrorCategories(null);
-        } else if (result?.message || result?.error) {
-          setErrorCategories(result.message || result.error);
-          setCategories([]);
-        } else {
-          setCategories(result.categories || []);
-          setErrorCategories(null);
-        }
-      } catch (err) {
-        setErrorCategories(err.message || "Unknown error");
-        setCategories([]);
-      } finally {
-        setIsLoadingCategories(false);
+    // The function that will fetch the data from your backend
+    queryFn: BackendConnector.fetchCategories,
+
+    // This function transforms the data to a consistent format after fetching
+    select: (result) => {
+      // If the API returns a direct array of categories
+      if (Array.isArray(result)) {
+        return result;
       }
-    };
-
-    fetchCategories();
-  }, []);
+      // If the API returns an object like { categories: [...] }
+      return result?.categories || [];
+    },
+  });
 
   return { categories, isLoadingCategories, errorCategories };
 };

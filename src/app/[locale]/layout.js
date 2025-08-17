@@ -2,6 +2,7 @@ import { Poppins, Noto_Kufi_Arabic } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { CartContextProvider } from '@/context/CartContext';
 import NextTopLoader from 'nextjs-toploader';
+import Providers from '../providers'; // استيراد المكون الجديد
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -36,22 +37,24 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <body className={`${poppins.variable} ${notoKufi.variable} font-sans`}>
-         <NextTopLoader
-          color="#FF671F" // هذا هو اللون البرتقالي الخاص بعلامتك التجارية
+        <NextTopLoader
+          color="#FF671F"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
           crawl={true}
-          showSpinner={false} // لإخفاء الدائرة الدوارة التي تأتي معه
+          showSpinner={false}
           easing="ease"
           speed={200}
           shadow="0 0 10px #FF671F, 0 0 5px #FF671F"
         />
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <CartContextProvider>
-            {children}
-          </CartContextProvider>
-        </NextIntlClientProvider>
+        <Providers> {/* <-- ✅ صحيح 100% */}
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <CartContextProvider>
+              {children}
+            </CartContextProvider>
+          </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );

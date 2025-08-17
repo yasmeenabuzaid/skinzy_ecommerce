@@ -1,47 +1,34 @@
-import { useEffect, useState } from 'react';
-import BackendConnector from '../services/connectors/BackendConnector';
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import BackendConnector from "../services/connectors/BackendConnector";
 import storageService from "@/services/storage/storageService";
 
 const useFavoritesQuery = () => {
-  const [favorites, setFavorites] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const user = storageService.getUserInfo();
 
-  useEffect(() => {
-    const user = storageService.getUserInfo();
+  const {
+    data: favorites = [], // Default to an empty array
+    isLoading,
+    error,
+  } = useQuery({
+    // 1. Key is now tied to the user's ID
+    queryKey: ["favorites", user?.id],
 
-    if (!user) {
-      setFavorites([]);
-      setIsLoading(false);
-      return;
-    }
+    // 2. The function to fetch the data
+    queryFn: BackendConnector.fetchFavorites,
 
-    const fetchFavorites = async () => {
-      setIsLoading(true);
-      try {
-        const result = await BackendConnector.fetchFavorites();
-        const data = result.data || result;
+    // 3. Only run the query if a user is logged in
+    enabled: !!user,
 
-        if (!Array.isArray(data.favorites)) {
-          throw new Error(data?.message || 'Invalid data');
-        }
+    // 4. Transform the response to get a clean array
+    select: (result) => {
+      const data = result.data || result;
+      return data?.favorites || [];
+    },
+  });
 
-        setFavorites(data.favorites);
-        setError(null);
-      } catch (err) {
-        console.error('Favorites fetch error:', err);
-        setError(err.message || 'Unknown error');
-        setFavorites([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  // ✅ أرجعي setFavorites حتى نقدر نحدث state من الخارج
-  return { favorites, setFavorites, isLoading, error };
+  // Note: We no longer return 'setFavorites'. See explanation below.
+  return { favorites, isLoading, error };
 };
 
 export default useFavoritesQuery;

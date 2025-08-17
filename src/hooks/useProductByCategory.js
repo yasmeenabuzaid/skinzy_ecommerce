@@ -1,48 +1,39 @@
-import { useState, useEffect } from "react";
-import BackendConnector from "../services/connectors/BackendConnector";
+import { useQuery } from '@tanstack/react-query';
+import BackendConnector from '../services/connectors/BackendConnector';
 
 const useProductsQuery = ({ CategoryId, filter }) => {
-  const [products, setProducts] = useState([]);
-  const [groups, setGroups] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({
+    // 1. The key is now dynamic, changing when CategoryId or filter changes
+    queryKey: ['productsByCategory', { CategoryId, filter }],
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!CategoryId) return;
+    // 2. The function that fetches data using the parameters
+    queryFn: () => BackendConnector.fetchProductsByCategory({ CategoryId, filter }),
 
-      setIsLoading(true);
-      try {
-        const result = await BackendConnector.fetchProductsByCategory({
-          CategoryId,
-          filter, 
-        });
-        if (Array.isArray(result)) {
-          setProducts(result);
-          setGroups([]);
-          setError(null);
-        } else if (result?.message || result?.error) {
-          setError(result.message || result.error);
-          setProducts([]);
-          setGroups([]);
-        } else {
-          setProducts(result.products || []);
-          setGroups(result.groups || []);
-          setError(null);
-        }
-      } catch (err) {
-        setError(err.message || "Unknown error");
-        setProducts([]);
-        setGroups([]);
-      } finally {
-        setIsLoading(false);
+    // 3. The query will only run if CategoryId is provided
+    enabled: !!CategoryId,
+
+    // 4. Transform the response to a consistent shape
+    select: (result) => {
+      if (Array.isArray(result)) {
+        return { products: result, groups: [] };
       }
-    };
+      return {
+        products: result?.products || [],
+        groups: result?.groups || [],
+      };
+    },
+  });
 
-    fetchData();
-  }, [CategoryId, filter]); 
-
-  return { products, groups, isLoading, error };
+  return {
+    products: data?.products || [],
+    groups: data?.groups || [],
+    isLoading,
+    error,
+  };
 };
 
 export default useProductsQuery;

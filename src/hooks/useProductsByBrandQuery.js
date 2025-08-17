@@ -1,47 +1,38 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import BackendConnector from "../services/connectors/BackendConnector";
 
-
 const useProductsByBrandQuery = ({ brandId, brandSlug, filter }) => {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: products = [], // The final data is the products array, with an empty array as a default
+    isLoading,
+    error,
+  } = useQuery({
+    // 1. Dynamic key that changes when parameters change, triggering a refetch
+    queryKey: ["productsByBrand", { brandId, brandSlug, filter }],
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!brandId && !brandSlug) return;
+    // 2. The function that fetches the data from your backend
+    queryFn: () =>
+      BackendConnector.fetchProductsByBrand({
+        brandId,
+        brandSlug,
+        filter,
+      }),
 
-      setIsLoading(true);
-      try {
-        const result = await BackendConnector.fetchProductsByBrand({
-          brandId,
-          brandSlug,
-          filter,
-        });
+    // 3. The query will only run if either brandId or brandSlug is provided
+    enabled: !!(brandId || brandSlug),
 
-        if (Array.isArray(result)) {
-          setProducts(result);
-          setError(null);
-        } else if (result?.message || result?.error) {
-          setError(result.message || result.error);
-          setProducts([]);
-        } else {
-          setProducts([]);
-          setError("لا توجد منتجات");
-        }
-      } catch (err) {
-        setError(err.message || "Unknown error");
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
+    // 4. This function transforms the raw API data into a clean products array
+    select: (result) => {
+      if (Array.isArray(result)) {
+        return result;
       }
-    };
-
-    fetchData();
-  }, [brandId, brandSlug, filter]);
+      // The library handles error objects automatically.
+      // This handles the case where data is nested inside a 'products' property.
+      return result?.products || [];
+    },
+  });
 
   return { products, isLoading, error };
 };
-
 
 export default useProductsByBrandQuery;

@@ -1,45 +1,37 @@
-import { useState, useEffect } from "react";
-import BackendConnector from "../services/connectors/BackendConnector";
+import { useQuery } from '@tanstack/react-query';
+import BackendConnector from '../services/connectors/BackendConnector';
 
 const useProductsQuery = () => {
-  const [products, setProducts] = useState([]);
-  const [groups, setGroups] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const result = await BackendConnector.fetchProducts();
-
-        if (Array.isArray(result)) {
-          setProducts(result);
-          setGroups([]);
-          setError(null);
-        } else if (result?.message || result?.error) {
-          setError(result.message || result.error);
-          setProducts([]);
-          setGroups([]);
-        } else {
-          // إذا كانت البيانات في شكل كائن يحتوي على products و groups
-          setProducts(result.products || []);
-          setGroups(result.groups || []);
-          setError(null);
-        }
-      } catch (err) {
-        setError(err.message || "Unknown error");
-        setProducts([]);
-        setGroups([]);
-      } finally {
-        setIsLoading(false);
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: BackendConnector.fetchProducts,
+    
+    // 👇 هنا الحل: نقوم بمعالجة البيانات لتوحيد شكلها
+    select: (responseData) => {
+      // الحالة الأولى: إذا كانت البيانات مصفوفة مباشرة
+      if (Array.isArray(responseData)) {
+        return { products: responseData, groups: [] };
       }
-    };
+      
+      // الحالة الثانية (الافتراضية): إذا كانت البيانات كائنًا
+      return {
+        products: responseData?.products || [],
+        groups: responseData?.groups || [],
+      };
+    },
+  });
 
-    fetchData();
-  }, []);
-
-  return { products, groups, isLoading, error };
+  return {
+    // الآن `data` دائمًا يحتوي على products و groups
+    products: data?.products || [],
+    groups: data?.groups || [],
+    isLoading,
+    error,
+  };
 };
 
 export default useProductsQuery;

@@ -1,37 +1,28 @@
-import { useState, useEffect } from "react";
-import BackendConnector from "../services/connectors/BackendConnector";
+import { useQuery } from '@tanstack/react-query';
+import BackendConnector from '../services/connectors/BackendConnector';
 
 const useBrandQuery = () => {
-  const [brands, setBrands] = useState([]);
-  const [isLoadingBrands, setIsLoadingBrands] = useState(true);
-  const [errorBrands, setErrorBrands] = useState(null);
+  const {
+    data: brands = [], // `data` is renamed to `brands` with a default value
+    isLoading: isLoadingBrands, // Renaming for consistency
+    error: errorBrands,
+  } = useQuery({
+    // 1. A unique key to cache the brands data
+    queryKey: ['brands'],
 
-  useEffect(() => {
-    const fetchBrands = async () => {
-      setIsLoadingBrands(true);
-      try {
-        const result = await BackendConnector.fetchBrands();
+    // 2. The function to fetch the data
+    queryFn: BackendConnector.fetchBrands,
 
-        if (Array.isArray(result)) {
-          setBrands(result);
-          setErrorBrands(null);
-        } else if (result?.message || result?.error) {
-          setErrorBrands(result.message || result.error);
-          setBrands([]);
-        } else {
-          setBrands(result.brands || []);
-          setErrorBrands(null);
-        }
-      } catch (err) {
-        setErrorBrands(err.message || "Unknown error");
-        setBrands([]);
-      } finally {
-        setIsLoadingBrands(false);
+    // 3. Transform the API response into a consistent array format
+    select: (result) => {
+      if (Array.isArray(result)) {
+        return result; // Handles the case where the API returns a direct array
       }
-    };
-
-    fetchBrands();
-  }, []);
+      // Handles the case where the API returns an object like { brands: [...] }
+      // The library handles error objects automatically
+      return result?.brands || [];
+    },
+  });
 
   return { brands, isLoadingBrands, errorBrands };
 };

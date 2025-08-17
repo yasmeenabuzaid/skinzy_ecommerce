@@ -1,36 +1,25 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import BackendConnector from "../services/connectors/BackendConnector";
 
 const useProductQuery = (id) => {
-  const [product, setProduct] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: product, // Rename 'data' to 'product' for clarity
+    isLoading,
+    error,
+  } = useQuery({
+    // 1. Dynamic key: Changes when the 'id' prop changes, triggering a refetch
+    queryKey: ["product", id],
 
-  useEffect(() => {
-    if (!id) return;
+    // 2. The query function automatically receives the queryKey
+    queryFn: ({ queryKey }) => BackendConnector.fetchSingleProduct(queryKey[1]), // queryKey[1] is the id
 
-    const fetchProduct = async () => {
-      setIsLoading(true);
-      try {
-        const result = await BackendConnector.fetchSingleProduct(id);
-        if (result?.message || result?.error) {
-          setError(result.message || result.error);
-          setProduct(null);
-        } else {
-          setProduct(result.product || result);
-          setError(null);
-        }
-      } catch (err) {
-        setError(err.message || "Unknown error");
-        setProduct(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // 3. Only run the query if an 'id' is provided
+    enabled: !!id,
 
-    fetchProduct();
-  }, [id]);
+    // 4. Transform the data to a consistent format
+    select: (result) => result?.product || result,
+  });
 
   return { product, isLoading, error };
 };
