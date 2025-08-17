@@ -57,24 +57,40 @@ export default function ProductCard({ product, onRemoveFavorite }) {
     });
   };
 
-  const _performAddToFavorites = async () => {
-    const currentUserInfo = storageService.getUserInfo();
-    if (!currentUserInfo?.id) return;
-    try {
-      const response = await BackendConnector.addToFavorites({
-        product_id: product.id,
-        user_id: currentUserInfo.id,
-      });
-      Swal.fire(
-        t.warningTitle,
-        response?.message || (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
-        response?.favorite ? "success" : "error"
-      );
-    } catch (error) {
-      console.error("Add to favorites error:", error);
-      Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
-    }
-  };
+const _performAddToFavorites = async () => {
+  // نحصل على بيانات المستخدم من الـ storage
+  const currentUserInfo = storageService.getUserInfo();
+  
+  // ✨ تصحيح: التحقق من وجود المستخدم والـ ID الخاص به بالمسار الصحيح
+  const userId = currentUserInfo?.user?.id;
+
+  if (!userId) {
+    console.error("User ID not found, cannot add to favorites.");
+    // يمكن إظهار رسالة للمستخدم هنا إذا أردت
+    Swal.fire(t.warningTitle, t.favoriteError, "error");
+    return; 
+  }
+
+  try {
+    // ✨ تصحيح: إرسال الـ user_id الصحيح إلى الخادم
+    const response = await BackendConnector.addToFavorites({
+      product_id: product.id,
+      user_id: userId, 
+    });
+
+    Swal.fire(
+      t.warningTitle,
+      response?.message || (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
+      response?.favorite ? "success" : "error"
+    );
+
+  } catch (error) {
+    console.error("Add to favorites error:", error);
+    // إظهار رسالة الخطأ من الـ backend إن وجدت
+    const errorMessage = error.response?.data?.message || t.favoriteErrorOccured;
+    Swal.fire(t.warningTitle, errorMessage, "error");
+  }
+};
 
   const handleAuthRequired = (action) => {
     setPendingAction(() => action);

@@ -31,22 +31,39 @@ export default function ProductDetails({
     setUserInfo(storageService.getUserInfo());
   }, []);
 
+  //  قاموس الترجمة لسهولة الوصول
   const translations = {
     ar: {
       chooseVariant: "اختر الإصدار:",
       quantity: "الكمية",
       addToCart: "أضف إلى السلة",
-      // ... ( باقي الترجمات )
+      addedToCart: "تمت الإضافة إلى السلة بنجاح!",
+      continueBtn: "متابعة",
+      warningTitle: "تنبيه",
+      favoriteError: "حدث خطأ أثناء إضافة المنتج للمفضلة.",
+      favoriteAdded: "تمت إضافة المنتج للمفضلة بنجاح!",
+      favoriteFailed: "فشلت إضافة المنتج للمفضلة.",
+      favoriteErrorOccured: "حدث خطأ غير متوقع.",
+      addToFavoritesAria: "إضافة إلى المفضلة",
+      noOptions: "لا توجد خيارات متاحة."
     },
     en: {
       chooseVariant: "Choose Variant:",
       quantity: "Quantity",
       addToCart: "Add to Cart",
-      // ... ( باقي الترجمات )
+      addedToCart: "Added to cart successfully!",
+      continueBtn: "Continue",
+      warningTitle: "Warning",
+      favoriteError: "Error adding product to favorites.",
+      favoriteAdded: "Product added to favorites successfully!",
+      favoriteFailed: "Failed to add product to favorites.",
+      favoriteErrorOccured: "An unexpected error occurred.",
+      addToFavoritesAria: "Add to favorites",
+      noOptions: "No options available."
     },
   };
 
-  const t = translations[locale] || translations.en;
+  const t = translations[locale] || translations.en; // اختيار اللغة الحالية
 
   const isVariation = product.type === "variation";
   const mainProduct = isVariation ? product.parent_product : product;
@@ -65,18 +82,61 @@ export default function ProductDetails({
     image: v.images?.[0]?.image,
   }));
 
+  // دالة إضافة المنتج للسلة
   const _performAddToCart = () => {
-    // Logic for adding to cart
+    addCart({
+      productId: product.id,
+      quantity: quantity, // استخدام الكمية المحددة من الواجهة
+      size: activeSize || product.sizes?.[0] || "default",
+    });
+    Swal.fire({
+      title: t.addedToCart,
+      icon: "success",
+      confirmButtonText: t.continueBtn,
+      confirmButtonColor: '#FF671F',
+      timer: 2000,
+      timerProgressBar: true,
+    });
   };
 
+  // دالة إضافة المنتج للمفضلة
   const _performAddToFavorites = async () => {
-    // Logic for adding to favorites
+    const currentUserInfo = storageService.getUserInfo();
+    const userId = currentUserInfo?.user?.id; // مسار صحيح للوصول إلى هوية المستخدم
+
+    if (!userId) {
+      console.error("User ID not found, cannot add to favorites.");
+      Swal.fire(t.warningTitle, t.favoriteError, "error");
+      return; 
+    }
+
+    try {
+      const response = await BackendConnector.addToFavorites({
+        product_id: product.id,
+        user_id: userId, 
+      });
+
+      // عرض رسالة بناءً على استجابة الخادم
+      Swal.fire(
+        t.warningTitle,
+        response?.message || (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
+        response?.favorite ? "success" : "error"
+      );
+
+    } catch (error) {
+      console.error("Add to favorites error:", error);
+      const errorMessage = error.response?.data?.message || t.favoriteErrorOccured;
+      Swal.fire(t.warningTitle, errorMessage, "error");
+    }
   };
 
+  // دالة للتعامل مع الإجراءات التي تتطلب تسجيل الدخول
   const handleAuthRequired = (action) => {
     setPendingAction(() => action);
     setIsAuthModalOpen(true);
   };
+
+  // معالج زر "أضف إلى السلة"
   const handleAddToCart = () => {
     if (!userInfo?.accessToken) {
       handleAuthRequired(_performAddToCart);
@@ -84,6 +144,8 @@ export default function ProductDetails({
       _performAddToCart();
     }
   };
+  
+  // معالج زر "إضافة للمفضلة"
   const addToFavorites = () => {
     if (!userInfo?.accessToken) {
       handleAuthRequired(_performAddToFavorites);
@@ -91,6 +153,8 @@ export default function ProductDetails({
       _performAddToFavorites();
     }
   };
+
+  // دالة تُنفذ بعد نجاح تسجيل الدخول
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
     setUserInfo(storageService.getUserInfo());
@@ -111,10 +175,7 @@ export default function ProductDetails({
         onAuthSuccess={handleAuthSuccess}
       />
 
-      {/* ✨ --- START: The Fix --- ✨ */}
-      {/* بإضافة `relative` و `z-10`، نضمن أن هذا القسم بأكمله سيكون فوق أي عناصر أخرى قد تتداخل معه في عرض الموبايل */}
       <div className="flex flex-col space-y-6 relative z-10">
-      {/* ✨ --- END: The Fix --- ✨ */}
         
         <div>
           <div className="flex items-center gap-3 mb-3 text-sm font-semibold">
@@ -183,7 +244,7 @@ export default function ProductDetails({
             <label className="font-semibold text-gray-800 mb-2 block text-sm">{t.quantity}</label>
             <div className="flex items-center border border-gray-300 rounded-lg">
               <button onClick={() => handleQuantityChange(-1)} className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-l-lg"><Minus size={16} /></button>
-              <input type="number" min={1} value={quantity} onChange={(e) => { const val = Math.max(1, Number(e.target.value)); handleQuantityChange(val - quantity); }} className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2" />
+              <input type="number" min={1} value={quantity} onChange={(e) => { const val = Math.max(1, Number(e.target.value)); handleQuantityChange(val - quantity, true); }} className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2" />
               <button onClick={() => handleQuantityChange(1)} className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-r-lg"><Plus size={16} /></button>
             </div>
           </div>
