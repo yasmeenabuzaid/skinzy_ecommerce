@@ -206,12 +206,12 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
     <nav className="bg-white border-b border-gray-200 relative">
       <div className="container mx-auto px-4 flex items-center justify-between h-24">
         <div className="flex-shrink-0">
-           <div className="flex-shrink-0">
-    {/* قمنا بزيادة عرض الحاوية من 160px إلى 200px للشاشات الكبيرة */}
-    <Link href={`/${locale}/`} className="block w-[400px] md:w-[400px] h-auto">
-        {/* نزيد أبعاد الصورة أيضًا لضمان جودة عالية */}
-        <Image src="/logo.png" alt="skinzy care" width={250} height={188} priority />
-    </Link>
+<div className="flex-shrink-0">
+  {/* الحل: مقاس للموبايل والتابلت، ومقاس أكبر للابتوب */}
+  <Link href={`/${locale}/`} className="block w-[150px] lg:w-[220px] h-auto">
+    {/* نُبقي أبعاد الصورة على أعلى قيمة لضمان الجودة */}
+    <Image src="/logo.png" alt="skinzy care" width={250} height={188} priority />
+  </Link>
 </div>
         </div>
 
