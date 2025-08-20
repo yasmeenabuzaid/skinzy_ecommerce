@@ -45,49 +45,52 @@ const BrandsSection = memo(function BrandsSection() {
     router.push(`/${locale}/brands/${brandId}`);
   }, [router, locale]);
   
-  const animationDuration = (brands?.length || 10) * 0.9;
+  // يمكن تعديل هذه القيمة لتغيير سرعة الشريط
+  const animationDuration = (brands?.length || 10) * 1.1;
 
-  if (isLoadingBrands) return <p className="text-center py-16">{t('loading')}</p>;
-  if (errorBrands) return <p className="text-center text-red-500 py-16">{t('error')} {errorBrands.message}</p>;
-  if (!brands?.length) return <p className="text-center py-16">{t('noBrands')}</p>;
+  if (isLoadingBrands) return <p className="text-center py-6">{t('loading')}</p>;
+  if (errorBrands) return <p className="text-center text-red-500 py-6">{t('error')} {errorBrands.message}</p>;
+  if (!brands?.length) return <p className="text-center py-6">{t('noBrands')}</p>;
   
   return (
     <section
       ref={ref}
-      className={`py-16 bg-gray-50 border-y border-gray-200 transition-all duration-700 ${
+      // التغيير 1: تقليل الحشوة العمودية أكثر إلى py-6
+      className={`py-6 bg-gray-50 border-y border-gray-200 transition-all duration-700 ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
-    <div 
-  className="flex flex-nowrap justify-start hover:[animation-play-state:paused] animate-scroll-left"
-  style={{ '--animation-duration': `${animationDuration}s` }}
->
-  {/* الحل: نكرر القائمة مرتين فقط، هذا كافٍ تمامًا */}
-  {[...brands, ...brands].map((brand, index) => (
-    <div
-      key={`${brand.id}-${index}`}
-      className="w-52 flex-shrink-0 flex items-center justify-center px-8 cursor-pointer group"
-      onClick={() => handleBrandClick(brand.id)}
-    >
-      <Image
-        src={brand.image || "/placeholder-brand.svg"}
-        alt={brand.name || 'Brand Logo'}
-        width={200}
-        height={64}
-        className="object-contain opacity-60 group-hover:opacity-100 transition-opacity"
-        style={{ color: 'transparent' }}
-      />
-    </div>
-  ))}
-</div>
+        <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+          <div 
+            className="flex flex-nowrap justify-start hover:[animation-play-state:paused] animate-scroll-left"
+            style={{ '--animation-duration': `${animationDuration}s` }}
+          >
+            {[...brands, ...brands].map((brand, index) => (
+              <div
+                key={`${brand.id}-${index}`}
+                // التغيير 2: تصغير العرض والحشوة بشكل إضافي
+                // w-28 للموبايل, sm:w-40 للشاشات الأكبر
+                className="w-28 sm:w-40 flex-shrink-0 flex items-center justify-center px-2 cursor-pointer group"
+                onClick={() => handleBrandClick(brand.id)}
+              >
+                <Image
+                  src={brand.image || "/placeholder-brand.svg"}
+                  alt={brand.name || 'Brand Logo'}
+                  width={150}
+                  height={50}
+                  // التغيير 3: تصغير ارتفاع الصورة ليتناسب مع الحجم الجديد
+                  className="object-contain h-10 sm:h-12 opacity-50 group-hover:opacity-100 transition-opacity"
+                  style={{ color: 'transparent' }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 });
-
 
 export default function App() {
   const t = useTranslations('brandsSection');
