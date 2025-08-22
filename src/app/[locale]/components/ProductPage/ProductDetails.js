@@ -14,8 +14,6 @@ const formatPrice = (price) =>
 
 export default function ProductDetails({
   product,
-  activeSize,
-  setActiveSize,
   quantity,
   handleQuantityChange,
 }) {
@@ -31,7 +29,6 @@ export default function ProductDetails({
     setUserInfo(storageService.getUserInfo());
   }, []);
 
-  //  قاموس الترجمة لسهولة الوصول
   const translations = {
     ar: {
       chooseVariant: "اختر الإصدار:",
@@ -63,7 +60,7 @@ export default function ProductDetails({
     },
   };
 
-  const t = translations[locale] || translations.en; // اختيار اللغة الحالية
+  const t = translations[locale] || translations.en;
 
   const isVariation = product.type === "variation";
   const mainProduct = isVariation ? product.parent_product : product;
@@ -78,16 +75,16 @@ export default function ProductDetails({
   const sizeOptions = variationOptions.map((v) => ({
     id: v.id,
     name: v.name,
+    name_ar: v.name_ar, // قد تحتاج لإضافة الاسم العربي هنا أيضاً إذا كان موجوداً
     price: v.price,
     image: v.images?.[0]?.image,
   }));
 
-  // دالة إضافة المنتج للسلة
   const _performAddToCart = () => {
     addCart({
       productId: product.id,
-      quantity: quantity, // استخدام الكمية المحددة من الواجهة
-      size: activeSize || product.sizes?.[0] || "default",
+      quantity: quantity,
+      size: product.name || "default",
     });
     Swal.fire({
       title: t.addedToCart,
@@ -99,10 +96,9 @@ export default function ProductDetails({
     });
   };
 
-  // دالة إضافة المنتج للمفضلة
   const _performAddToFavorites = async () => {
     const currentUserInfo = storageService.getUserInfo();
-    const userId = currentUserInfo?.user?.id; // مسار صحيح للوصول إلى هوية المستخدم
+    const userId = currentUserInfo?.user?.id;
 
     if (!userId) {
       console.error("User ID not found, cannot add to favorites.");
@@ -116,7 +112,6 @@ export default function ProductDetails({
         user_id: userId, 
       });
 
-      // عرض رسالة بناءً على استجابة الخادم
       Swal.fire(
         t.warningTitle,
         response?.message || (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
@@ -130,13 +125,11 @@ export default function ProductDetails({
     }
   };
 
-  // دالة للتعامل مع الإجراءات التي تتطلب تسجيل الدخول
   const handleAuthRequired = (action) => {
     setPendingAction(() => action);
     setIsAuthModalOpen(true);
   };
 
-  // معالج زر "أضف إلى السلة"
   const handleAddToCart = () => {
     if (!userInfo?.accessToken) {
       handleAuthRequired(_performAddToCart);
@@ -145,7 +138,6 @@ export default function ProductDetails({
     }
   };
   
-  // معالج زر "إضافة للمفضلة"
   const addToFavorites = () => {
     if (!userInfo?.accessToken) {
       handleAuthRequired(_performAddToFavorites);
@@ -154,7 +146,6 @@ export default function ProductDetails({
     }
   };
 
-  // دالة تُنفذ بعد نجاح تسجيل الدخول
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
     setUserInfo(storageService.getUserInfo());
@@ -192,15 +183,20 @@ export default function ProductDetails({
             )}
           </div>
           
+          {/* ==================== بداية الجزء المعدل ==================== */}
           <h1 className="text-4xl font-extrabold text-gray-900 leading-tight flex items-center gap-3">
-            <span>{locale === 'ar' ? mainProduct.name_ar : mainProduct.name}</span>
+            {/* التعديل هنا: استخدم product بدلاً من mainProduct */}
+            <span>{locale === 'ar' ? product.name_ar : product.name}</span>
             <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
-              {mainProduct.code}
+              {/* يمكنك أن تقرر إذا كنت تريد إظهار كود المنتج الأب أو المنتج الحالي */}
+              {product.code || mainProduct.code}
             </span>
           </h1>
           <p className="mt-2 text-lg text-gray-500">
-            {locale === 'ar' ? mainProduct.small_description_ar : mainProduct.small_description}
+            {/* التعديل هنا: استخدم product بدلاً من mainProduct */}
+            {locale === 'ar' ? product.small_description_ar : product.small_description}
           </p>
+          {/* ==================== نهاية الجزء المعدل ==================== */}
         </div>
 
         <p className="text-3xl font-bold text-gray-800">
@@ -224,18 +220,43 @@ export default function ProductDetails({
             {sizeOptions.length > 0 ? (
               sizeOptions.map((option) => {
                 const isCurrent = product.id === option.id;
-                const isActive = activeSize === option.name;
                 return (
-                  <div key={option.id} onClick={() => { if (!isCurrent) { router.push(`/${locale}/products/${option.id}`); } setActiveSize(option.name); }} className={`border rounded-lg p-2 cursor-pointer transition-all duration-200 flex items-center gap-3 w-full sm:w-auto ${isActive ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F]" : "border-gray-300 hover:border-[#FF671F]"}`}>
-                    {option.image ? (<img src={option.image} alt={option.name} className="w-14 h-14 object-cover rounded-md"/>) : (<div className="w-14 h-14 bg-gray-100 rounded-md"></div>)}
+                  <div
+                    key={option.id}
+                    onClick={() => {
+                      if (!isCurrent) {
+                        router.push(`/${locale}/products/${option.id}`);
+                      }
+                    }}
+                    className={`border rounded-lg p-2 cursor-pointer transition-all duration-200 flex items-center gap-3 w-full sm:w-auto ${
+                      isCurrent
+                        ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F]"
+                        : "border-gray-300 hover:border-[#FF671F]"
+                    }`}
+                  >
+                    {option.image ? (
+                      <img
+                        src={option.image}
+                        alt={locale === 'ar' ? option.name_ar : option.name}
+                        className="w-14 h-14 object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 bg-gray-100 rounded-md"></div>
+                    )}
                     <div>
-                      <span className="font-semibold text-gray-800 text-sm block">{option.name}</span>
-                      <span className="text-xs text-gray-600 mt-1">{formatPrice(option.price)}</span>
+                      <span className="font-semibold text-gray-800 text-sm block">
+                        {locale === 'ar' ? option.name_ar : option.name}
+                      </span>
+                      <span className="text-xs text-gray-600 mt-1">
+                        {formatPrice(option.price)}
+                      </span>
                     </div>
                   </div>
                 );
               })
-            ) : ( <p>{t.noOptions}</p> )}
+            ) : (
+              <p>{t.noOptions}</p>
+            )}
           </div>
         </div>
 
