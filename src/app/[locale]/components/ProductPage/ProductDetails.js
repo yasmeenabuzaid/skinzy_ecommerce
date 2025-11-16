@@ -2,28 +2,37 @@
 import { useCartContext } from "@/context/CartContext";
 import { Heart, Minus, Plus } from "lucide-react";
 import Swal from "sweetalert2";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import storageService from "@/services/storage/storageService";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import AuthModal from "../../components/auth/AuthModal";
 import Link from "next/link";
 
+// تحويل السعر إلى رقم قبل تنسيقه
 const formatPrice = (price) =>
-  typeof price === "number" ? `${price.toFixed(2)} JOD` : "السعر غير متوفر";
+  typeof Number(price) === "number"
+    ? `${Number(price).toFixed(2)} JOD`
+    : "السعر غير متوفر";
 
 export default function ProductDetails({
   product,
   quantity,
   handleQuantityChange,
+  // ⭐️ 1. سنعتمد على هذه الـ props فقط لاختيار الفاريشن
+  selectedVariation, 
+  setSelectedVariation,
 }) {
   const { addCart } = useCartContext();
-  const router = useRouter();
-  const { locale } = useParams();
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1] || "en";
 
   const [userInfo, setUserInfo] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+
+  // ⭐️ 2. تم حذف الحالة الداخلية `selectedOptions`
+  // نحن نعتمد كلياً على `selectedVariation` القادم من الأب.
 
   useEffect(() => {
     setUserInfo(storageService.getUserInfo());
@@ -31,7 +40,11 @@ export default function ProductDetails({
 
   const translations = {
     ar: {
-      chooseVariant: "اختر الإصدار:",
+      Color: "اللون",
+      Scent: "الرائحة",
+      Size: "الحجم",
+      Weight: "الوزن",
+      chooseVariant: "اختر المواصفات:",
       quantity: "الكمية",
       addToCart: "أضف إلى السلة",
       addedToCart: "تمت الإضافة إلى السلة بنجاح!",
@@ -42,10 +55,14 @@ export default function ProductDetails({
       favoriteFailed: "فشلت إضافة المنتج للمفضلة.",
       favoriteErrorOccured: "حدث خطأ غير متوقع.",
       addToFavoritesAria: "إضافة إلى المفضلة",
-      noOptions: "لا توجد خيارات متاحة."
+      noOptions: "لا توجد خيارات متاحة.",
     },
     en: {
-      chooseVariant: "Choose Variant:",
+      Color: "Color",
+      Scent: "Scent",
+      Size: "Size",
+      Weight: "Weight",
+      chooseVariant: "Choose Options:",
       quantity: "Quantity",
       addToCart: "Add to Cart",
       addedToCart: "Added to cart successfully!",
@@ -56,80 +73,103 @@ export default function ProductDetails({
       favoriteFailed: "Failed to add product to favorites.",
       favoriteErrorOccured: "An unexpected error occurred.",
       addToFavoritesAria: "Add to favorites",
-      noOptions: "No options available."
+      noOptions: "No options available.",
     },
   };
 
   const t = translations[locale] || translations.en;
+  const mainProduct = product;
 
-  const isVariation = product.type === "variation";
-  const mainProduct = isVariation ? product.parent_product : product;
-  
-  const subCategoryName = locale === 'ar' ? mainProduct.sub_category?.name_ar : mainProduct.sub_category?.name;
-  const brandName = locale === 'ar' ? mainProduct.brand?.name_ar : mainProduct.brand?.name;
+  const subCategoryName =
+    locale === "ar"
+      ? mainProduct.subCategory?.name_ar
+      : mainProduct.subCategory?.name;
+  const brandName =
+    locale === "ar" ? mainProduct.brand?.name_ar : mainProduct.brand?.name;
 
-  const variationOptions = isVariation
-    ? [mainProduct, ...(mainProduct.variations || [])]
-    : [product, ...(product.variations || [])];
+  // ⭐️ 3. تجميع التنويعات للعرض (يبقى كما هو)
+  const groupedVariations = (mainProduct.variations || []).reduce((acc, variation) => {
+    const type = variation.variation_type;
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(variation);
+    return acc;
+  }, {});
+  // { Color: [...], Size: [...] }
 
-  const sizeOptions = variationOptions.map((v) => ({
-    id: v.id,
-    name: v.name,
-    name_ar: v.name_ar, // قد تحتاج لإضافة الاسم العربي هنا أيضاً إذا كان موجوداً
-    price: v.price,
-    image: v.images?.[0]?.image,
-  }));
+  // ⭐️ 4. تعديل المنطق ليعتمد فقط على `selectedVariation` (الذي يأتي كـ prop)
+  const activeVariation = selectedVariation; // أصبح المصدر المباشر
 
+  const activePrice = activeVariation?.price || mainProduct.price;
+  const activePriceAfterDiscount =
+    activeVariation?.price_after_discount || mainProduct.price_after_discount;
+
+  const activeName = activeVariation
+    ? locale === "ar"
+      ? `${mainProduct.name_ar} - ${activeVariation.variation_value}`
+      : `${mainProduct.name} - ${activeVariation.variation_value}`
+    : locale === "ar"
+    ? mainProduct.name_ar
+    : mainProduct.name;
+
+  const activeCode = activeVariation?.code || mainProduct.code;
+
+  // ⭐️ 5. تبسيط دالة تحديث الخيار
+  const handleOptionSelect = (variation) => {
+    // نقوم فقط بتحديث الحالة في المكون الأب (page.js)
+    // وهذا سيؤدي لتحديث الصورة وتحديث `selectedVariation` هنا
+    setSelectedVariation(variation);
+  };
+
+  // ⭐️ 6. تحديث دالة إضافة السلة
   const _performAddToCart = () => {
     addCart({
-      productId: product.id,
+      productId: mainProduct.id,
       quantity: quantity,
-      size: product.name || "default",
+      // نرسل قيمة التنويع المختار (أو "default" إذا لم يختر شيء)
+      size: selectedVariation?.variation_value || "default",
+      // ❗️ تأكد أن سلة المشتريات تتوقع `size` وليس `options`
     });
     Swal.fire({
       title: t.addedToCart,
       icon: "success",
       confirmButtonText: t.continueBtn,
-      confirmButtonColor: '#FF671F',
+      confirmButtonColor: "#FF671F",
       timer: 2000,
       timerProgressBar: true,
     });
   };
 
+  // ... (بقية الدوال المساعدة تبقى كما هي)
   const _performAddToFavorites = async () => {
     const currentUserInfo = storageService.getUserInfo();
     const userId = currentUserInfo?.user?.id;
-
     if (!userId) {
-      console.error("User ID not found, cannot add to favorites.");
       Swal.fire(t.warningTitle, t.favoriteError, "error");
-      return; 
+      return;
     }
-
     try {
       const response = await BackendConnector.addToFavorites({
-        product_id: product.id,
-        user_id: userId, 
+        product_id: mainProduct.id,
+        user_id: userId,
       });
-
       Swal.fire(
         t.warningTitle,
-        response?.message || (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
+        response?.message ||
+          (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
         response?.favorite ? "success" : "error"
       );
-
     } catch (error) {
-      console.error("Add to favorites error:", error);
-      const errorMessage = error.response?.data?.message || t.favoriteErrorOccured;
+      const errorMessage =
+        error.response?.data?.message || t.favoriteErrorOccured;
       Swal.fire(t.warningTitle, errorMessage, "error");
     }
   };
-
   const handleAuthRequired = (action) => {
     setPendingAction(() => action);
     setIsAuthModalOpen(true);
   };
-
   const handleAddToCart = () => {
     if (!userInfo?.accessToken) {
       handleAuthRequired(_performAddToCart);
@@ -137,7 +177,6 @@ export default function ProductDetails({
       _performAddToCart();
     }
   };
-  
   const addToFavorites = () => {
     if (!userInfo?.accessToken) {
       handleAuthRequired(_performAddToFavorites);
@@ -145,7 +184,6 @@ export default function ProductDetails({
       _performAddToFavorites();
     }
   };
-
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
     setUserInfo(storageService.getUserInfo());
@@ -154,6 +192,7 @@ export default function ProductDetails({
       setPendingAction(null);
     }
   };
+
 
   return (
     <>
@@ -167,115 +206,153 @@ export default function ProductDetails({
       />
 
       <div className="flex flex-col space-y-6 relative z-10">
-        
         <div>
           <div className="flex items-center gap-3 mb-3 text-sm font-semibold">
             {subCategoryName && (
-              <Link href={`/${locale}/subcategory/${mainProduct.sub_category?.id}`} className="text-orange-600 hover:underline">
+              <Link
+                href={`/${locale}/subcategory/${mainProduct.subCategory?.id}`}
+                className="text-orange-600 hover:underline"
+              >
                 {subCategoryName}
               </Link>
             )}
-            {subCategoryName && brandName && <span className="text-gray-300">|</span>}
+            {subCategoryName && brandName && (
+              <span className="text-gray-300">|</span>
+            )}
             {brandName && (
-              <Link href={`/${locale}/products?brand=${mainProduct.brand?.id}`} className="text-gray-500 hover:underline">
+              <Link
+                href={`/${locale}/products?brand=${mainProduct.brand?.id}`}
+                className="text-gray-500 hover:underline"
+              >
                 {brandName}
               </Link>
             )}
           </div>
-          
-          {/* ==================== بداية الجزء المعدل ==================== */}
+
           <h1 className="text-4xl font-extrabold text-gray-900 leading-tight flex items-center gap-3">
-            {/* التعديل هنا: استخدم product بدلاً من mainProduct */}
-            <span>{locale === 'ar' ? product.name_ar : product.name}</span>
+            <span>{activeName}</span>
             <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
-              {/* يمكنك أن تقرر إذا كنت تريد إظهار كود المنتج الأب أو المنتج الحالي */}
-              {product.code || mainProduct.code}
+              {activeCode}
             </span>
           </h1>
           <p className="mt-2 text-lg text-gray-500">
-            {/* التعديل هنا: استخدم product بدلاً من mainProduct */}
-            {locale === 'ar' ? product.small_description_ar : product.small_description}
+            {locale === "ar"
+              ? product.small_description_ar
+              : product.small_description}
           </p>
-          {/* ==================== نهاية الجزء المعدل ==================== */}
         </div>
 
         <p className="text-3xl font-bold text-gray-800">
-          {product.price_after_discount && product.price_after_discount < product.price ? (
+          {activePriceAfterDiscount > 0 &&
+          activePriceAfterDiscount < activePrice ? (
             <>
               <span className="text-xl font-semibold text-[#FF671F] me-3">
-                {formatPrice(product.price_after_discount)}
+                {formatPrice(activePriceAfterDiscount)}
               </span>
               <span className="text-lg text-gray-400 line-through font-medium">
-                {formatPrice(product.price)}
+                {formatPrice(activePrice)}
               </span>
             </>
           ) : (
-            formatPrice(product.price)
+            formatPrice(activePrice)
           )}
         </p>
-        
-        <div>
-          <h3 className="text-sm font-semibold text-gray-800 mb-3">{t.chooseVariant}</h3>
-          <div className="flex flex-wrap gap-3">
-            {sizeOptions.length > 0 ? (
-              sizeOptions.map((option) => {
-                const isCurrent = product.id === option.id;
-                return (
-                  <div
-                    key={option.id}
-                    onClick={() => {
-                      if (!isCurrent) {
-                        router.push(`/${locale}/products/${option.id}`);
-                      }
-                    }}
-                    className={`border rounded-lg p-2 cursor-pointer transition-all duration-200 flex items-center gap-3 w-full sm:w-auto ${
-                      isCurrent
-                        ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F]"
-                        : "border-gray-300 hover:border-[#FF671F]"
-                    }`}
-                  >
-                    {option.image ? (
-                      <img
-                        src={option.image}
-                        alt={locale === 'ar' ? option.name_ar : option.name}
-                        className="w-14 h-14 object-cover rounded-md"
-                      />
-                    ) : (
-                      <div className="w-14 h-14 bg-gray-100 rounded-md"></div>
-                    )}
-                    <div>
-                      <span className="font-semibold text-gray-800 text-sm block">
-                        {locale === 'ar' ? option.name_ar : option.name}
-                      </span>
-                      <span className="text-xs text-gray-600 mt-1">
-                        {formatPrice(option.price)}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p>{t.noOptions}</p>
-            )}
-          </div>
+
+        {/* ================================================ */}
+        {/* ⭐️ قسم التنويعات (Variations) المُجمَّع ⭐️ */}
+        {/* ================================================ */}
+        <div className="flex flex-col gap-5">
+          {Object.keys(groupedVariations).length > 0 ? (
+            Object.entries(groupedVariations).map(([type, variations]) => (
+              <div key={type}>
+                <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                  {t[type] || type}:
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {variations.map((variation) => {
+                    // ⭐️ 7. المقارنة تتم الآن مقابل `selectedVariation` مباشرة
+                    const isCurrent = selectedVariation?.id === variation.id;
+
+                    return (
+                      <button
+                        key={variation.id}
+                        // ⭐️ 8. تمرير كائن "variation" الكامل للدالة
+                        onClick={() => handleOptionSelect(variation)}
+                        type="button"
+                        className={`border rounded-lg py-2 px-4 cursor-pointer transition-all duration-200 text-sm font-medium
+                          ${
+                            isCurrent
+                              ? "ring-2 ring-offset-1 border-[#FF671F] ring-[#FF671F] bg-[#FFF1E6] text-[#FF671F]"
+                              : "border-gray-300 hover:border-gray-500 bg-white text-gray-700"
+                          }`}
+                      >
+                        <span>
+                          {variation.variation_value}
+                        </span>
+                        
+                        {variation.price && (
+                          <span className="text-xs text-gray-600 block mt-1 text-center">
+                            {formatPrice(variation.price)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>{t.noOptions}</p>
+          )}
         </div>
+        {/* ================================================ */}
+        {/* ⭐️ نهاية قسم التنويعات (Variations) ⭐️ */}
+        {/* ================================================ */}
 
         <div className="flex items-center gap-8">
           <div>
-            <label className="font-semibold text-gray-800 mb-2 block text-sm">{t.quantity}</label>
+            <label className="font-semibold text-gray-800 mb-2 block text-sm">
+              {t.quantity}
+            </label>
             <div className="flex items-center border border-gray-300 rounded-lg">
-              <button onClick={() => handleQuantityChange(-1)} className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-l-lg"><Minus size={16} /></button>
-              <input type="number" min={1} value={quantity} onChange={(e) => { const val = Math.max(1, Number(e.target.value)); handleQuantityChange(val - quantity, true); }} className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2" />
-              <button onClick={() => handleQuantityChange(1)} className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-r-lg"><Plus size={16} /></button>
+              <button
+                onClick={() => handleQuantityChange(-1)}
+                className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-l-lg"
+              >
+                <Minus size={16} />
+              </button>
+              <input
+                type="number"
+                min={1}
+                value={quantity}
+                readOnly
+                className="w-14 text-center font-bold border-l border-r border-gray-300 focus:outline-none py-2"
+              />
+              <button
+                onClick={() => handleQuantityChange(1)}
+                className="p-3 text-gray-500 hover:bg-gray-100 transition rounded-r-lg"
+              >
+                <Plus size={16} />
+              </button>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
-          <button onClick={handleAddToCart} className="w-full bg-gradient-to-r from-[#FF671F] to-[#FF671F] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">{t.addToCart}</button>
-          <button onClick={addToFavorites} className="w-full sm:w-auto bg-white border-2 border-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:border-[#FF671F] hover:text-[#FF671F] hover:bg-[#FFF1E6] flex items-center justify-center gap-2 text-gray-700" aria-label={t.addToFavoritesAria}><Heart size={20} /></button>
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-gradient-to-r from-[#FF671F] to-[#FF671F] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            {t.addToCart}
+          </button>
+          <button
+            onClick={addToFavorites}
+            className="w-full sm:w-auto bg-white border-2 border-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:border-[#FF671F] hover:text-[#FF671F] hover:bg-[#FFF1E6] flex items-center justify-center gap-2 text-gray-700"
+            aria-label={t.addToFavoritesAria}
+          >
+            <Heart size={20} />
+          </button>
         </div>
-
       </div>
     </>
   );

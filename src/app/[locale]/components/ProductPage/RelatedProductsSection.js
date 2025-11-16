@@ -11,7 +11,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
   const sliderRef = useRef(null);
   const [activeFilter, setActiveFilter] = useState(filters ? filters[0] : '');
 
-  const { products, isLoading, error } = useProductsQuery();
+  const { products, error } = useProductsQuery();
 
   const scroll = (direction) => {
     if (sliderRef.current) {
@@ -23,13 +23,7 @@ export default function ProductSliderSection({ title, subtitle, filters, buttonT
     }
   };
 
-  if (isLoading) {
-    return (
-      <section className="py-20">
-        <div className="container mx-auto px-4 text-center text-gray-500">Loading products...</div>
-      </section>
-    );
-  }
+  
 
   if (error) {
     return (

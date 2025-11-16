@@ -3,13 +3,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 
-// ❌ تم حذف: import useProductsQuery from '../../../../hooks/useProductsQuery';
+// ❌ حذف: import useProductsQuery from '../../../../hooks/useProductsQuery';
 import ProductCard from '../ui/ProductCard.js';
 
-// ====================================================================
-// 1. Helper Components
-// ====================================================================
-
+// Helper Components (يفترض أنها موجودة في نفس الملف أو مسار يمكن الوصول إليه)
 const LoadingState = ({ t, title, subtitle }) => (
     <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -17,11 +14,13 @@ const LoadingState = ({ t, title, subtitle }) => (
                 <p className="text-gray-500 mb-1.5">{subtitle || t('defaultSubtitle')}</p>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{title}</h2>
             </div>
+            {/* Skeleton for filters */}
             <div className="flex justify-center flex-wrap gap-2.5 mb-12 animate-pulse">
                 <div className="bg-gray-200 rounded-full h-10 w-28"></div>
                 <div className="bg-gray-200 rounded-full h-10 w-32"></div>
                 <div className="bg-gray-200 rounded-full h-10 w-24"></div>
             </div>
+            {/* Skeleton for products */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className="animate-pulse">
@@ -44,16 +43,12 @@ const ErrorState = ({ t, error }) => (
 );
 
 
-// ====================================================================
-// 2. Main Component
-// ====================================================================
-
+// ⭐️ المكون الرئيسي يستقبل البيانات كـ props
 export default function FeaturedProductsGrid({
     title,
     subtitle,
     buttonText,
     buttonLink,
-    // ⭐️ استقبال البيانات كـ props
     products, 
     isLoading, 
     error
@@ -62,9 +57,9 @@ export default function FeaturedProductsGrid({
     const locale = useLocale();
     const t = useTranslations('productSlider');
 
-    // ❌ تم حذف: const { products, isLoading, error } = useProductsQuery();
+    // ❌ حذف: const { products, isLoading, error } = useProductsQuery();
 
-    // استخلاص الفلاتر الأكثر شيوعاً (يعمل على الـ prop)
+    // استخلاص الفلاتر الأكثر شيوعاً
     const filters = useMemo(() => {
         if (!products || products.length === 0) return [];
         const counts = {};

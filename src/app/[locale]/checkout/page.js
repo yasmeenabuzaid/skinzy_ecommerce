@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import Header from "../components/ui/Header";
-import Footer from "../components/ui/Footer";
 import OrderSummary from "./OrderSummary";
 import { useLocale, useTranslations } from "next-intl";
 import BackendConnector from "@/services/connectors/BackendConnector";
@@ -128,7 +126,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="text-gray-800">
-      <Header />
       <div className="bg-white font-sans">
         <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row" encType="multipart/form-data">
           <div className="w-full lg:w-3/5">
@@ -191,7 +188,6 @@ export default function CheckoutPage() {
           <OrderSummary extraFee={deliveryFee} />
         </form>
       </div>
-      <Footer />
 
       {/* --- إضافة المودال هنا --- */}
       <Modal isOpen={isAddressModalOpen} onClose={() => setIsAddressModalOpen(false)}>

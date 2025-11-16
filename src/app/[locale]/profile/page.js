@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { User, MapPin, LogOut, Plus, Trash2, Home } from "lucide-react";
 import Swal from "sweetalert2";
-import Header from "../components/ui/Header";
-import Footer from "../components/ui/Footer";
 // --- Services & External Connectors ---
 import storageService from "@/services/storage/storageService";
 import BackendConnector from "@/services/connectors/BackendConnector";
@@ -287,7 +285,6 @@ export default function ProfilePage() {
 
     return (
           <div className="text-gray-800 ">
-            <Header />
         <div className="bg-gray-50 min-h-[70vh]">
             <div className="container mx-auto px-4 py-8 sm:py-12">
                 <header className="mb-8">
@@ -312,7 +309,6 @@ export default function ProfilePage() {
                 </div>
             </div>
         </div>
-            <Footer />
             </div>
     );
 }

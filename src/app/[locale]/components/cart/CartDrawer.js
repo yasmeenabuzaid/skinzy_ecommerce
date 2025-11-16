@@ -7,6 +7,25 @@ import { BsCartX } from "react-icons/bs"; // أيقونة للسلة الفار�
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
+// ⭐️ دالة مساعدة لتحويل السعر بأمان
+// (تتعامل مع الحالات التي يكون فيها السعر بعد الخصم 0 أو null)
+const getPriceAsNumber = (product) => {
+  const priceAfterDiscount = parseFloat(product?.price_after_discount);
+  const price = parseFloat(product?.price);
+
+  // إذا كان السعر بعد الخصم موجوداً وأكبر من 0، استخدمه
+  if (priceAfterDiscount > 0) {
+    return priceAfterDiscount;
+  }
+  // وإلا، استخدم السعر الأصلي
+  if (price > 0) {
+    return price;
+  }
+  // إذا لم يوجد سعر، أرجع 0
+  return 0;
+};
+
+
 export default function CartDrawer({
   items = [],
   isOpen,
@@ -16,7 +35,6 @@ export default function CartDrawer({
   const locale = useLocale();
   const t = useTranslations("cartDrawer");
   
-  // ✅ Check for RTL support
   const isRTL = locale === 'ar';
 
   useEffect(() => {
@@ -25,7 +43,6 @@ export default function CartDrawer({
     } else {
       document.body.style.overflow = "";
     }
-    // Cleanup function
     return () => {
       document.body.style.overflow = "";
     };
@@ -33,11 +50,11 @@ export default function CartDrawer({
 
   const validItems = items.filter((item) => item.product);
 
+  // ⭐️ 1. تم تعديل حاسب المجموع
+  // نستخدم الدالة المساعدة لضمان أننا نجمع أرقاماً
   const subtotal = validItems.reduce(
     (sum, item) =>
-      sum +
-      ((item.product?.price_after_discount ?? item.product?.price ?? 0) *
-        item.quantity),
+      sum + (getPriceAsNumber(item.product) * item.quantity),
     0
   );
   
@@ -94,8 +111,11 @@ export default function CartDrawer({
                     <Link href={`/${locale}/products/${item.product.id}`} className="font-bold text-gray-800 text-base leading-tight hover:text-black transition-colors block mb-1">
                       {isRTL ? item.product?.name_ar || item.product?.name : item.product?.name || t("noName")}
                     </Link>
+                    
+                    {/* ⭐️ 2. تم تعديل عرض السعر هنا */}
                     <p className="text-sm text-gray-500">
-                      {item.quantity} × JD {(item.product?.price_after_discount ?? item.product?.price ?? 0).toFixed(2)}
+                      {/* نستخدم الدالة المساعدة لضمان الحصول على رقم قبل .toFixed */}
+                      {item.quantity} × JD {getPriceAsNumber(item.product).toFixed(2)}
                     </p>
                   </div>
                   <button
@@ -112,43 +132,41 @@ export default function CartDrawer({
         )}
 
         {/* Footer */}
-{validItems.length > 0 && (
-  <div className="p-5 border-t border-gray-200 bg-white space-y-4 flex-shrink-0">
-    <div className="flex justify-between items-center mb-4">
-      <span className="font-semibold text-gray-800 text-lg">{t("subtotal")}</span>
-      <span className="font-extrabold text-2xl text-black">
-        JD {subtotal.toFixed(2)}
-      </span>
-    </div>
-    <p className="text-xs text-gray-500 text-center mb-4">{t("shippingMessage")}</p>
+        {validItems.length > 0 && (
+          <div className="p-5 border-t border-gray-200 bg-white space-y-4 flex-shrink-0">
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-semibold text-gray-800 text-lg">{t("subtotal")}</span>
+              <span className="font-extrabold text-2xl text-black">
+                {/* `subtotal` الآن رقم مضمون، لذا .toFixed() آمن */}
+                JD {subtotal.toFixed(2)}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 text-center mb-4">{t("shippingMessage")}</p>
 
-  {/* أزرار جنب بعض */}
-<div className="flex gap-4">
-  <Link href={`/${locale}/checkout`} className="flex-grow">
-    <button
-      className="w-full bg-[#FF671F] text-white py-3 rounded-lg text-base font-bold hover:bg-gray-800 transition-transform hover:scale-[1.02] duration-300 cursor-pointer"
-    >
-      {t("goToCheckout")}
-    </button>
-  </Link>
-  <Link href={`/${locale}/cart`} className="flex-grow">
-    <button
-      className="w-full bg-white text-black border border-gray-300 py-3 rounded-lg text-base font-bold hover:bg-gray-100 transition-transform hover:scale-[1.02] duration-300 cursor-pointer"
-    >
-      {t("goToCart")}
-    </button>
-  </Link>
-</div>
+            <div className="flex gap-4">
+              <Link href={`/${locale}/checkout`} className="flex-grow">
+                <button
+                  className="w-full bg-[#FF671F] text-white py-3 rounded-lg text-base font-bold hover:bg-gray-800 transition-transform hover:scale-[1.02] duration-300 cursor-pointer"
+                >
+                  {t("goToCheckout")}
+                </button>
+              </Link>
+              <Link href={`/${locale}/cart`} className="flex-grow">
+                <button
+                  className="w-full bg-white text-black border border-gray-300 py-3 rounded-lg text-base font-bold hover:bg-gray-100 transition-transform hover:scale-[1.02] duration-300 cursor-pointer"
+                >
+                  {t("goToCart")}
+                </button>
+              </Link>
+            </div>
 
-
-    <div className="text-center mt-4">
-      <button onClick={onClose} className="text-sm text-gray-600 hover:text-black underline">
-        {t("orContinueShopping")}
-      </button>
-    </div>
-  </div>
-)}
-
+            <div className="text-center mt-4">
+              <button onClick={onClose} className="text-sm text-gray-600 hover:text-black underline">
+                {t("orContinueShopping")}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

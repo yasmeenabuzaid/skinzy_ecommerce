@@ -7,16 +7,18 @@ import Breadcrumbs from "../../components/ProductPage/Breadcrumbs";
 import ProductGallery from "../../components/ProductPage/ProductGallery";
 import ProductDetails from "../../components/ProductPage/ProductDetails";
 import ProductDescriptionSection from "../../components/ProductPage/ProductDescriptionSection";
-import RelatedProductsSection from "../../components/ProductPage/RelatedProductsSection";
+// import RelatedProductsSection from "../../components/ProductPage/RelatedProductsSection";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
-import Header from "../../components/ui/Header";
-import Footer from "../../components/ui/Footer";
+import AllProductSliderSection from '../../components/sections/allProductSliderSection';
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { product, isLoading, error } = useProductQuery(id);
+  const { product, error } = useProductQuery(id);
   const [mainImage, setMainImage] = useState("");
-  const [activeSize, setActiveSize] = useState("");
+  
+  // ⭐️ 1. استخدام selectedVariation لإدارة التنويعات
+  const [selectedVariation, setSelectedVariation] = useState(null);
+
   const [quantity, setQuantity] = useState(1);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -24,9 +26,7 @@ export default function ProductPage() {
 
   const locale = useLocale();
   const isArabic = locale === "ar";
-
-  const handleCartToggle = () => setIsCartOpen(!isCartOpen);
-  const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  console.log("Product data:", product);
 
   const handleQuantityChange = (amount) => {
     setQuantity((prev) => Math.max(1, prev + amount));
@@ -45,22 +45,49 @@ export default function ProductPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ This is the corrected useEffect hook
+  // ⭐️ 2. تعديل الـ useEffect الرئيسي لتعيين الحالة الافتراضية
   useEffect(() => {
     if (product) {
+      // 2أ. تعيين التنويع الافتراضي (الأول في القائمة أو null)
+      const defaultVariation = product.variations?.[0] || null;
+      setSelectedVariation(defaultVariation);
+      
+      // 2ب. تعيين الصورة الرئيسية
+      // نبحث عن صورة مرتبطة بالتنويع الافتراضي أولاً
+      const variationImage = product.images?.find(
+        (img) => img.variation_id === defaultVariation?.id
+      )?.image;
+      
+      // إذا لم نجد، نستخدم أول صورة في المنتج كصورة احتياطية
       const fallbackImage = product.images?.[0]?.image || "";
-      setMainImage(fallbackImage);
-      setActiveSize(product.sizes?.[0] || "100g");
-      // The line that reset the quantity has been removed.
-    }
-  }, [product]);
 
-  if (isLoading) return <div className="text-center py-20">Loading...</div>;
+      setMainImage(variationImage || fallbackImage);
+    }
+  }, [product]); // يعمل فقط عند تحميل بيانات المنتج
+
+  // ⭐️ 3. (إضافة جديدة) useEffect لمراقبة اختيار المستخدم للتنويع
+  useEffect(() => {
+    if (selectedVariation) {
+      // ابحث عن صورة مرتبطة بـ variation_id للتنويع المختار
+      const newVariationImage = product.images?.find(
+        (img) => img.variation_id === selectedVariation.id
+      )?.image;
+
+      // إذا وجدنا صورة مخصصة لهذا التنويع، قم بتعيينها كصورة رئيسية
+      if (newVariationImage) {
+        setMainImage(newVariationImage);
+      }
+    }
+  }, [selectedVariation, product?.images]); // يعمل عند تغيير selectedVariation
+
+
   if (error) return <div className="text-center text-red-500 py-20">{error.message || "An error occurred"}</div>;
   if (!product) return <div className="text-center py-20">Product not found</div>;
 
+  // ⭐️ 4. تمرير بيانات المنتج الأصلية (التي تحتوي على images) إلى ProductDetails
+  // مع الحفاظ على الأسماء المترجمة
   const translatedProduct = {
-    ...product,
+    ...product, // <-- هذا يضمن بقاء مصفوفة images الأصلية
     name: isArabic ? product.name_ar : product.name,
     small_description: isArabic ? product.small_description_ar : product.small_description,
   };
@@ -73,8 +100,6 @@ export default function ProductPage() {
 
   return (
     <div className="text-gray-800 ">
-      <Header onCartToggle={handleCartToggle} onMenuToggle={handleMenuToggle} />
-
       <div className="bg-white text-gray-800 font-sans mr-10 ml-10">
         <div className="container mx-auto px-4 py-8">
           <Breadcrumbs />
@@ -86,10 +111,11 @@ export default function ProductPage() {
               setMainImage={setMainImage}
             />
 
+            {/* ⭐️ 5. تمرير الـ props الصحيحة لـ ProductDetails */}
             <ProductDetails
-              product={translatedProduct}
-              activeSize={activeSize}
-              setActiveSize={setActiveSize}
+              product={translatedProduct} // يحتوي على .images
+              selectedVariation={selectedVariation}
+              setSelectedVariation={setSelectedVariation}
               quantity={quantity}
               handleQuantityChange={handleQuantityChange}
             />
@@ -101,11 +127,8 @@ export default function ProductPage() {
           specifications={translatedSpecifications}
         />
 
-        <RelatedProductsSection products={product.related || []} />
         <ScrollToTopButton show={showScrollBtn} onClick={scrollToTop} />
       </div>
-
-      <Footer />
     </div>
   );
 }

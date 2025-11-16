@@ -36,7 +36,7 @@ const useOnScreen = (options) => {
 
 const BrandsSection = memo(function BrandsSection() {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
-  const { brands, isLoadingBrands, errorBrands } = useBrandsQuery();
+  const { brands, errorBrands } = useBrandsQuery();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('brandsSection');
@@ -48,7 +48,6 @@ const BrandsSection = memo(function BrandsSection() {
   // يمكن تعديل هذه القيمة لتغيير سرعة الشريط
   const animationDuration = (brands?.length || 10) * 1.1;
 
-  if (isLoadingBrands) return <p className="text-center py-6">{t('loading')}</p>;
   if (errorBrands) return <p className="text-center text-red-500 py-6">{t('error')} {errorBrands.message}</p>;
   if (!brands?.length) return <p className="text-center py-6">{t('noBrands')}</p>;
   

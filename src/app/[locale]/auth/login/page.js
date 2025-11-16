@@ -1,13 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Swal from 'sweetalert2';
 import BackendConnector from '@/services/connectors/BackendConnector';
 import { useLocale, useTranslations } from 'next-intl';
 import storageService from '@/services/storage/storageService';
 import Link from 'next/link';
-import Header from '../../components/ui/Header'; // Adjust path if needed
-import Footer from '../../components/ui/Footer'; // Adjust path if needed
+
 // --- Icons ---
 const Eye = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -32,42 +30,42 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
 
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
-    };
+    const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setMessage('');
 
         if (!email || !password) {
-            Swal.fire(t('error'), t('fillAllFields'), 'error');
+            setError(t('fillAllFields'));
             return;
         }
 
         try {
             setLoading(true);
             const response = await BackendConnector.login({ email, password });
+            console.log('Login response:', response);
 
-            if (response?.success) {
+            if (response?.status) {
                 storageService.setUserInfo({
                     accessToken: response.accessToken,
-                    user: response.user,
+                    user: response.data,
                 });
 
-                await Swal.fire({
-                    title: t('success'),
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
+                setMessage(t('loginSuccess'));
 
-                router.replace(`/${locale}`);
+                setTimeout(() => {
+                    router.replace(`/${locale}`);
+                }, 1500);
             } else {
-                 Swal.fire(t('error'), response?.message || t('failed'), 'error');
+                setError(response?.message || t('failed'));
             }
         } catch (err) {
-            Swal.fire(t('error'), err?.response?.data?.message || t('failed'), 'error');
+            setError(err?.response?.data?.message || t('failed'));
             console.error(err);
         } finally {
             setLoading(false);
@@ -75,9 +73,8 @@ export default function LoginPage() {
     };
 
     return (
-       <div className="text-gray-800">
-            <Header />
-                        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-gray-800">
+            <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="w-full max-w-md mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-lg">
                     <Link href="/" className="text-3xl font-bold text-gray-800 mb-4 block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
                         Skinzy Care
@@ -88,7 +85,6 @@ export default function LoginPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            {/* ✨ محاذاة النص لليمين في العربي */}
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 text-start">{t('email')}</label>
                             <input
                                 type="email"
@@ -96,7 +92,6 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                // ✨ النص داخل الحقل سيبدأ من اليمين في العربي
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#FF671F] focus:border-[#FF671F] transition-colors text-start"
                                 placeholder="your.email@example.com"
                             />
@@ -105,9 +100,7 @@ export default function LoginPage() {
                         <div>
                             <div className="flex justify-between items-center mb-1">
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">{t('password')}</label>
-                                <Link href={`/${locale}/auth/forgot`} className="text-sm text-[#FF671F] hover:underline">
-                                    {t('forgotPassword')}
-                                </Link>
+                                <Link href={`/${locale}/auth/forgot`} className="text-sm text-[#FF671F] hover:underline">{t('forgotPassword')}</Link>
                             </div>
                             <div className="relative">
                                 <input
@@ -116,14 +109,12 @@ export default function LoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    // ✨ إضافة مساحة للأيقونة على اليسار في العربي، وعلى اليمين في الإنجليزي
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#FF671F] focus:border-[#ff8c57] transition-colors text-start pe-12"
                                     placeholder={t('password')}
                                 />
                                 <button
                                     type="button"
                                     onClick={togglePasswordVisibility}
-                                    // ✨ تغيير موقع الأيقونة حسب اتجاه اللغة
                                     className="absolute inset-y-0 end-0 px-4 flex items-center text-gray-500 hover:text-gray-700"
                                     aria-label="Toggle password visibility"
                                 >
@@ -141,17 +132,18 @@ export default function LoginPage() {
                                 {loading ? t('signingIn') : t('signIn')}
                             </button>
                         </div>
+
+                        {/* رسائل الخطأ أو النجاح */}
+                        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+                        {message && <p className="text-green-500 text-center mt-4">{message}</p>}
                     </form>
 
                     <p className="text-center text-sm text-gray-600 mt-8">
-                        {t('noAccount')} {' '}
-                        <Link href={`/${locale}/auth/register`} className="font-semibold text-[#FF671F] hover:underline">
-                            {t('createAccount')}
-                        </Link>
+                        {t('noAccount')}{' '}
+                        <Link href={`/${locale}/auth/register`} className="font-semibold text-[#FF671F] hover:underline">{t('createAccount')}</Link>
                     </p>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 
 export default function ProductGallery({ mainImage, thumbnails, setMainImage }) {
+  // يتم تعيين الصورة الرئيسية الآن من المكون الأب (ProductPage)
   useEffect(() => {
     if (!mainImage && thumbnails.length > 0) {
       setMainImage(thumbnails[0]);
@@ -10,13 +11,14 @@ export default function ProductGallery({ mainImage, thumbnails, setMainImage }) 
 
   return (
     <div className="flex flex-col gap-4">
+      {/* 1. حاوية الصورة الرئيسية */}
       <div className="relative w-full aspect-square border rounded-lg bg-white shadow-sm overflow-hidden">
         {mainImage ? (
           <img
             src={mainImage}
             alt="Main product"
-            className="w-full h-full object-cover"
-            loading="lazy"
+            className="w-full h-full object-contain p-2"
+            loading="eager"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -25,15 +27,23 @@ export default function ProductGallery({ mainImage, thumbnails, setMainImage }) 
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      {/* 2. حاوية الصور المصغرة (شريط أفقي قابل للتمرير) */}
+      <div className="flex gap-4 overflow-x-auto pb-2">
         {thumbnails.length > 0 ? (
           thumbnails.map((thumb, index) => (
             <div
               key={index}
               onClick={() => setMainImage(thumb)}
-              className={`aspect-square border rounded-lg overflow-hidden cursor-pointer ${
-                mainImage === thumb ? "border-2 border-black" : ""
-              }`}
+              className={`
+                flex-shrink-0  /* يمنع الصور من الانكماش */
+                w-24 h-24      /* حجم ثابت وموحد */
+                border rounded-lg overflow-hidden cursor-pointer 
+                ${
+                  mainImage === thumb
+                    ? "border-2 border-[#FF671F]"
+                    : "border-gray-200"
+                }
+              `}
             >
               <img
                 src={thumb}
@@ -44,7 +54,7 @@ export default function ProductGallery({ mainImage, thumbnails, setMainImage }) 
             </div>
           ))
         ) : (
-          <div className="col-span-4 text-center text-gray-400 py-10">
+          <div className="w-full text-center text-gray-400 py-10">
             No Images Available
           </div>
         )}

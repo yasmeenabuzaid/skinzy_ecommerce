@@ -1,38 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
 import BackendConnector from "../services/connectors/BackendConnector";
 
-const useProductsByBrandQuery = ({ brandId, brandSlug, filter }) => {
+// 🔽 *** تم إضافة "page" هنا *** 🔽
+const useProductsByBrandQuery = ({ brandId, brandSlug, filter, page }) => {
   const {
-    data: products = [], // The final data is the products array, with an empty array as a default
+    data: paginatedData, // 🔽 غيرنا الاسم لـ paginatedData
     isLoading,
     error,
   } = useQuery({
-    // 1. Dynamic key that changes when parameters change, triggering a refetch
-    queryKey: ["productsByBrand", { brandId, brandSlug, filter }],
-
-    // 2. The function that fetches the data from your backend
+    // 🔽 *** تم إضافة "page" للـ queryKey *** 🔽
+    queryKey: ["productsByBrand", { brandId, brandSlug, filter, page }],
     queryFn: () =>
       BackendConnector.fetchProductsByBrand({
         brandId,
         brandSlug,
         filter,
+        page, // 🔽 *** تم تمرير "page" للـ API *** 🔽
       }),
-
-    // 3. The query will only run if either brandId or brandSlug is provided
     enabled: !!(brandId || brandSlug),
-
-    // 4. This function transforms the raw API data into a clean products array
-    select: (result) => {
-      if (Array.isArray(result)) {
-        return result;
-      }
-      // The library handles error objects automatically.
-      // This handles the case where data is nested inside a 'products' property.
-      return result?.products || [];
-    },
+    
+    // 🔽 *** تم حذف "select" *** 🔽
+    //  عشان يرجّع الأوبجكت كامل من الـ API
+    //  select: (result) => result?.data || [],  <-- هذا السطر انحذف
   });
 
-  return { products, isLoading, error };
+  // 🔽 *** جهزنا الداتا والـ paginationInfo بمتغيرات منفصلة *** 🔽
+  const products = paginatedData?.data || [];
+  const paginationInfo = {
+    currentPage: paginatedData?.current_page || 1,
+    lastPage: paginatedData?.last_page || 1,
+    total: paginatedData?.total || 0,
+    links: paginatedData?.links || [],
+  };
+
+  // 🔽 *** رجعنا المنتجات ومعلومات الـ pagination *** 🔽
+  return { products, paginationInfo, isLoading, error };
 };
 
 export default useProductsByBrandQuery;

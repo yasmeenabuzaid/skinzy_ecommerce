@@ -6,8 +6,6 @@ import Swal from 'sweetalert2';
 import BackendConnector from '@/services/connectors/BackendConnector';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import Header from '../../components/ui/Header'; // Adjust path if needed
-import Footer from '../../components/ui/Footer'; // Adjust path if needed
 // --- Icons ---
 const Eye = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -89,7 +87,6 @@ export default function RegisterPage() {
 
   return (
 <div className="text-gray-800">
-            <Header />
                   <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-lg">
           <Link href="/" className="text-3xl font-bold text-gray-800 mb-4 block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -196,6 +193,5 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
-  <Footer />
         </div>  );
 };

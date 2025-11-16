@@ -1,7 +1,5 @@
 "use client";
 import React from "react";
-import Header from "../components/ui/Header";
-import Footer from "../components/ui/Footer";
 import { useCartContext } from "../../../context/CartContext"; // تأكد من المسار الصحيح
 import Link from "next/link";
 import { useLocale } from 'next-intl';
@@ -66,7 +64,6 @@ export default function CartPage() {
 
   return (
     <div className="text-gray-800" dir={isArabic ? "rtl" : "ltr"}>
-      <Header />
 
       <div className="bg-white min-h-screen font-sans">
         <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -151,7 +148,6 @@ export default function CartPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

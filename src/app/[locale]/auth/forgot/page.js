@@ -4,8 +4,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
-import Header from '../../components/ui/Header'; // Adjust path if needed
-import Footer from '../../components/ui/Footer'; // Adjust path if needed
 import BackendConnector from '@/services/connectors/BackendConnector';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -50,7 +48,6 @@ const ForgotPasswordPage = () => {
 
     return (
         <div className="text-gray-800">
-            <Header />
             <div className="min-h-screen bg-white flex items-center justify-center p-4">
                 <div className="w-full max-w-md mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-lg">
                     <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 text-center">{t('title')}</h2>
@@ -88,7 +85,6 @@ const ForgotPasswordPage = () => {
                     </p>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

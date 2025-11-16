@@ -1,61 +1,60 @@
 import { Poppins, Noto_Kufi_Arabic } from 'next/font/google';
 import { notFound } from 'next/navigation';
-import { CartContextProvider } from '@/context/CartContext';
 import NextTopLoader from 'nextjs-toploader';
-import Providers from '../providers'; // استيراد المكون الجديد
-
-import { NextIntlClientProvider } from 'next-intl';
+import Providers from '../providers';
 import { getMessages } from 'next-intl/server';
 import '../globals.css';
+import Footer from '../[locale]/components/ui/Footer'; 
+import Header from '../[locale]/components/ui/Header'; 
 
 const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
 });
 
 const notoKufi = Noto_Kufi_Arabic({
-  subsets: ['arabic'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-noto-kufi',
+  subsets: ['arabic'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-noto-kufi',
 });
 
+
 export const metadata = {
-  title: 'Skinzy Care',
-  description: 'Your trusted online beauty hub',
+  title: 'Skinzy Care',
+  description: 'Your trusted online beauty hub',
 };
 
-export default async function RootLayout({ children, params }) {
-  const locale = params.locale;
+export default async function RootLayout({ children, params: { locale } }) {
+  if (!['en', 'ar'].includes(locale)) {
+    notFound();
+  }
 
-  if (!locale || !['en', 'ar'].includes(locale)) {
-    notFound();
-  }
+  const messages = await getMessages(locale);
 
-  const messages = await getMessages(locale);
-
-  return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-      <body className={`${poppins.variable} ${notoKufi.variable} font-sans`}>
-        <NextTopLoader
-          color="#FF671F"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px #FF671F, 0 0 5px #FF671F"
-        />
-        <Providers> {/* <-- ✅ صحيح 100% */}
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <CartContextProvider>
-              {children}
-            </CartContextProvider>
-          </NextIntlClientProvider>
-        </Providers>
-      </body>
-    </html>
-  );
+  return (
+    <html 
+        lang={locale} 
+        dir={locale === 'ar' ? 'rtl' : 'ltr'}
+        suppressHydrationWarning 
+    >
+      {/* ⭐️ تأكد أن هذا السطر يبدأ مباشرة تحت وسم <html> */}
+      <body className={`${poppins.variable} ${notoKufi.variable} font-sans`}>
+        <NextTopLoader
+          color="#FF671F"
+          height={3}
+          showSpinner={false}
+        />
+          <Providers locale={locale} messages={messages}>
+          <Header />
+          
+          <main className="min-h-screen">
+            {children}
+          </main>
+          
+          <Footer />
+        </Providers>
+      </body>
+    </html>
+  );
 }

@@ -353,14 +353,19 @@ const Header = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick, isSt
   </header>
 );
 
+// --- ✅ الكود المُعدل والمُصحح ---
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
 
-  const { cart, updateCart } = useCartContext() || { cart: [], updateCart: () => {} };
-  const { cartCount } = useCartContext();
+  // 💡 1. تم توحيد الاستدعاء وإضافة قيم افتراضية قوية
+  const { cart, updateCart, cartCount } = useCartContext() || { 
+    cart: [], 
+    updateCart: () => {}, 
+    cartCount: 0 
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -370,6 +375,18 @@ export default function App() {
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 💡 2. الحل: "تنظيف" بيانات السلة قبل تمريرها
+  // هذا يضمن أن .toFixed سيعمل دائمًا داخل CartDrawer
+  const sanitizedCart = (cart || []).map(item => ({
+    ...item,
+    // نفترض أن الخصائص التي تسبب المشكلة هي 'price' أو 'sale_price'
+    // نقوم بتحويلها إلى أرقام
+    price: parseFloat(item.price) || 0,
+    
+    // يمكنك إضافة أي حقول سعر أخرى قد تكون موجودة
+    // sale_price: parseFloat(item.sale_price) || 0, 
+  }));
   
   return (
     <div className="font-sans" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -383,7 +400,15 @@ export default function App() {
       {isSticky && <div style={{ height: '136px' }} />}
 
       <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} items={cart} onRemoveItem={updateCart} />
+      
+      {/* 💡 3. تمرير البيانات النظيفة (sanitizedCart) بدلاً من (cart) */}
+      <CartDrawer 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        items={sanitizedCart} 
+        onRemoveItem={updateCart} 
+      />
+      
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );

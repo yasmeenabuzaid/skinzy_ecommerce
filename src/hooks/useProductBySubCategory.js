@@ -1,39 +1,30 @@
 import { useQuery } from '@tanstack/react-query';
 import BackendConnector from '../services/connectors/BackendConnector';
 
-const useProductsQuery = ({ subCategoryId, filter }) => {
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
-    // 1. Dynamic key that includes subCategoryId and filter
-    queryKey: ['productsBySubCategory', { subCategoryId, filter }],
-
-    // 2. The function that fetches the data
-    queryFn: () => BackendConnector.fetchProductsBySubCategory({ subCategoryId, filter }),
-
-    // 3. Only run this query if subCategoryId is provided
+// 🔽 1. إضافة "page" كمتغير
+const useProductBySubCategory = ({ subCategoryId, filter, page }) => {
+  // 🔽 2. تغيير اسم "data" إلى "paginatedData" ليكون أوضح
+  const { data: paginatedData, isLoading, error } = useQuery({
+    // 🔽 3. إضافة "page" للـ queryKey
+    queryKey: ['productsBySubCategory', { subCategoryId, filter, page }],
+    // 🔽 4. تمرير "page" للـ API
+    queryFn: () => BackendConnector.fetchProductsBySubCategory({ subCategoryId, filter, page }),
     enabled: !!subCategoryId,
-
-    // 4. Transform the API response into a consistent shape
-    select: (result) => {
-      if (Array.isArray(result)) {
-        return { products: result, groups: [] };
-      }
-      return {
-        products: result?.products || [],
-        groups: result?.groups || [],
-      };
-    },
+    // 🔽 5. حذف "select" عشان يرجع كل الأوبجكت
+    // select: (result) => result?.data || [], <-- هذا السطر انحذف
   });
 
-  return {
-    products: data?.products || [],
-    groups: data?.groups || [],
-    isLoading,
-    error,
+  // 🔽 6. تجهيز الداتا للـ Component
+  const products = paginatedData?.data || [];
+  const paginationInfo = {
+    currentPage: paginatedData?.current_page || 1,
+    lastPage: paginatedData?.last_page || 1,
+    total: paginatedData?.total || 0,
+    links: paginatedData?.links || [],
   };
+
+  // 🔽 7. إرجاع المنتجات ومعلومات الـ pagination
+  return { products, paginationInfo, isLoading, error };
 };
 
-export default useProductsQuery;
+export default useProductBySubCategory;

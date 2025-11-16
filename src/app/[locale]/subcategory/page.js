@@ -8,8 +8,6 @@ import useProductsQuery from '../../../hooks/useProductsQuery';
 import ProductCard from '../components/ui/ProductCard';
 import Link from 'next/link';
 
-import Header from '../components/ui/Header';
-import Footer from '../components/ui/Footer';
 // ✨ قمت بحذف Header و Footer من هنا لأنه من الأفضل إضافتهم في ملف layout.js
 // يمكنك إعادتهم إذا كان تصميمك يتطلب ذلك
 
@@ -33,7 +31,7 @@ export default function ProductListPage() {
     const locale = useLocale();
     const t = useTranslations('ProductPage');
 
-    const { products, isLoading, error } = useProductsQuery();
+    const { products, error } = useProductsQuery();
 
     // ✨ أصبح useMemo أفضل هنا لتحسين الأداء عند الفلترة
     const filteredProducts = useMemo(() => {
@@ -43,9 +41,6 @@ export default function ProductListPage() {
             : products;
     }, [products, selectedBrandId]);
 
-    if (isLoading) {
-        return <div className="text-center p-20 text-gray-500">{t('loading')}</div>;
-    }
 
     if (error) {
         return <div className="text-center p-20 text-red-500">Error: {error.message}</div>;
@@ -61,7 +56,6 @@ export default function ProductListPage() {
 
     return (
         <div className="text-gray-800 bg-white">
-           <Header />
             <div className="container mx-auto px-4 py-8">
                 
                 {/* ✨ --- Section Header --- ✨ */}
@@ -106,7 +100,6 @@ export default function ProductListPage() {
                 </div>
 
             </div>
-                  <Footer />
         </div>
     );
 }

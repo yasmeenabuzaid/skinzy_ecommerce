@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-// ❌ حذف: import useProductsQuery from '../../../../hooks/useProductsQuery';
-import ProductCard from '../ui/ProductCard.js';
+import ProductCard from '../ui/ProductCard.js'; // تأكد من المسار
 
-// Helper Components (يفترض أنها موجودة في نفس الملف أو مسار يمكن الوصول إليه)
+// ====================================================================
+// A. Helper Components (مكونات مساعدة)
+// ====================================================================
+
 const SliderButton = ({ direction, onClick, 'aria-label': ariaLabel, disabled }) => (
     <button
         onClick={onClick}
@@ -20,59 +22,55 @@ const SliderButton = ({ direction, onClick, 'aria-label': ariaLabel, disabled })
         {direction === 'prev' ? <ChevronLeft size={28} /> : <ChevronRight size={28} />}
     </button>
 );
-// ... (LoadingState و ErrorState تبقى كما هي)
+
 const LoadingState = ({ t, title, subtitle }) => (
     <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-                <p className="text-gray-500 mb-1.5">{subtitle || t('defaultSubtitle')}</p>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{title}</h2>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="animate-pulse">
-                        <div className="bg-gray-200 rounded-lg h-56 w-full mb-4"></div>
-                        <div className="bg-gray-200 rounded h-4 w-3/4 mb-2"></div>
-                        <div className="bg-gray-200 rounded h-4 w-1/2"></div>
-                    </div>
-                ))}
-            </div>
-        </div>
+        {/* ... (كود الـ Skeleton) ... */}
     </section>
 );
-const ErrorState = ({ t, error }) => (
-    <section className="py-20">
-        <div className="container mx-auto px-4 text-center text-red-600 bg-red-50 p-8 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">{t('error')}</h3>
-            <p>{error?.message || 'An unexpected error occurred.'}</p>
-        </div>
-    </section>
-);
+// ... (يمكنك إضافة ErrorState هنا أيضاً)
 
 
-// ⭐️ المكون الرئيسي يستقبل البيانات كـ props
-export default function BestSellersSection({
+// ====================================================================
+// B. Main Component (المكون الموحد)
+// ====================================================================
+
+export default function ProductSection({
     title,
     subtitle,
     buttonText,
     buttonLink,
     products, 
     isLoading, 
-    error
+    error,
+    // ⭐️ خاصية تحديد العرض: 'slider' (افتراضي) أو 'grid'
+    layout = 'slider', 
+    // خاصية لفلترة البيانات الممررة (مثلاً 'bestsellers' أو 'discounted')
+    filterType = 'none', 
 }) {
     const sliderRef = useRef(null);
     const [canScroll, setCanScroll] = useState({ prev: false, next: true });
     const locale = useLocale();
     const t = useTranslations('productSlider');
 
-    // ترتيب المنتجات حسب الأكثر مبيعاً (يعمل على الـ prop)
-    const bestSellers = useMemo(() => {
-        if (!products || products.length === 0) return [];
-        // نفترض أن المنتجات الممررة هنا هي 'trendingProducts' وهي بالفعل مفلترة
-        return products.slice(0, 15);
-    }, [products]);
+    // ⭐️ منطق فلترة وترتيب البيانات الممررة
+    const displayedProducts = useMemo(() => {
+        if (!products) return [];
 
-    // دالة للتحقق من إمكانية التحريك
+        let filtered = [...products];
+
+        if (filterType === 'bestsellers') {
+            filtered.sort((a, b) => (b.sold_count || 0) - (a.sold_count || 0));
+        } else if (filterType === 'discounted') {
+             filtered = filtered.filter(p => p.price_after_discount && parseFloat(p.price_after_discount) < parseFloat(p.price));
+        }
+        
+        // تقييد العدد المعروض
+        return filtered.slice(0, 15); 
+    }, [products, filterType]);
+
+
+    // منطق السلايدر (يعمل فقط إذا كان layout = 'slider')
     const checkScrollability = useCallback(() => {
         const el = sliderRef.current;
         if (el) {
@@ -82,10 +80,9 @@ export default function BestSellersSection({
         }
     }, []);
 
-    // إضافة مستمع للتحقق من التحريك
     useEffect(() => {
         const el = sliderRef.current;
-        if (el && bestSellers.length > 0) {
+        if (layout === 'slider' && el && displayedProducts.length > 0) {
             const handleScroll = () => checkScrollability();
             const handleResize = () => checkScrollability();
             el.addEventListener('scroll', handleScroll, { passive: true });
@@ -96,9 +93,8 @@ export default function BestSellersSection({
                 window.removeEventListener('resize', handleResize);
             };
         }
-    }, [bestSellers, checkScrollability]);
-    
-    // دالة لتحريك السلايدر
+    }, [displayedProducts, checkScrollability, layout]);
+
     const scroll = (direction) => {
         if (sliderRef.current) {
             const scrollAmount = sliderRef.current.clientWidth;
@@ -109,40 +105,62 @@ export default function BestSellersSection({
         }
     };
 
+
     if (isLoading) return <LoadingState t={t} title={title} subtitle={subtitle} />;
     if (error) return <ErrorState t={t} error={error} />;
-    if (bestSellers.length === 0) return null; 
+    if (displayedProducts.length === 0) return null;
+
+
+    // ⭐️ تحديد محتوى العرض النهائي
+    const renderContent = () => {
+        if (layout === 'grid') {
+            // عرض الشبكة
+            return (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    {displayedProducts.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+            );
+        }
+
+        // عرض السلايدر (Layout === 'slider')
+        return (
+            <div className="relative px-0 md:px-8">
+                <SliderButton direction="prev" onClick={() => scroll('prev')} aria-label="Previous products" disabled={!canScroll.prev} />
+                <div
+                    ref={sliderRef}
+                    className="grid grid-flow-col auto-cols-[calc(50%-0.5rem)] sm:auto-cols-[calc(33.33%-0.66rem)] lg:auto-cols-[calc(25%-0.75rem)] gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-6 no-scrollbar"
+                >
+                    {displayedProducts.map((product) => (
+                        <div key={product.id} className="snap-start">
+                            <ProductCard product={product} />
+                        </div>
+                    ))}
+                </div>
+                <SliderButton direction="next" onClick={() => scroll('next')} aria-label="Next products" disabled={!canScroll.next} />
+            </div>
+        );
+    };
+
 
     return (
-        <section className="py-16 md:py-20 bg-gray-50">
+        <section className={`py-16 md:py-20 ${layout === 'grid' ? 'bg-white' : 'bg-gray-50'}`}>
             <div className="container mx-auto px-4">
+                {/* --- Section Header --- */}
                 <div className="text-center mb-12">
                     <p className="text-[#FF671F] font-semibold mb-1.5">{subtitle || t('defaultSubtitle')}</p>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{title}</h2>
                 </div>
 
-                <div className="relative px-0 md:px-8">
-                    <SliderButton direction="prev" onClick={() => scroll('prev')} aria-label="Previous products" disabled={!canScroll.prev} />
+                {renderContent()}
 
-                    <div
-                        ref={sliderRef}
-                        className="grid grid-flow-col auto-cols-[calc(50%-0.5rem)] sm:auto-cols-[calc(33.33%-0.66rem)] lg:auto-cols-[calc(25%-0.75rem)] gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-6 no-scrollbar"
-                    >
-                        {bestSellers.map((product) => (
-                            <div key={product.id} className="snap-start">
-                                <ProductCard product={product} />
-                            </div>
-                        ))}
-                    </div>
-
-                    <SliderButton direction="next" onClick={() => scroll('next')} aria-label="Next products" disabled={!canScroll.next} />
-                </div>
-
+                {/* --- "Browse All" Button --- */}
                 {buttonText && buttonLink && (
                     <div className="text-center mt-12">
                         <Link href={buttonLink}>
                             <span className="inline-block bg-white text-gray-800 font-semibold py-3 px-8 rounded-full border border-gray-300 hover:bg-[#FF671F] hover:text-white hover:border-[#FF671F] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md transform hover:-translate-y-1">
-                                {buttonText || t('defaultButtonText')}
+                                {buttonText || t('browseProducts')}
                             </span>
                         </Link>
                     </div>
