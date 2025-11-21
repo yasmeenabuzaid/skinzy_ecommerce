@@ -19,13 +19,19 @@ const SearchIcon = (props) => (
 
 const SearchResultCard = ({ product }) => {
   const locale = useLocale();
-  const imageUrl =
-    product.images?.length > 0 && product.images[0].image
-      ? product.images[0].image
-      : '/fallback.jpg';
+  
+  // ✅ تعديل هنا: التحقق من جميع مصادر الصورة المحتملة
+  const imageUrl = 
+    product.first_image?.image || 
+    product.full_image_url || 
+    product.images?.[0]?.image || 
+    '/fallback.jpg';
 
   const productName = locale === 'ar' && product.name_ar ? product.name_ar : product.name;
   const productCode = product.code || '';
+
+  // تحويل السعر إلى رقم
+  const price = Number(product.price || 0);
 
   return (
     <Link
@@ -36,6 +42,8 @@ const SearchResultCard = ({ product }) => {
         src={imageUrl}
         alt={productName}
         className="w-16 h-16 object-cover rounded-md border border-gray-200"
+        // إضافة معالجة خطأ الصورة للاحتياط
+        onError={(e) => { e.target.src = '/fallback.jpg'; }}
       />
       <div className="flex-grow">
         <p className="font-semibold text-sm text-gray-800 flex items-center gap-2">
@@ -46,7 +54,7 @@ const SearchResultCard = ({ product }) => {
             </span>
           )}
         </p>
-        <p className="text-sm text-[#FF671F]">${product.price?.toFixed(2)}</p>
+        <p className="text-sm text-[#FF671F]">${price.toFixed(2)}</p>
       </div>
     </Link>
   );

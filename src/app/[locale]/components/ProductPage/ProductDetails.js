@@ -1,7 +1,8 @@
 "use client";
 import { useCartContext } from "@/context/CartContext";
 import { Heart, Minus, Plus } from "lucide-react";
-import Swal from "sweetalert2";
+// 1. استبدال سويت اليرت بـ توست
+import toast from "react-hot-toast";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import storageService from "@/services/storage/storageService";
@@ -19,8 +20,7 @@ export default function ProductDetails({
   product,
   quantity,
   handleQuantityChange,
-  // ⭐️ 1. سنعتمد على هذه الـ props فقط لاختيار الفاريشن
-  selectedVariation, 
+  selectedVariation,
   setSelectedVariation,
 }) {
   const { addCart } = useCartContext();
@@ -30,9 +30,6 @@ export default function ProductDetails({
   const [userInfo, setUserInfo] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
-
-  // ⭐️ 2. تم حذف الحالة الداخلية `selectedOptions`
-  // نحن نعتمد كلياً على `selectedVariation` القادم من الأب.
 
   useEffect(() => {
     setUserInfo(storageService.getUserInfo());
@@ -52,10 +49,12 @@ export default function ProductDetails({
       warningTitle: "تنبيه",
       favoriteError: "حدث خطأ أثناء إضافة المنتج للمفضلة.",
       favoriteAdded: "تمت إضافة المنتج للمفضلة بنجاح!",
-      favoriteFailed: "فشلت إضافة المنتج للمفضلة.",
+      favoriteRemoved: "تمت إزالة المنتج من المفضلة.",
+      favoriteFailed: "فشلت العملية.",
       favoriteErrorOccured: "حدث خطأ غير متوقع.",
       addToFavoritesAria: "إضافة إلى المفضلة",
       noOptions: "لا توجد خيارات متاحة.",
+      processing: "جاري المعالجة..."
     },
     en: {
       Color: "Color",
@@ -70,10 +69,12 @@ export default function ProductDetails({
       warningTitle: "Warning",
       favoriteError: "Error adding product to favorites.",
       favoriteAdded: "Product added to favorites successfully!",
-      favoriteFailed: "Failed to add product to favorites.",
+      favoriteRemoved: "Product removed from favorites.",
+      favoriteFailed: "Operation failed.",
       favoriteErrorOccured: "An unexpected error occurred.",
       addToFavoritesAria: "Add to favorites",
       noOptions: "No options available.",
+      processing: "Processing..."
     },
   };
 
@@ -87,7 +88,7 @@ export default function ProductDetails({
   const brandName =
     locale === "ar" ? mainProduct.brand?.name_ar : mainProduct.brand?.name;
 
-  // ⭐️ 3. تجميع التنويعات للعرض (يبقى كما هو)
+  // تجميع التنويعات للعرض
   const groupedVariations = (mainProduct.variations || []).reduce((acc, variation) => {
     const type = variation.variation_type;
     if (!acc[type]) {
@@ -96,10 +97,8 @@ export default function ProductDetails({
     acc[type].push(variation);
     return acc;
   }, {});
-  // { Color: [...], Size: [...] }
 
-  // ⭐️ 4. تعديل المنطق ليعتمد فقط على `selectedVariation` (الذي يأتي كـ prop)
-  const activeVariation = selectedVariation; // أصبح المصدر المباشر
+  const activeVariation = selectedVariation;
 
   const activePrice = activeVariation?.price || mainProduct.price;
   const activePriceAfterDiscount =
@@ -115,75 +114,70 @@ export default function ProductDetails({
 
   const activeCode = activeVariation?.code || mainProduct.code;
 
-  // ⭐️ 5. تبسيط دالة تحديث الخيار
   const handleOptionSelect = (variation) => {
-    // نقوم فقط بتحديث الحالة في المكون الأب (page.js)
-    // وهذا سيؤدي لتحديث الصورة وتحديث `selectedVariation` هنا
     setSelectedVariation(variation);
   };
 
-  // ⭐️ 6. تحديث دالة إضافة السلة
+  // تعديل دالة إضافة السلة: إزالة Swal والاعتماد على Context
   const _performAddToCart = () => {
     addCart({
       productId: mainProduct.id,
       quantity: quantity,
-      // نرسل قيمة التنويع المختار (أو "default" إذا لم يختر شيء)
       size: selectedVariation?.variation_value || "default",
-      // ❗️ تأكد أن سلة المشتريات تتوقع `size` وليس `options`
     });
-    Swal.fire({
-      title: t.addedToCart,
-      icon: "success",
-      confirmButtonText: t.continueBtn,
-      confirmButtonColor: "#FF671F",
-      timer: 2000,
-      timerProgressBar: true,
-    });
+    // لا حاجة لإضافة Toast هنا لأن addCart في Context تقوم بذلك بالفعل
   };
 
-  // ... (بقية الدوال المساعدة تبقى كما هي)
+  // تعديل دالة المفضلة لاستخدام Toast بدلاً من Swal
   const _performAddToFavorites = async () => {
     const currentUserInfo = storageService.getUserInfo();
     const userId = currentUserInfo?.user?.id;
     if (!userId) {
-      Swal.fire(t.warningTitle, t.favoriteError, "error");
+      toast.error(t.favoriteError);
       return;
     }
+
+    const toastId = toast.loading(t.processing);
+
     try {
       const response = await BackendConnector.addToFavorites({
         product_id: mainProduct.id,
         user_id: userId,
       });
-      Swal.fire(
-        t.warningTitle,
-        response?.message ||
-          (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
-        response?.favorite ? "success" : "error"
-      );
+
+      if (response?.favorite) {
+        toast.success(response.message || t.favoriteAdded, { id: toastId });
+      } else {
+        // قد تكون العملية إزالة من المفضلة أو فشل
+        toast.success(response?.message || t.favoriteRemoved, { id: toastId });
+      }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || t.favoriteErrorOccured;
-      Swal.fire(t.warningTitle, errorMessage, "error");
+      const errorMessage = error.response?.data?.message || t.favoriteErrorOccured;
+      toast.error(errorMessage, { id: toastId });
     }
   };
+
   const handleAuthRequired = (action) => {
     setPendingAction(() => action);
     setIsAuthModalOpen(true);
   };
+
   const handleAddToCart = () => {
     if (!userInfo?.accessToken) {
-      handleAuthRequired(_performAddToCart);
+      handleAuthRequired(() => _performAddToCart());
     } else {
       _performAddToCart();
     }
   };
+
   const addToFavorites = () => {
     if (!userInfo?.accessToken) {
-      handleAuthRequired(_performAddToFavorites);
+      handleAuthRequired(() => _performAddToFavorites());
     } else {
       _performAddToFavorites();
     }
   };
+
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
     setUserInfo(storageService.getUserInfo());
@@ -192,7 +186,6 @@ export default function ProductDetails({
       setPendingAction(null);
     }
   };
-
 
   return (
     <>
@@ -259,7 +252,7 @@ export default function ProductDetails({
         </p>
 
         {/* ================================================ */}
-        {/* ⭐️ قسم التنويعات (Variations) المُجمَّع ⭐️ */}
+        {/* ⭐️ قسم التنويعات (Variations) ⭐️ */}
         {/* ================================================ */}
         <div className="flex flex-col gap-5">
           {Object.keys(groupedVariations).length > 0 ? (
@@ -270,13 +263,11 @@ export default function ProductDetails({
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {variations.map((variation) => {
-                    // ⭐️ 7. المقارنة تتم الآن مقابل `selectedVariation` مباشرة
                     const isCurrent = selectedVariation?.id === variation.id;
 
                     return (
                       <button
                         key={variation.id}
-                        // ⭐️ 8. تمرير كائن "variation" الكامل للدالة
                         onClick={() => handleOptionSelect(variation)}
                         type="button"
                         className={`border rounded-lg py-2 px-4 cursor-pointer transition-all duration-200 text-sm font-medium
@@ -305,9 +296,6 @@ export default function ProductDetails({
             <p>{t.noOptions}</p>
           )}
         </div>
-        {/* ================================================ */}
-        {/* ⭐️ نهاية قسم التنويعات (Variations) ⭐️ */}
-        {/* ================================================ */}
 
         <div className="flex items-center gap-8">
           <div>

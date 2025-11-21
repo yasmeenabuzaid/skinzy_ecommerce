@@ -98,6 +98,7 @@
   },
 "cart": {
     "error": "Error",
+    "addSuccess": "add Success",
   "loginRequired": "You must be logged in to add the product to the cart",
   "addError": "An error occurred while adding to the cart",
   "removingProduct": "Removing the product from the cart...",
@@ -205,6 +206,8 @@
   },
     "login": {
     "welcomeBack": "Welcome Back!",
+    "loginSuccess": "Login successful! Redirecting...",
+    "title": "Sign in to your account",
     "subtitle": "Please enter your details to sign in.",
     "email": "Email Address",
     "password": "Password",

@@ -151,26 +151,34 @@ const TopBar = () => {
   );
 };
 
+// Grid Layout Update for Scalability
 const CategoryMegaMenu = ({ category }) => {
   const subCategories = category.subcategories || [];
   const locale = useLocale();
 
   return (
-    <div className="mega-menu absolute top-full left-1/2 lg:w-[1200px] -translate-x-1/2 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 -translate-y-2.5 z-50 border-t border-gray-100">
-      <div className="container mx-auto px-4 py-8 min-h-[150px]">
-        <div className="flex gap-8">
-          <div className="flex-1">
-            <h4 className="font-semibold text-base mb-5 text-gray-800">{locale === "ar" ? category.name_ar : category.name}</h4>
-            <ul className="space-y-2.5">
+    <div className="mega-menu absolute top-full left-1/2 lg:w-[1000px] -translate-x-1/2 bg-white shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 -translate-y-2.5 z-50 border-t border-gray-100 rounded-b-lg">
+      <div className="container mx-auto px-6 py-6 min-h-[150px]">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+                <h4 className="font-bold text-base text-gray-800">
+                    {locale === "ar" ? category.name_ar : category.name}
+                </h4>
+                <Link href={`/${locale}/category/${category.id}`} className="text-xs font-bold text-[#FF671F] hover:underline">
+                    {locale === "ar" ? "عرض الكل" : "VIEW ALL"}
+                </Link>
+            </div>
+            
+            {/* Using Grid for subcategories */}
+            <ul className="grid grid-cols-4 gap-x-8 gap-y-3">
               {subCategories.map((subCategory) => (
                 <li key={subCategory.id}>
-                  <Link href={`/${locale}/subcategory/${subCategory.id}`} className="text-gray-500 hover:text-gray-800 text-sm">
+                  <Link href={`/${locale}/subcategory/${subCategory.id}`} className="text-gray-500 hover:text-[#FF671F] text-sm hover:translate-x-1 transition-transform duration-200 block">
                     {locale === "ar" ? subCategory.name_ar : subCategory.name}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
         </div>
       </div>
     </div>
@@ -192,7 +200,8 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
     }
   }, []);
 
-  const navLinks = [
+  // All Links
+  const allLinks = [
     { id: "home", name: t("home"), href: `/${locale}/`, subcategories: [] },
     ...(categories || []).map((cat) => ({
       ...cat,
@@ -202,45 +211,71 @@ const MainNav = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick }) =
     })),
   ];
 
+  // Split links into Visible and More
+  const MAX_VISIBLE_ITEMS = 6; // تم زيادة العدد قليلاً للسماح بعرض المزيد قبل "المزيد"
+  const visibleLinks = allLinks.slice(0, MAX_VISIBLE_ITEMS);
+  const moreLinks = allLinks.slice(MAX_VISIBLE_ITEMS);
+
   return (
     <nav className="bg-white border-b border-gray-200 relative">
       <div className="container mx-auto px-4 flex items-center justify-between h-24">
         <div className="flex-shrink-0">
-<div className="flex-shrink-0">
-  {/* الحل: مقاس للموبايل والتابلت، ومقاس أكبر للابتوب */}
-  <Link href={`/${locale}/`} className="block w-[150px] lg:w-[220px] h-auto">
-    {/* نُبقي أبعاد الصورة على أعلى قيمة لضمان الجودة */}
-    <Image src="/logo.png" alt="skinzy care" width={250} height={188} priority />
-  </Link>
-</div>
+            {/* Mobile/Tablet vs Desktop size */}
+            <Link href={`/${locale}/`} className="block w-[150px] lg:w-[220px] h-auto">
+              <Image src="/logo.png" alt="skinzy care" width={250} height={188} priority />
+            </Link>
         </div>
 
-        <ul className="hidden lg:flex items-center gap-10 mx-auto">
+        {/* ⭐️ تم إضافة mr-auto هنا لدفع اللينكات لليمين وإبعادها عن اللوجو ⭐️
+            ⭐️ تم زيادة الـ gap إلى gap-10 لتوسيع المسافة بين اللينكات نفسها ⭐️
+        */}
+        <ul className="hidden lg:flex items-center gap-10 mr-auto ml-10"> {/* Changed mx-auto to mr-auto and added ml-10 */}
           {isLoadingCategories && <li className="text-sm text-gray-500">{t("loadingCategories")}</li>}
           {errorCategories && <li className="text-sm text-red-500">{t("errorLoadingCategories")}</li>}
-          {!isLoadingCategories && !errorCategories && navLinks.map((link) => {
+          
+          {!isLoadingCategories && !errorCategories && visibleLinks.map((link) => {
             const hasSubCategories = link.subcategories && link.subcategories.length > 0;
             return (
               <li key={link.id} className="group relative">
-                {/* ✨ --- START: Correction --- ✨ */}
-                {/* Now, all category names are clickable links */}
                 <Link 
                   href={link.href} 
-                  className="text-gray-800 font-medium text-sm flex items-center gap-1 py-2.5 cursor-pointer"
+                  className="text-gray-800 font-medium text-sm flex items-center gap-1 py-2.5 cursor-pointer hover:text-[#FF671F] transition-colors"
                 >
                   {link.name}
-                  {/* The chevron only shows for non-home links that have subcategories */}
                   {hasSubCategories && link.id !== "home" && <ChevronDown size={14} />}
                 </Link>
-                {/* ✨ --- END: Correction --- ✨ */}
                 
                 {hasSubCategories && <CategoryMegaMenu category={link} />}
               </li>
             );
           })}
+
+          {/* "More" Dropdown Logic */}
+          {!isLoadingCategories && !errorCategories && moreLinks.length > 0 && (
+            <li className="group relative">
+                <button className="text-gray-800 font-medium text-sm flex items-center gap-1 py-2.5 cursor-pointer hover:text-[#FF671F] transition-colors">
+                    {locale === 'ar' ? 'المزيد' : 'More'}
+                    <ChevronDown size={14} />
+                </button>
+                <div className="absolute top-full right-0 w-56 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-gray-100 py-2">
+                    {moreLinks.map((link) => (
+                        <Link 
+                            key={link.id} 
+                            href={link.href} 
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#FF671F]"
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
+                </div>
+            </li>
+          )}
         </ul>
 
-        <div className="flex items-center gap-3 md:gap-4">
+        {/* ⭐️ تم إضافة ml-auto هنا لدفع الأيقونات لليسار وإبعادها عن اللينكات ⭐️
+            ⭐️ تم زيادة الـ gap إلى gap-5 لتوسيع المسافة بين الأيقونات نفسها ⭐️
+        */}
+        <div className="flex items-center gap-5 ml-auto"> {/* Changed gap-3 md:gap-4 to gap-5 and added ml-auto */}
           <SearchBar onSearchClick={onSearchClick} />
           <div className="md:hidden text-gray-700">
             <LanguageSwitcher />
@@ -309,7 +344,7 @@ const MobileNav = ({ isOpen, onClose }) => {
 
           <button onClick={onClose} aria-label="Close navigation menu"><X size={28} /></button>
         </div>
-        <div className="p-5 overflow-y-auto">
+        <div className="p-5 overflow-y-auto h-[calc(100%-80px)]">
           <ul className="flex flex-col">
             {isLoadingCategories && <li className="py-4 text-gray-500">{t("loading")}</li>}
             {errorCategories && <li className="py-4 text-red-500">{t("error")}</li>}
@@ -318,7 +353,7 @@ const MobileNav = ({ isOpen, onClose }) => {
               return (
                 <li key={link.id} className="border-b border-gray-200">
                   <div className="flex justify-between items-center">
-                    <Link href={link.href} className="block py-4 font-medium text-gray-700">{link.name}</Link>
+                    <Link href={link.href} className="block py-4 font-medium text-gray-700" onClick={onClose}>{link.name}</Link>
                     {hasSubCategories && (
                       <button onClick={() => toggleMenu(link.id)} className="p-2 cursor-pointer">
                         <ChevronDown size={20} className={`transition-transform ${openMenus[link.id] ? "rotate-180" : ""}`} />
@@ -330,7 +365,7 @@ const MobileNav = ({ isOpen, onClose }) => {
                       <ul className="space-y-2">
                         {link.subcategories.map((subLink) => (
                           <li key={subLink.id}>
-                            <Link href={`/${locale}/subcategory/${subLink.id}`} className="text-gray-500 text-sm py-1 block">{subLink.name}</Link>
+                            <Link href={`/${locale}/subcategory/${subLink.id}`} className="text-gray-500 text-sm py-1 block" onClick={onClose}>{subLink.name}</Link>
                           </li>
                         ))}
                       </ul>
@@ -353,20 +388,21 @@ const Header = ({ onCartToggle, onMenuToggle, cartItemCount, onSearchClick, isSt
   </header>
 );
 
-// --- ✅ الكود المُعدل والمُصحح ---
+// --- App Component ---
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
 
-  // 💡 1. تم توحيد الاستدعاء وإضافة قيم افتراضية قوية
-  const { cart, updateCart, cartCount } = useCartContext() || { 
-    cart: [], 
-    updateCart: () => {}, 
-    cartCount: 0 
+  // 1. Safe default values
+  const { cart, updateCart, cartCount, updateCartq } = useCartContext() || { 
+     cart: [], 
+     updateCart: () => {}, 
+     cartCount: 0,
+     updateCartq: () => {} 
   };
-
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsSticky(window.scrollY > 10);
@@ -376,15 +412,11 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 💡 2. الحل: "تنظيف" بيانات السلة قبل تمريرها
-  // هذا يضمن أن .toFixed سيعمل دائمًا داخل CartDrawer
+  // 2. Data Sanitization (Fixes .toFixed errors)
   const sanitizedCart = (cart || []).map(item => ({
     ...item,
-    // نفترض أن الخصائص التي تسبب المشكلة هي 'price' أو 'sale_price'
-    // نقوم بتحويلها إلى أرقام
     price: parseFloat(item.price) || 0,
-    
-    // يمكنك إضافة أي حقول سعر أخرى قد تكون موجودة
+    // If you have sale_price, uncomment below:
     // sale_price: parseFloat(item.sale_price) || 0, 
   }));
   
@@ -401,12 +433,13 @@ export default function App() {
 
       <MobileNav isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       
-      {/* 💡 3. تمرير البيانات النظيفة (sanitizedCart) بدلاً من (cart) */}
+      {/* 3. Pass sanitized cart and updateCartq */}
       <CartDrawer 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
         items={sanitizedCart} 
         onRemoveItem={updateCart} 
+        onUpdateQuantity={updateCartq}
       />
       
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

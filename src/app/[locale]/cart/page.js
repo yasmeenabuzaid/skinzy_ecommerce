@@ -79,7 +79,7 @@ export default function CartPage() {
 
               <div className="border-b">
                 {cart.map((item) => {
-                  const price = item.product?.price_after_discount ?? item.product?.price ?? 0;
+const price = parseFloat(item.product?.price_after_discount ?? item.product?.price ?? 0);
                   return (
                     <div key={item.id} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center py-6">
                       <div className="col-span-3 flex items-center gap-4">

@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Heart, X } from 'lucide-react';
-import { useCartContext } from "../../../../context/CartContext";
+import { useCartContext } from "../../../../context/CartContext"; // تأكد أن المسار صحيح حسب مشروعك
 import { useRouter } from 'next/navigation';
 import { useLocale } from "next-intl";
-import Swal from "sweetalert2";
+import toast from 'react-hot-toast'; // استبدال Swal بـ toast
 import storageService from "@/services/storage/storageService";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import AuthModal from "../../components/auth/AuthModal";
@@ -12,10 +12,10 @@ import AuthModal from "../../components/auth/AuthModal";
 export default function ProductCard({ product, onRemoveFavorite }) {
     const router = useRouter();
     const locale = useLocale();
+    
+    // استدعاء دالة الإضافة من الكونتكس (التي تحتوي الآن على التوست واللوجيك)
     const { addCart } = useCartContext();
 
-    // 🔽 *** هاد هو السطر اللي تعدل *** 🔽
-    // ضفنا product.first_image?.image كخيار أول
     const productImage = product.first_image?.image || product.full_image_url || product.images?.[0]?.image || '/placeholder.png';
 
     const [userInfo, setUserInfo] = useState(null);
@@ -26,49 +26,48 @@ export default function ProductCard({ product, onRemoveFavorite }) {
         setUserInfo(storageService.getUserInfo());
     }, []);
 
+    // نصوص الترجمة للتنبيهات
     const t = {
         ar: {
-            addedToCart: "تمت الإضافة إلى السلة",
-            continueBtn: "متابعة",
             favoriteAdded: "تمت الإضافة إلى المفضلة",
+            favoriteRemoved: "تم الحذف من المفضلة",
             favoriteFailed: "فشل في الإضافة",
-            favoriteErrorOccured: "حدث خطأ",
-            warningTitle: "تنبيه"
+            loginRequired: "يجب تسجيل الدخول أولاً",
+            errorOccurred: "حدث خطأ ما",
+            processing: "جاري المعالجة..."
         },
         en: {
-            addedToCart: "Added to Cart",
-            continueBtn: "Continue",
             favoriteAdded: "Added to Favorites",
+            favoriteRemoved: "Removed from Favorites",
             favoriteFailed: "Failed to add",
-            favoriteErrorOccured: "An error occurred",
-            warningTitle: "Warning"
+            loginRequired: "Login required",
+            errorOccurred: "An error occurred",
+            processing: "Processing..."
         }
     }[locale] || {};
 
+    // دالة إضافة للسلة (بسيطة جداً الآن لأن الكونتكس يتولى الباقي)
     const _performAddToCart = () => {
         addCart({
             productId: product.id,
             quantity: 1,
             size: product.sizes?.[0] || "default",
         });
-        Swal.fire({
-            title: t.addedToCart,
-            icon: "success",
-            confirmButtonText: t.continueBtn,
-            confirmButtonColor: '#FF671F',
-            timer: 2000
-        });
+        // لا داعي لإضافة toast هنا لأن addCart في الكونتكس تقوم بذلك
     };
 
+    // دالة المفضلة مع Toast
     const _performAddToFavorites = async () => {
         const currentUserInfo = storageService.getUserInfo();
         const userId = currentUserInfo?.user?.id; 
 
         if (!userId) {
-            console.error("User ID not found, cannot add to favorites.");
-            Swal.fire(t.warningTitle, t.favoriteErrorOccured, "error");
+            toast.error(t.loginRequired);
             return; 
         }
+
+        // إظهار لودينج صغير
+        const toastId = toast.loading(t.processing);
 
         try {
             const response = await BackendConnector.addToFavorites({
@@ -76,16 +75,19 @@ export default function ProductCard({ product, onRemoveFavorite }) {
                 user_id: userId,
             });
 
-            Swal.fire(
-                t.warningTitle,
-                response?.message || (response?.favorite ? t.favoriteAdded : t.favoriteFailed),
-                response?.favorite ? "success" : "error"
-            );
+            if (response?.favorite) {
+                toast.success(response.message || t.favoriteAdded, { id: toastId });
+            } else {
+                // في حال كان الرد نجاح لكن العملية هي إزالة (Toggle) أو فشل
+                const msg = response?.message || t.favoriteFailed;
+                // نحدد نوع الأيقونة بناء على الرسالة أو الحالة
+                toast.success(msg, { id: toastId });
+            }
 
         } catch (error) {
             console.error("Add to favorites error:", error);
-            const errorMessage = error.response?.data?.message || t.favoriteErrorOccured;
-            Swal.fire(t.warningTitle, errorMessage, "error");
+            const errorMessage = error.response?.data?.message || t.errorOccurred;
+            toast.error(errorMessage, { id: toastId });
         }
     };
     
@@ -94,17 +96,23 @@ export default function ProductCard({ product, onRemoveFavorite }) {
         setIsAuthModalOpen(true);
     };
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (e) => {
+        e.preventDefault(); // منع انتقال الصفحة عند الضغط على الزر
+        e.stopPropagation();
+
         if (!userInfo?.accessToken) {
-            handleAuthRequired(_performAddToCart);
+            handleAuthRequired(() => _performAddToCart());
         } else {
             _performAddToCart();
         }
     };
 
-    const handleAddToFavorites = () => {
+    const handleAddToFavorites = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!userInfo?.accessToken) {
-            handleAuthRequired(_performAddToFavorites);
+            handleAuthRequired(() => _performAddToFavorites());
         } else {
             _performAddToFavorites();
         }
@@ -112,7 +120,8 @@ export default function ProductCard({ product, onRemoveFavorite }) {
 
     const handleAuthSuccess = () => {
         setIsAuthModalOpen(false);
-        setUserInfo(storageService.getUserInfo());
+        const user = storageService.getUserInfo();
+        setUserInfo(user);
         if (pendingAction) {
             pendingAction();
             setPendingAction(null);
@@ -120,10 +129,12 @@ export default function ProductCard({ product, onRemoveFavorite }) {
     };
 
     const handleActionClick = (e, action) => {
+        e.preventDefault();
         e.stopPropagation();
         action();
     };
 
+    // تجهيز البيانات للعرض
     const productName = locale === 'ar' ? product.name_ar : product.name;
     const smallDescription = locale === 'ar' ? product.small_description_ar : product.small_description;
 
@@ -186,14 +197,14 @@ export default function ProductCard({ product, onRemoveFavorite }) {
                         "
                     >
                         <button
-                            onClick={(e) => handleActionClick(e, handleAddToCart)}
+                            onClick={handleAddToCart}
                             className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-700 shadow-xl hover:bg-[#FF671F] hover:text-white transition-colors duration-200"
                             title="Add to Cart"
                         >
                             <ShoppingCart size={18} />
                         </button>
                         <button
-                            onClick={(e) => handleActionClick(e, handleAddToFavorites)}
+                            onClick={handleAddToFavorites}
                             className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-700 shadow-xl hover:bg-[#FF671F] hover:text-white transition-colors duration-200"
                             title="Add to Favorites"
                         >
@@ -226,7 +237,6 @@ export default function ProductCard({ product, onRemoveFavorite }) {
                             </span>
                         )}
                     </div>
-
                 </div>
             </div>
         </>

@@ -4,17 +4,19 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { User, MapPin, LogOut, Plus, Trash2, Home } from "lucide-react";
-import Swal from "sweetalert2";
+// 1. استبدال سويت اليرت بـ توست
+import toast, { Toaster } from 'react-hot-toast';
+
 // --- Services & External Connectors ---
 import storageService from "@/services/storage/storageService";
 import BackendConnector from "@/services/connectors/BackendConnector";
 
 // ====================================================================
-// 1. Sub-Components (Views) - All within this file
+// 1. Sub-Components (Views)
 // ====================================================================
 
 // ------------------------------------------
-// AccountDetailsView: Displays user's main info
+// AccountDetailsView
 // ------------------------------------------
 const AccountDetailsView = ({ onViewAddresses, onLogout }) => {
     const t = useTranslations("AccountDetailsView");
@@ -82,7 +84,7 @@ const AccountDetailsView = ({ onViewAddresses, onLogout }) => {
 
 
 // ------------------------------------------
-// AddressesView: Displays a list of user addresses
+// AddressesView
 // ------------------------------------------
 const AddressesView = ({ onAddAddress }) => {
     const t = useTranslations("AddressesView");
@@ -96,34 +98,27 @@ const AddressesView = ({ onAddAddress }) => {
             setAddresses(res?.addresses || []);
         } catch (error) {
             console.error(error);
+            toast.error(t("loadError") || "Failed to load addresses");
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         fetchAddresses();
     }, [fetchAddresses]);
 
-    const handleDelete = (id) => {
-        Swal.fire({
-            title: t("deleteConfirmTitle"),
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#e11d48",
-            confirmButtonText: t("deleteConfirmButton"),
-            cancelButtonText: t("cancel"),
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    await BackendConnector.deleteAddress(id);
-                    fetchAddresses();
-                    Swal.fire(t("deleteSuccessTitle"), t("deleteSuccessText"), "success");
-                } catch (error) {
-                    Swal.fire(t("deleteErrorTitle"), "", "error");
-                }
+    const handleDelete = async (id) => {
+        // استبدال SweetAlert بـ native confirm
+        if (window.confirm(t("deleteConfirmTitle") || "Are you sure you want to delete this address?")) {
+            try {
+                await BackendConnector.deleteAddress(id);
+                fetchAddresses();
+                toast.success(t("deleteSuccessText") || "Address deleted successfully");
+            } catch (error) {
+                toast.error(t("deleteErrorTitle") || "Failed to delete address");
             }
-        });
+        }
     };
 
     const AddressCard = ({ address, onDelete }) => (
@@ -167,7 +162,7 @@ const AddressesView = ({ onAddAddress }) => {
 
 
 // ------------------------------------------
-// AddAddressView: Form to add a new address
+// AddAddressView
 // ------------------------------------------
 const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
     const t = useTranslations("AddAddressView");
@@ -192,18 +187,21 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!fullAddress || !cityId) {
-            Swal.fire({ icon: 'error', title: t("error"), text: t("fillFields") });
+            toast.error(t("fillFields") || "Please fill all required fields");
             return;
         }
         setIsSubmitting(true);
         const addressData = { title, full_address: fullAddress, city_id: cityId, country: "Jordan" };
+        
+        const toastId = toast.loading(t("saving") || "Saving...");
+
         try {
             await BackendConnector.addAddress(addressData);
-            Swal.fire({ icon: 'success', title: t("success"), text: t("addressAdded") });
+            toast.success(t("addressAdded") || "Address added successfully", { id: toastId });
             if (onSubmitSuccess) onSubmitSuccess();
         } catch (error) {
             console.error(error);
-            Swal.fire({ icon: 'error', title: t("failed"), text: t("addressFailed") });
+            toast.error(t("addressFailed") || "Failed to add address", { id: toastId });
         } finally {
             setIsSubmitting(false);
         }
@@ -232,15 +230,14 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
 
 
 // ====================================================================
-// 2. Main Component (ProfilePage) - This brings all views together
+// 2. Main Component (ProfilePage)
 // ====================================================================
 export default function ProfilePage() {
-    const [view, setView] = useState("details"); // 'details', 'addresses', 'addAddress'
+    const [view, setView] = useState("details");
     const router = useRouter();
     const locale = useLocale();
     const t = useTranslations("ProfilePage");
 
-    // Check if user is logged in
     useEffect(() => {
         const userInfo = storageService.getUserInfo();
         if (!userInfo?.accessToken) {
@@ -249,19 +246,11 @@ export default function ProfilePage() {
     }, [router, locale]);
 
     const handleLogout = () => {
-        Swal.fire({
-            title: t("logoutConfirmTitle"),
-            text: t("logoutConfirmText"),
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: t("logoutConfirmButton"),
-            cancelButtonText: t("cancel"),
-        }).then((result) => {
-            if (result.isConfirmed) {
-                storageService.deleteAll();
-                window.location.href = `/${locale}`; // Redirect to home page
-            }
-        });
+        // استبدال SweetAlert بـ native confirm
+        if (window.confirm(t("logoutConfirmText") || "Are you sure you want to logout?")) {
+            storageService.deleteAll();
+            window.location.href = `/${locale}`;
+        }
     };
 
     const renderContent = () => {
@@ -284,31 +273,34 @@ export default function ProfilePage() {
     );
 
     return (
-          <div className="text-gray-800 ">
-        <div className="bg-gray-50 min-h-[70vh]">
-            <div className="container mx-auto px-4 py-8 sm:py-12">
-                <header className="mb-8">
-                    <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">{t("mainTitle")}</h1>
-                    <p className="mt-1 text-lg text-gray-500">{t("welcomeMessage")}</p>
-                </header>
+        <div className="text-gray-800">
+            {/* إضافة Toaster لعرض التنبيهات */}
+            <Toaster position="top-center" />
+            
+            <div className="bg-gray-50 min-h-[70vh]">
+                <div className="container mx-auto px-4 py-8 sm:py-12">
+                    <header className="mb-8">
+                        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">{t("mainTitle")}</h1>
+                        <p className="mt-1 text-lg text-gray-500">{t("welcomeMessage")}</p>
+                    </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-12">
-                    <aside className="lg:col-span-3 mb-8 lg:mb-0">
-                        <div className="bg-white rounded-xl shadow-sm p-4 space-y-2">
-                            <NavLink icon={<User size={20} />} label={t("navAccountDetails")} isActive={view === "details"} onClick={() => setView("details")} />
-                            <NavLink icon={<MapPin size={20} />} label={t("navMyAddresses")} isActive={view === "addresses" || view === "addAddress"} onClick={() => setView("addresses")} />
-                            <div className="pt-2 mt-2 border-t border-gray-200">
-                                <NavLink icon={<LogOut size={20} />} label={t("navLogout")} isActive={false} onClick={handleLogout} />
+                    <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-12">
+                        <aside className="lg:col-span-3 mb-8 lg:mb-0">
+                            <div className="bg-white rounded-xl shadow-sm p-4 space-y-2">
+                                <NavLink icon={<User size={20} />} label={t("navAccountDetails")} isActive={view === "details"} onClick={() => setView("details")} />
+                                <NavLink icon={<MapPin size={20} />} label={t("navMyAddresses")} isActive={view === "addresses" || view === "addAddress"} onClick={() => setView("addresses")} />
+                                <div className="pt-2 mt-2 border-t border-gray-200">
+                                    <NavLink icon={<LogOut size={20} />} label={t("navLogout")} isActive={false} onClick={handleLogout} />
+                                </div>
                             </div>
-                        </div>
-                    </aside>
+                        </aside>
 
-                    <main className="lg:col-span-9">
-                        {renderContent()}
-                    </main>
+                        <main className="lg:col-span-9">
+                            {renderContent()}
+                        </main>
+                    </div>
                 </div>
             </div>
         </div>
-            </div>
     );
 }

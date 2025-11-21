@@ -62,7 +62,7 @@ function HeroSection() {
   }, [nextSlide]);
 
   return (
-    <section className="relative h-[calc(100vh-136px)] min-h-[500px] w-full overflow-hidden bg-gray-100 group">
+    <section className="relative h-[calc(100vh-136px)] min-h-[500px] w-full overflow-hidden bg-gray-100 group ">
       {heroSlides.map((slide, index) => (
         <div
           key={index}

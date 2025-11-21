@@ -35,42 +35,44 @@ export default function LoginPage() {
 
     const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setMessage('');
+  const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setMessage('');
 
-        if (!email || !password) {
-            setError(t('fillAllFields'));
-            return;
-        }
+        if (!email || !password) {
+            setError(t('fillAllFields'));
+            return;
+        }
 
-        try {
-            setLoading(true);
-            const response = await BackendConnector.login({ email, password });
-            console.log('Login response:', response);
+        try {
+            setLoading(true);
+            const response = await BackendConnector.login({ email, password });
+            console.log('Login response:', response);
 
-            if (response?.status) {
-                storageService.setUserInfo({
-                    accessToken: response.accessToken,
-                    user: response.data,
-                });
+            if (response?.success) { 
+                storageService.setUserInfo({
+                    accessToken: response.accessToken,
+                    user: response.user,
+                });
 
-                setMessage(t('loginSuccess'));
+                setMessage(t('loginSuccess'));
 
-                setTimeout(() => {
-                    router.replace(`/${locale}`);
-                }, 1500);
-            } else {
-                setError(response?.message || t('failed'));
-            }
-        } catch (err) {
-            setError(err?.response?.data?.message || t('failed'));
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+                setTimeout(() => {
+                    // التعديل هنا: استخدمنا window.location.href لعمل ريفريش كامل
+                    // router.replace(`/${locale}`);  <-- هذا السطر القديم
+                    window.location.href = `/${locale}`; 
+                }, 1500);
+            } else {
+                setError(response?.message || t('failed'));
+            }
+        } catch (err) {
+            setError(err?.response?.data?.message || t('failed'));
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="text-gray-800">

@@ -11,14 +11,16 @@ const OrderSummaryItem = ({ item, onRemove }) => {
   if (!product) return null;
 
   const image = product.images?.[0]?.image || "https://placehold.co/100x100";
-  
-  // عرض الاسم العربي لو اللغة عربية واسم عربي موجود، وإلا الاسم الإنجليزي
+
   const name =
     locale === "ar" && product.name_ar && product.name_ar.trim() !== ""
       ? product.name_ar
       : product.name || "Unnamed";
 
-  const price = product.price_after_discount ?? product.price ?? 0;
+  // ⭐️⭐️⭐️ الحل: استخدمنا parseFloat() لتحويل السعر إلى رقم ⭐️⭐️⭐️
+  const price = parseFloat(
+    product.price_after_discount ?? product.price ?? 0
+  );
 
   return (
     <div className="flex gap-4 mb-5">

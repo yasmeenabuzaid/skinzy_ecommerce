@@ -6,12 +6,12 @@ import { useLocale, useTranslations } from "next-intl";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import { useCartContext } from "../../../context/CartContext";
 import StripePayment from "./StripePayment.js";
-import Swal from "sweetalert2";
+// 1. استبدال سويت اليرت بـ توست
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 // --- استيراد المكونات الجديدة ---
 import Modal from "../components/ui/Modal"; 
-// تأكد من أن هذا المسار صحيح بالنسبة لمشروعك
 import AddAddressView from "../components/account/AddAddressView"; 
 
 const FREE_SHIPPING_THRESHOLD = 20;
@@ -45,7 +45,7 @@ export default function CheckoutPage() {
 
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false); // State للتحكم بالمودال
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentProof, setPaymentProof] = useState(null);
@@ -57,14 +57,13 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price_after_discount ?? item.product?.price ?? 0) * item.quantity), 0);
   const deliveryFee = shippingMethod === "home_delivery" ? (subtotal > FREE_SHIPPING_THRESHOLD ? 0 : parseFloat(selectedAddress?.city?.delivery_fee || 0)) : 0;
 
-  // دالة جلب العناوين لجعلها قابلة لإعادة الاستخدام
   const fetchAddresses = useCallback(async () => {
     try {
       setLoading(true);
       const res = await BackendConnector.getAddresses();
       const fetchedAddresses = res?.addresses || [];
       setAddresses(fetchedAddresses);
-      return fetchedAddresses; // إرجاع العناوين لتحديث الاختيار
+      return fetchedAddresses;
     } catch (error) {
       console.error(t("orderFailText"), error);
       setAddresses([]);
@@ -78,12 +77,10 @@ export default function CheckoutPage() {
     fetchAddresses();
   }, [fetchAddresses]);
 
-  // دالة لإغلاق المودال وتحديث العناوين بعد الإضافة
   const handleAddressAdded = async (newAddress) => {
-    setIsAddressModalOpen(false); // 1. أغلق المودال
-    const updatedAddresses = await fetchAddresses(); // 2. أعد جلب كل العناوين
+    setIsAddressModalOpen(false);
+    const updatedAddresses = await fetchAddresses();
 
-    // 3. ابحث عن العنوان الجديد وقم باختياره تلقائياً
     if (newAddress && newAddress.id) {
         const newlyAdded = updatedAddresses.find(addr => addr.id === newAddress.id);
         if (newlyAdded) {
@@ -95,7 +92,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedAddress || !shippingMethod || !paymentMethod || (paymentMethod === "stripe" && !paymentProof)) {
-      alert(t("fillAllRequired"));
+      toast.error(t("fillAllRequired"));
       return;
     }
     setSubmitting(true);
@@ -106,19 +103,24 @@ export default function CheckoutPage() {
     if (paymentMethod === "stripe" && paymentProof) {
       formData.append("image", paymentProof);
     }
+
+    const toastId = toast.loading(t("submittingOrder") || "Processing order...");
+
     try {
       await BackendConnector.handleCheckout(formData);
       await fetchCart();
       await fetchCartCount();
-      Swal.fire({
-        icon: "success",
-        title: t("orderSuccessTitle"),
-        text: t("orderSuccessText"),
-        confirmButtonText: t("orderSuccessBtn"),
-      }).then(() => router.push("/"));
+      
+      // 2. رسالة نجاح بدلاً من Swal
+      toast.success(t("orderSuccessText") || "Order placed successfully!", { id: toastId });
+      
+      setTimeout(() => {
+          router.push("/");
+      }, 1500);
+
     } catch (error) {
       console.error(t("orderFailText"), error);
-      Swal.fire({ icon: "error", title: t("orderFailTitle"), text: t("orderFailText") });
+      toast.error(t("orderFailText") || "Failed to place order", { id: toastId });
     } finally {
       setSubmitting(false);
     }
@@ -150,7 +152,6 @@ export default function CheckoutPage() {
                 {loading ? (
                   <p className="text-gray-500">{t("loadingAddresses")}</p>
                 ) : addresses.length === 0 ? (
-                  // --- التعديل هنا: استبدال الرابط بزر يفتح المودال ---
                   <div className="text-center p-4 border rounded-md bg-gray-50">
                     <p className="text-gray-600">
                       {t("noAddressesMessage")}{" "}
@@ -189,7 +190,6 @@ export default function CheckoutPage() {
         </form>
       </div>
 
-      {/* --- إضافة المودال هنا --- */}
       <Modal isOpen={isAddressModalOpen} onClose={() => setIsAddressModalOpen(false)}>
         <AddAddressView onCancel={() => setIsAddressModalOpen(false)} onSubmitSuccess={handleAddressAdded} />
       </Modal>

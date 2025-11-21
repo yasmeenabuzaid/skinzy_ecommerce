@@ -4,9 +4,9 @@ import NextTopLoader from 'nextjs-toploader';
 import Providers from '../providers';
 import { getMessages } from 'next-intl/server';
 import '../globals.css';
-import Footer from '../[locale]/components/ui/Footer'; 
-import Header from '../[locale]/components/ui/Header'; 
-
+import Footer from './components/ui/Footer'; 
+import Header from './components/ui/Header'; 
+import PageTransitionWrapper from '../PageTransitionWrapper'; // ⭐️ تأكد من المسار
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
@@ -42,15 +42,17 @@ export default async function RootLayout({ children, params: { locale } }) {
       <body className={`${poppins.variable} ${notoKufi.variable} font-sans`}>
         <NextTopLoader
           color="#FF671F"
-          height={3}
+//           height={3}
           showSpinner={false}
         />
           <Providers locale={locale} messages={messages}>
           <Header />
-          
+          <PageTransitionWrapper> 
+  
           <main className="min-h-screen">
             {children}
           </main>
+</PageTransitionWrapper>
           
           <Footer />
         </Providers>

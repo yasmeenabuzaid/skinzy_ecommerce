@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { LayoutGrid, Rows3, List, LogIn, HeartCrack } from 'lucide-react'; // ⭐️ 1. إضافة أيقونات جديدة
+import { LayoutGrid, Rows3, List, LogIn, HeartCrack } from 'lucide-react';
 import useFavoritesQuery from '../../../hooks/useFavoritesQuery';
 
 import ProductCard from '../components/ui/ProductCard';
 import storageService from '@/services/storage/storageService';
 
 import BackendConnector from '@/services/connectors/BackendConnector';
-import Swal from 'sweetalert2';
-import Link from 'next/link'; // ⭐️ 2. إضافة استيراد Link
+// 1. استبدال سويت اليرت بـ توست
+import toast from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function FavoriteProductsPage() {
   const [view, setView] = useState(3);
@@ -21,11 +22,8 @@ export default function FavoriteProductsPage() {
 
   const user = storageService.getUserInfo();
   
-  // ⭐️ 3. (إصلاح الخطأ 401)
-  // نمرر خيار "enabled" للـ Hook
-  // هذا يمنع الـ Hook من العمل (وإرسال طلب API) إذا كان المستخدم غير مسجل
   const { favorites, setFavorites, isLoading, error } = useFavoritesQuery({
-    enabled: !!user?.accessToken // 👈 لن يعمل الـ Hook إلا إذا كان هناك Token
+    enabled: !!user?.accessToken
   });
 
   const favoriteProducts = Array.isArray(favorites)
@@ -34,52 +32,47 @@ export default function FavoriteProductsPage() {
 
   const handleRemoveFavorite = async (productId) => {
     const originalFavorites = favorites;
+    
+    // تحديث فوري للواجهة (Optimistic Update)
     const updatedFavorites = originalFavorites.filter(
       (fav) => fav.product_id !== productId
     );
     setFavorites(updatedFavorites);
 
     try {
-      // ⭐️ ملاحظة: تأكد أن دالة الحذف ترسل الـ Token (هذا يتم داخل BackendConnector)
       const response = await BackendConnector.removeFromFavorites(productId);
 
       if (!response.success) {
-        Swal.fire({
-          icon: 'error',
-          title: t('errorTitle'),
-          text: t('removeError'),
-        });
+        // في حالة الفشل نرجع القائمة القديمة ونعرض خطأ
         setFavorites(originalFavorites);
+        toast.error(t('removeError') || "Failed to remove favorite");
+      } else {
+        // نجاح صامت (أو يمكن إضافة رسالة صغيرة)
+        toast.success(t('removeSuccess') || "Removed from favorites");
       }
     } catch (error) {
       console.error("Failed to remove favorite:", error);
-      Swal.fire({
-        icon: 'error',
-        title: t('errorTitle'),
-        text: t('networkError'),
-      });
       setFavorites(originalFavorites);
+      toast.error(t('networkError') || "Network error occurred");
     }
   };
 
-  // ⭐️ 4. (تنفيذ طلبك) تحديث دالة عرض المحتوى
   const renderContent = () => {
     
     // ===== الحالة الأولى: المستخدم غير مسجل =====
-    // هذا هو التحقق الفوري (Client-side)
     if (!user || !user.accessToken) {
       return (
         <div className="text-center py-20 px-6">
           <LogIn size={60} className="mx-auto text-gray-300" />
           <h2 className="mt-4 text-xl font-semibold text-gray-800">
-            {t('loginRequiredTitle', 'Login Required')} {/* "يجب تسجيل الدخول" */}
+            {t('loginRequiredTitle', 'Login Required')}
           </h2>
           <p className="mt-2 text-gray-500 max-w-md mx-auto">
-            {t('loginRequiredMessage', 'Please log in to view your favorite products.')} {/* "الرجاء تسجيل الدخول لعرض منتجاتك المفضلة." */}
+            {t('loginRequiredMessage', 'Please log in to view your favorite products.')}
           </p>
           <Link href={`/${locale}/auth/login`}>
             <button className="mt-6 bg-[#FF671F] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
-              {t('loginButton', 'Log In')} {/* "تسجيل الدخول" */}
+              {t('loginButton', 'Log In')}
             </button>
           </Link>
         </div>
@@ -90,18 +83,17 @@ export default function FavoriteProductsPage() {
     if (isLoading) {
       return (
         <div className="text-center py-20">
-          <p>{t('loading', 'Loading...')}</p> {/* "جاري التحميل..." */}
+          <p>{t('loading', 'Loading...')}</p>
         </div>
       );
     }
 
-    // ===== الحالة الثالثة: حدث خطأ (مثل 401 لانتهاء الصلاحية أو خطأ بالشبكة) =====
+    // ===== الحالة الثالثة: حدث خطأ =====
     if (error) {
       return (
         <div className="text-center py-20 text-red-600">
           <h2 className="text-xl font-semibold">{t('errorTitle', 'An Error Occurred')}</h2>
           <p>{error.message || t('networkError', 'Failed to fetch favorites.')}</p>
-          {/* إذا كان الخطأ 401 (انتهت الجلسة)، يمكننا أيضاً عرض زر تسجيل الدخول */}
           {error.response?.status === 401 && (
              <Link href={`/${locale}/auth/login`}>
               <button className="mt-6 bg-red-600 text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors">
@@ -113,20 +105,20 @@ export default function FavoriteProductsPage() {
       );
     }
 
-    // ===== الحالة الرابعة: المستخدم مسجل، ولكن لا يوجد لديه مفضلة =====
+    // ===== الحالة الرابعة: لا يوجد مفضلة =====
     if (favoriteProducts.length === 0) {
       return (
         <div className="text-center py-20 px-6">
            <HeartCrack size={60} className="mx-auto text-gray-300" />
           <h2 className="mt-4 text-xl font-semibold text-gray-800">
-            {t('noFavoritesTitle', 'No Favorites Yet')} {/* "لا يوجد منتجات مفضلة بعد" */}
+            {t('noFavoritesTitle', 'No Favorites Yet')}
           </h2>
           <p className="mt-2 text-gray-500 max-w-md mx-auto">
-            {t('noFavoritesMessage', 'Add products you love to your favorites to see them here.')} {/* "أضف المنتجات التي تحبها إلى المفضلة لتراها هنا." */}
+            {t('noFavoritesMessage', 'Add products you love to your favorites to see them here.')}
           </p>
           <Link href={`/${locale}/`}>
             <button className="mt-6 bg-black text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
-              {t('continueShopping', 'Continue Shopping')} {/* "متابعة التسوق" */}
+              {t('continueShopping', 'Continue Shopping')}
             </button>
           </Link>
         </div>
@@ -163,7 +155,6 @@ export default function FavoriteProductsPage() {
             {t('favoriteProductsTitle', 'Favorite Products')}
           </h1>
           <div className="flex items-center gap-3 mt-4 md:mt-0">
-            {/* (أزرار التبديل - تبقى كما هي) */}
             <button
               onClick={() => setView(2)}
               className={`p-2 rounded-md ${view === 2 ? 'bg-[#FF671F] text-white' : 'bg-gray-200 text-gray-600'}`}

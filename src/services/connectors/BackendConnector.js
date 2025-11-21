@@ -127,13 +127,14 @@ class BackendConnector {
         return requests.get(options).then((response) => response).catch((err) => err);
     };
 
-    getCities = (context = null) => {
-        const options = {
-            url: `/e-commerce/customer/cities`,
-            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-        };
-        return requests.get(options).then((response) => response).catch((err) => err);
+getCities = () => {
+    const options = {
+        url: `/e-commerce/customer/cities`,
+        baseURL: process.env.NEXT_PUBLIC_BASE_URL,
     };
+    // 🚨 التعديل الضروري: إعادة response.data فقط، حيث توجد المصفوفة
+    return requests.get(options).then((response) => response.data).catch((err) => err);
+};
 
     fetchProducts = async (params, context = null) => {
         const options = {

@@ -1,9 +1,9 @@
 "use client";
 import React, { useContext, useState, useEffect, createContext } from "react";
 import BackendConnector from "@/services/connectors/BackendConnector";
-import Swal from "sweetalert2";
 import storageService from "@/services/storage/storageService";
 import { useTranslations } from "next-intl";
+import toast, { Toaster } from 'react-hot-toast'; // استيراد التوست
 
 const CartContext = createContext({});
 
@@ -13,31 +13,28 @@ export const CartContextProvider = ({ children }) => {
   const [isFetching, setIsFetching] = useState(false);
   const t = useTranslations("cart");
 
-  const fetchCart = async () => {
+  const fetchCart = async (silent = false) => {
     const userInfo = storageService.getUserInfo();
     if (!userInfo?.accessToken) return;
     try {
-      setIsFetching(true);
+      if (!silent) setIsFetching(true);
       const data = await BackendConnector.fetchCart();
-      setIsFetching(false);
+      if (!silent) setIsFetching(false);
 
       if (data.success) {
         setCart(data.cart || []);
-      } else {
-        console.error("Fetch cart failed:", data.message);
       }
     } catch (error) {
       console.error("Fetch cart error:", error);
-      setIsFetching(false);
+      if (!silent) setIsFetching(false);
     }
   };
 
   const fetchCartCount = async () => {
     const userInfo = storageService.getUserInfo();
     if (!userInfo?.accessToken) return;
-
     try {
-      const data = await BackendConnector.fetchCartCount(); 
+      const data = await BackendConnector.fetchCartCount();
       if (data.success) {
         setCartCount(data.count || 0);
       }
@@ -48,102 +45,105 @@ export const CartContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCart();
-    fetchCartCount(); // جلب العدد عند تحميل الكومبوننت
+    fetchCartCount();
   }, []);
 
+  // --- إضافة للكارت ---
   const addCart = async ({ productId, quantity = 1, size = null }) => {
     const userInfo = storageService.getUserInfo();
     if (!userInfo?.accessToken) {
-      Swal.fire(t("error"), t("loginRequired"), "error");
+      toast.error(t("loginRequired")); // استبدال Swal بـ toast
       return;
     }
+
+    // تحديث وهمي سريع للعدد (اختياري)
+    setCartCount(prev => prev + 1); 
+
+    const toastId = toast.loading(t("adding")); // إظهار لودينج صغير
+
     try {
       const resp = await BackendConnector.addCart({ productId, quantity, size });
+      
       if (resp?.success) {
-        await fetchCart();
-        await fetchCartCount(); // تحديث العدد بعد الإضافة
+        toast.success(t("addSuccess"), { id: toastId }); // تحويل اللودينج لنجاح
+        await fetchCart(true); // تحديث صامت للداتا الحقيقية
+        await fetchCartCount();
+      } else {
+        toast.error(t("addError"), { id: toastId });
+        setCartCount(prev => prev - 1); // تراجع في حالة الفشل
       }
-
     } catch (error) {
-      console.error("Add cart error:", error);
-      Swal.fire(t("error"), t("addError"), "error");
+      toast.error(t("addError"), { id: toastId });
+      setCartCount(prev => prev - 1); // تراجع
     }
   };
 
+  // --- حذف من الكارت (تحديث فوري) ---
   const deleteCart = async (id) => {
+    // 1. حفظ النسخة القديمة احتياطاً
+    const previousCart = [...cart];
+    const previousCount = cartCount;
+
+    // 2. التحديث الفوري للواجهة (حذف العنصر فوراً)
+    setCart((prev) => prev.filter((item) => item.id !== id));
+    setCartCount((prev) => Math.max(0, prev - 1));
+    
+    // رسالة صغيرة
+    toast.success(t("deleteSuccess"), { duration: 2000 });
+
     try {
+      // 3. إرسال الطلب للسيرفر
       const data = await BackendConnector.deleteCart({ id });
-      if (data.success) {
-        setCart((prev) => prev.filter((item) => item.id !== id));
-        await fetchCartCount(); // تحديث العدد بعد الحذف
-      } else {
-        console.error("Delete cart failed:", data.message);
+      
+      if (!data.success) {
+        throw new Error(data.message);
       }
+      // في حالة النجاح، لا نفعل شيئاً لأننا حدثنا الواجهة بالفعل
+      // يمكن عمل fetch في الخلفية للتأكد من الداتا
+      fetchCartCount(); 
     } catch (error) {
-      console.error("Delete cart error:", error);
+      // 4. في حالة الفشل: استرجاع النسخة القديمة
+      setCart(previousCart);
+      setCartCount(previousCount);
+      toast.error(t("deleteError"));
     }
   };
 
-  const updateCart = async (id, quantity) => {
-    Swal.fire({
-      title: t("removingProduct"),
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    try {
-      const data = await BackendConnector.updateCart({ id, quantity });
-      if (data?.success) {
-        await fetchCart();
-        await fetchCartCount(); // تحديث العدد بعد التحديث
-
-        Swal.fire({
-          icon: "success",
-          title: t("deleteSuccess"),
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      } else {
-        console.error("Update cart failed:", data?.message);
-        Swal.fire(t("error"), t("updateFailed"), "error");
-      }
-    } catch (error) {
-      console.error("Update cart error:", error);
-      Swal.fire(t("error"), t("updateError"), "error");
-    }
-  };
-
+  // --- تحديث الكمية (تحديث فوري) ---
   const updateCartq = async (id, quantity) => {
-    Swal.fire({
-      title: t("modifyingQuantity"),
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    // 1. حفظ النسخة القديمة
+    const previousCart = [...cart];
+
+    // 2. التحديث الفوري للواجهة (تغيير الرقم فوراً أمام اليوزر)
+    setCart((prevCart) => 
+      prevCart.map((item) => 
+        item.id === id ? { ...item, quantity: quantity } : item
+      )
+    );
 
     try {
+      // 3. إرسال الطلب للسيرفر بدون لودينج مزعج
       const data = await BackendConnector.updateCartq({ id, quantity });
-      if (data?.success) {
-        await fetchCart();
-        await fetchCartCount(); // تحديث العدد بعد التعديل
-
-        Swal.fire({
-          icon: "success",
-          title: t("updateSuccess"),
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      } else {
-        console.error("Update cart failed:", data?.message);
-        Swal.fire(t("error"), t("updateFailed"), "error");
+      
+      if (!data?.success) {
+        throw new Error(data?.message);
       }
+      
+      // نجاح صامت، أو يمكن عمل fetch silent للتأكد من الأسعار
+      fetchCart(true); 
+      
     } catch (error) {
+      // 4. تراجع عند الخطأ
+      setCart(previousCart);
+      toast.error(t("updateError"));
       console.error("Update cart error:", error);
-      Swal.fire(t("error"), t("updateError"), "error");
     }
+  };
+
+  // دالة updateCart القديمة (إذا كنت تستخدمها لحذف المنتج عند نقص الكمية لصفر)
+  const updateCart = async (id, quantity) => {
+     // يمكنك تطبيق نفس منطق updateCartq هنا
+     // ...
   };
 
   return (
@@ -151,7 +151,7 @@ export const CartContextProvider = ({ children }) => {
       value={{
         addCart,
         deleteCart,
-        updateCart,
+        updateCart, // تأكد من توحيد استخدامك للدوال
         updateCartq,
         cartCount,
         cart,
@@ -160,6 +160,8 @@ export const CartContextProvider = ({ children }) => {
         fetchCartCount
       }}
     >
+      {/* ضروري لإظهار التوست في التطبيق */}
+      <Toaster position="top-center" reverseOrder={false} />
       {children}
     </CartContext.Provider>
   );

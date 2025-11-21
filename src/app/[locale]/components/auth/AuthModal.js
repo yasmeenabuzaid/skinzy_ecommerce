@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Swal from 'sweetalert2';
+import toast from 'react-hot-toast'; // استبدلنا Swal بـ toast
 import BackendConnector from '@/services/connectors/BackendConnector';
 import storageService from '@/services/storage/storageService';
 import { X } from 'lucide-react';
@@ -26,21 +26,25 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     const handleLogin = async (e) => {
         e.preventDefault();
         if (!email || !password) {
-            Swal.fire("خطأ", t('fillAllFields'), 'warning');
+            toast.error(t('fillAllFields'));
             return;
         }
         setLoading(true);
+        const toastId = toast.loading(t('loggingIn') || '...جاري الدخول'); // لودينج صغير
+
         try {
             const response = await BackendConnector.login({ email, password });
             if (response?.success) {
                 storageService.setUserInfo({ accessToken: response.accessToken, user: response.user });
+                
+                toast.success(t('loginSuccess') || 'تم تسجيل الدخول بنجاح', { id: toastId });
                 resetForm();
-                onAuthSuccess();
+                onAuthSuccess(); // تحديث الواجهة بعد الدخول
             } else {
-                Swal.fire("خطأ", response?.message || t('loginFail'), 'error');
+                toast.error(response?.message || t('loginFail'), { id: toastId });
             }
-        } catch {
-            Swal.fire("خطأ", "حدث خطأ غير متوقع", 'error');
+        } catch (error) {
+            toast.error("حدث خطأ غير متوقع", { id: toastId });
         } finally {
             setLoading(false);
         }
@@ -49,12 +53,16 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     const handleRegister = async (e) => {
         e.preventDefault();
         if (!fullName || !email || !password) {
-            Swal.fire("خطأ", t('fillAllFields'), 'warning');
+            toast.error(t('fillAllFields'));
             return;
         }
+        
         const [firstName, ...rest] = fullName.trim().split(' ');
         const lastName = rest.join(' ') || ' ';
+        
         setLoading(true);
+        const toastId = toast.loading(t('registering') || '...جاري التسجيل');
+
         try {
             const response = await BackendConnector.register({
                 Fname: firstName,
@@ -63,14 +71,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
                 password,
                 password_confirmation: password
             });
+            
             if (response?.success) {
-                Swal.fire("نجاح!", t('registerSuccess'), 'success');
-                setIsLoginView(true);
+                toast.success(t('registerSuccess'), { id: toastId });
+                setIsLoginView(true); // التحويل لصفحة الدخول بعد التسجيل
             } else {
-                Swal.fire("خطأ", response?.message || t('registerFail'), 'error');
+                toast.error(response?.message || t('registerFail'), { id: toastId });
             }
-        } catch {
-            Swal.fire("خطأ", "حدث خطأ غير متوقع أثناء التسجيل", 'error');
+        } catch (error) {
+            toast.error("حدث خطأ غير متوقع أثناء التسجيل", { id: toastId });
         } finally {
             setLoading(false);
         }
@@ -103,8 +112,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
                             <label className="block text-sm font-medium text-gray-700">{t('passwordLabel')}</label>
                             <input type="password" placeholder={t('passwordPlaceholder')} value={password} onChange={e => setPassword(e.target.value)} required className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#FF671F] focus:border-[#FF671F]" />
                         </div>
-                        <button type="submit" disabled={loading} className="w-full bg-[#FF671F] text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-md">
-                            {loading ? '...جاري الدخول' : t('loginBtn')}
+                        <button type="submit" disabled={loading} className="w-full bg-[#FF671F] text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-md disabled:opacity-70">
+                            {loading ? '...' : t('loginBtn')}
                         </button>
                     </form>
                 ) : (
@@ -122,8 +131,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
                             <label className="block text-sm font-medium text-gray-700">{t('passwordLabel')}</label>
                             <input type="password" placeholder={t('passwordPlaceholder')} value={password} onChange={e => setPassword(e.target.value)} required className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#FF671F] focus:border-[#FF671F]" />
                         </div>
-                        <button type="submit" disabled={loading} className="w-full bg-[#FF671F] text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-md">
-                            {loading ? '...جاري التسجيل' : t('registerBtn')}
+                        <button type="submit" disabled={loading} className="w-full bg-[#FF671F] text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-md disabled:opacity-70">
+                            {loading ? '...' : t('registerBtn')}
                         </button>
                     </form>
                 )}
