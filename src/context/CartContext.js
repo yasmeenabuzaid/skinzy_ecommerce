@@ -93,7 +93,7 @@ export const CartContextProvider = ({ children }) => {
 
     try {
       // 3. إرسال الطلب للسيرفر
-      const data = await BackendConnector.deleteCart({ id });
+const data = await BackendConnector.updateCart({ id, is_deleted: 1 });
       
       if (!data.success) {
         throw new Error(data.message);

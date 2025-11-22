@@ -6,7 +6,6 @@ import { useLocale, useTranslations } from "next-intl";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import { useCartContext } from "../../../context/CartContext";
 import StripePayment from "./StripePayment.js";
-// 1. استبدال سويت اليرت بـ توست
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -51,7 +50,10 @@ export default function CheckoutPage() {
   const [paymentProof, setPaymentProof] = useState(null);
   const [stripeData, setStripeData] = useState({});
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [shippingMethod, setShippingMethod] = useState("");
+  
+  // 🟢 التعديل 1: تثبيت القيمة الافتراضية لتكون home_delivery دائماً
+  const [shippingMethod, setShippingMethod] = useState("home_delivery");
+  
   const [submitting, setSubmitting] = useState(false);
 
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price_after_discount ?? item.product?.price ?? 0) * item.quantity), 0);
@@ -91,14 +93,15 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedAddress || !shippingMethod || !paymentMethod || (paymentMethod === "stripe" && !paymentProof)) {
+    // لا حاجة للتحقق من shippingMethod لأنه ثابت
+    if (!selectedAddress || !paymentMethod || (paymentMethod === "stripe" && !paymentProof)) {
       toast.error(t("fillAllRequired"));
       return;
     }
     setSubmitting(true);
     const formData = new FormData(e.target);
     formData.set("address_id", selectedAddress.id);
-    formData.set("shipping_method", shippingMethod);
+    formData.set("shipping_method", shippingMethod); // القيمة الثابتة
     formData.set("payment_method", paymentMethod);
     if (paymentMethod === "stripe" && paymentProof) {
       formData.append("image", paymentProof);
@@ -111,7 +114,6 @@ export default function CheckoutPage() {
       await fetchCart();
       await fetchCartCount();
       
-      // 2. رسالة نجاح بدلاً من Swal
       toast.success(t("orderSuccessText") || "Order placed successfully!", { id: toastId });
       
       setTimeout(() => {
@@ -143,7 +145,18 @@ export default function CheckoutPage() {
 
               <div className="mb-8">
                 <h2 className="text-lg font-medium mb-4">{t("shippingMethod")}</h2>
-                <SelectInput id="shipping_method" label={t("chooseShippingMethod")} options={[{ value: "home_delivery", label: t("homeDelivery") }]} value={shippingMethod} onChange={(e) => setShippingMethod(e.target.value)} />
+                
+                {/* 🟢 التعديل 2: عرض حقل ثابت بدلاً من القائمة المنسدلة */}
+                <div className="relative">
+                    <input 
+                        type="text" 
+                        value={t("homeDelivery")} // النص الظاهر للمستخدم
+                        disabled 
+                        className="w-full px-3 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none"
+                    />
+                    {/* إرسال القيمة الحقيقية بشكل مخفي لضمان وصولها في الـ Form Data */}
+                    <input type="hidden" name="shipping_method" value="home_delivery" />
+                </div>
                 <p className="text-sm text-gray-500 mt-1">{t("note")}: {t("homeDeliveryOnlyNoPickup")}</p>
               </div>
 

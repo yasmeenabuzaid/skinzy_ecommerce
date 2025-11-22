@@ -138,6 +138,22 @@
   "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل."
   }
   ,
+   "HomePage": {
+    "trendingTitle": "المنتجات الرائجة",
+    "trendingSubtitle": "اكتشفي أكثر المنتجات مبيعاً",
+    "promoTitle": "عروض هذا الأسبوع",
+    "promoSubtitle": "تسوقي حسب الخصومات",
+    "gridTitle": "مثال على قسم الشبكة",
+    "trendingTitle": "المنتجات الرائجة",
+    "trendingSubtitle": "اكتشف منتجاتنا الأكثر مبيعاً",
+    "highlightsTitle": "أبرز منتجات الأسبوع",
+    "highlightsSubtitle": "تسوق العروض والخصومات",
+    "gridExampleTitle": "تشكيلة مميزة",
+    "gridExampleSubtitle": "تصفح أحدث الشبكات",
+    "viewAll": "عرض الكل" ,
+    "gridSubtitle": "شبكة أخرى",
+    "viewAll": "عرض الكل"
+  },
     "FavoriteProducts": {
     "favoriteProductsTitle": "المنتجات المفضلة",
     "errorTitle": "حدث خطأ",
@@ -148,6 +164,18 @@
     "loadingFavorites": "جاري تحميل المنتجات المفضلة...",
     "noFavorites": "لا توجد منتجات في قائمة المفضلة.",
     "browseProducts": "تصفح المنتجات",
+       "favoriteProductsTitle": "المنتجات المفضلة",
+    "loading": "جاري تحميل مفضلتك...",
+    "loginRequiredTitle": "تسجيل الدخول مطلوب",
+    "loginRequiredMessage": "يرجى تسجيل الدخول لعرض منتجاتك المفضلة.",
+    "loginButton": "تسجيل الدخول",
+    "noFavoritesTitle": "لا توجد مفضلات بعد",
+    "noFavoritesMessage": "أضف المنتجات التي تعجبك إلى المفضلة لتظهر هنا.",
+    "continueShopping": "متابعة التسوق",
+    "errorTitle": "حدث خطأ",
+    "removeError": "فشل في إزالة المنتج من المفضلة",
+    "removeSuccess": "تمت الإزالة من المفضلة",
+    "networkError": "حدث خطأ في الشبكة",
     "sortByPopular": "ترتيب حسب: الأكثر شيوعاً",
     "sortByPriceAsc": "السعر: من الأقل للأعلى",
     "sortByPriceDesc": "السعر: من الأعلى للأقل",
@@ -202,6 +230,8 @@
   },
   "cart": {
      "error": "خطأ",
+     "adding": "جاري الإضافة إلى السلة...",
+     
      "addSuccess": "تمت الإضافة إلى السلة بنجاح!",
      "loginSuccess": "تم تسجيل الدخول بنجاح! جاري إعادة التوجيه...",
   "loadingCart": "جاري تحميل السلة...",
@@ -361,10 +391,21 @@
   },
   "ProductPage": {
   "home": "الرئيسية",
+      "viewAll": "عرض الكل",
+
   "products": "المنتجات",
   "ourProducts": "منتجاتنا",
   "loading": "جارٍ تحميل المنتجات...",
+    "gridExampleTitle": "تشكيلة مميزة",
+    "gridExampleSubtitle": "تصفح أحدث الشبكات",
   "showing": "عرض",
+  "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "page": "صفحة",
+      "of": "من"
+    },
+  "noProducts": "لا توجد منتجات متاحة في هذا القسم.",
   "sort": {
     "bestSelling": "الأكثر مبيعاً",
     "lowToHigh": "السعر: من الأقل للأعلى",

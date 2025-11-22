@@ -4,59 +4,74 @@ import NextTopLoader from 'nextjs-toploader';
 import Providers from '../providers';
 import { getMessages } from 'next-intl/server';
 import '../globals.css';
-import Footer from './components/ui/Footer'; 
-import Header from './components/ui/Header'; 
-import PageTransitionWrapper from '../PageTransitionWrapper'; // ⭐️ تأكد من المسار
+import Footer from './components/ui/Footer';
+import Header from './components/ui/Header';
+
+// ⭐ Fonts
 const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
 });
 
 const notoKufi = Noto_Kufi_Arabic({
-  subsets: ['arabic'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-noto-kufi',
+  subsets: ['arabic'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-noto-kufi',
+  display: 'swap',
 });
 
-
-export const metadata = {
-  title: 'Skinzy Care',
-  description: 'Your trusted online beauty hub',
+// ⭐ Viewport Configuration
+export const viewport = {
+  themeColor: '#FF671F', // لون الثيم للموبايل
 };
 
-export default async function RootLayout({ children, params: { locale } }) {
-  if (!['en', 'ar'].includes(locale)) {
-    notFound();
-  }
+export const metadata = {
+  title: 'Skinzy Care',
+  description: 'Your trusted online beauty hub',
+};
 
-  const messages = await getMessages(locale);
-
-  return (
-    <html 
-        lang={locale} 
-        dir={locale === 'ar' ? 'rtl' : 'ltr'}
-        suppressHydrationWarning 
-    >
-      {/* ⭐️ تأكد أن هذا السطر يبدأ مباشرة تحت وسم <html> */}
-      <body className={`${poppins.variable} ${notoKufi.variable} font-sans`}>
-        <NextTopLoader
-          color="#FF671F"
-//           height={3}
-          showSpinner={false}
-        />
-          <Providers locale={locale} messages={messages}>
-          <Header />
-          <PageTransitionWrapper> 
+// 🟢 التعديل الأهم هنا: params وعد (Promise) ويجب انتظاره
+export default async function RootLayout({ children, params }) {
   
-          <main className="min-h-screen">
-            {children}
-          </main>
-</PageTransitionWrapper>
-          
-          <Footer />
-        </Providers>
-      </body>
-    </html>
-  );
+  // 1. انتظار الـ params (حل مشكلة Server Error)
+  const { locale } = await params;
+
+  // 2. التحقق من اللغة
+  if (!['en', 'ar'].includes(locale)) {
+    notFound();
+  }
+
+  // 3. جلب الرسائل
+  const messages = await getMessages(locale);
+
+  return (
+    <html
+      lang={locale}
+      dir={locale === 'ar' ? 'rtl' : 'ltr'}
+      // قمع تحذيرات الهيدريشن على مستوى الصفحة
+      suppressHydrationWarning
+    >
+      {/* ❌ تم حذف <head> اليدوي لأنه يسبب أخطاء 404 مع globals.css */}
+      
+      <body 
+        className={`${poppins.variable} ${notoKufi.variable} font-sans`}
+        // 🟢 هذا السطر يحل مشكلة Smart Unit Converter Extension
+        suppressHydrationWarning={true} 
+      >
+        <NextTopLoader color="#FF671F" showSpinner={false} />
+
+        <Providers locale={locale} messages={messages}>
+          <Header />
+          
+          <main className="min-h-screen">
+            {children}
+          </main>
+
+          <Footer />
+        </Providers>
+      </body>
+    </html>
+  );
 }

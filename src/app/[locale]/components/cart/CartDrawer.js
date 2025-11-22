@@ -197,11 +197,11 @@ export default function CartDrawer({
                   {t("goToCheckout")}
                 </button>
               </Link>
-              <Link href={`/${locale}/cart`} className="flex-grow">
+              {/* <Link href={`/${locale}/cart`} className="flex-grow">
                 <button className="w-full bg-white text-black border border-gray-300 py-3 rounded-lg text-base font-bold hover:bg-gray-100 transition-transform hover:scale-[1.02] duration-300 cursor-pointer">
                   {t("goToCart")}
                 </button>
-              </Link>
+              </Link> */}
             </div>
 
             <div className="text-center mt-4">

@@ -117,7 +117,7 @@ const price = parseFloat(item.product?.price_after_discount ?? item.product?.pri
 
               <div className={`mt-12 flex justify-between items-start gap-8 flex-col md:flex-row ${isArabic ? "text-right" : "text-left"}`}>
                 <div className="w-full md:w-1/2">
-                  <Link href={`/${locale}`} className="bg-[#FF671F] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#b1603a]">
+                  <Link href={`/${locale}`} prefetch className="bg-[#FF671F] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#b1603a]">
                     {text.continueShopping}
                   </Link>
                 </div>
@@ -129,7 +129,7 @@ const price = parseFloat(item.product?.price_after_discount ?? item.product?.pri
                   <p className="text-xs text-gray-500 mb-6">
                     {text.taxesNote}
                   </p>
-                  <Link href={`/${locale}/checkout`}>
+                  <Link href={`/${locale}/checkout`} prefetch>
                     <button className="w-full bg-[#FF671F] text-white px-6 py-4 rounded-md font-bold text-lg hover:bg-[#bd5727]">
                       {text.checkOut}
                     </button>
@@ -140,7 +140,7 @@ const price = parseFloat(item.product?.price_after_discount ?? item.product?.pri
           ) : (
             <div className="text-center py-16">
               <h2 className="text-2xl font-semibold mb-2">{text.cartEmpty}</h2>
-              <Link href={`/${locale}`} className="text-[#d77979] underline font-semibold">
+              <Link href={`/${locale}`} prefetch className="text-[#d77979] underline font-semibold">
                 {text.continueShopping}
               </Link>
             </div>

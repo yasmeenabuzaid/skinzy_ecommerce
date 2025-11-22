@@ -81,7 +81,6 @@ const AddAddressView = ({ onCancel, onSubmitSuccess }) => {
     try {
       const response = await BackendConnector.addAddress(addressData);
       
-      console.log("Address added successfully!");
       
       if (onSubmitSuccess) {
         onSubmitSuccess(response?.address || response?.data || response);

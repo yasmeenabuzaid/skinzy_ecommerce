@@ -48,7 +48,6 @@ export default function LoginPage() {
         try {
             setLoading(true);
             const response = await BackendConnector.login({ email, password });
-            console.log('Login response:', response);
 
             if (response?.success) { 
                 storageService.setUserInfo({

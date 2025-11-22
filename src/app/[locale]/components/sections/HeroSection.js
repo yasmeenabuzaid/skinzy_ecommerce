@@ -1,49 +1,68 @@
 'use client';
 import React from 'react';
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from 'next-intl';
 
-// Chevron icons مع دعم RTL
+// Chevron icons with RTL support
 const ChevronLeft = ({ isRTL, ...props }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
-    style={{ transform: isRTL ? 'scaleX(-1)' : 'scaleX(1)' }} 
-    {...props}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ transform: isRTL ? 'scaleX(-1)' : 'scaleX(1)' }}
+    {...props}
+  >
     <path d="m15 18-6-6 6-6" />
   </svg>
 );
 
 const ChevronRight = ({ isRTL, ...props }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     style={{ transform: isRTL ? 'scaleX(-1)' : 'scaleX(1)' }}
-    {...props}>
+    {...props}
+  >
     <path d="m9 18 6-6-6-6" />
   </svg>
 );
 
 function HeroSection() {
   const [currentSlide, setCurrentSlide] = React.useState(0);
-  const t = useTranslations("hero");
+  // تأكد من أن ملفات الترجمة موجودة لتجنب الأخطاء، أو استخدم قيم افتراضية
+  const t = useTranslations('hero'); 
   const locale = useLocale();
   const isRTL = locale === 'ar';
 
   const heroSlides = [
     {
       image: '/hero2.png',
-      offer: t("slides.1.offer"),
-      title: t("slides.1.title"),
-      description: t("slides.1.description"),
-      buttonText: t("slides.0.buttonText"),
+      offer: t('slides.1.offer'),
+      title: t('slides.1.title'),
+      description: t('slides.1.description'),
+      buttonText: t('slides.0.buttonText'),
     },
     {
       image: '/hero3.png',
-      offer: t("slides.0.offer"),
-      title: t("slides.0.title"),
-      description: t("slides.0.description"),
-      buttonText: t("slides.0.buttonText"),
+      offer: t('slides.0.offer'),
+      title: t('slides.0.title'),
+      description: t('slides.0.description'),
+      buttonText: t('slides.0.buttonText'),
     },
   ];
-  
+
   const nextSlide = React.useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   }, [heroSlides.length]);
@@ -62,7 +81,8 @@ function HeroSection() {
   }, [nextSlide]);
 
   return (
-    <section className="relative h-[calc(100vh-136px)] min-h-[500px] w-full overflow-hidden bg-gray-100 group ">
+    // التغيير هنا: إضافة max-w-full لضمان عدم تجاوز العرض
+    <section className="relative w-full max-w-full overflow-hidden h-[calc(100vh-136px)] min-h-[500px] bg-gray-100 group">
       {heroSlides.map((slide, index) => (
         <div
           key={index}
@@ -79,34 +99,40 @@ function HeroSection() {
                 index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               } ${isRTL ? 'lg:mr-[12%] lg:text-right' : 'lg:ml-[12%] lg:text-left'}`}
             >
-              {/* الخط أسود بدرجات خفيفة */}
-              <p className="text-white font-medium mb-2 text-lg" style={{ textShadow: "0 0 1px rgba(0,0,0,0.3)" }}>
+              <p
+                className="text-white font-medium mb-2 text-lg"
+                style={{ textShadow: '0 0 1px rgba(0,0,0,0.3)' }}
+              >
                 {slide.offer}
               </p>
-              
-              <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-white mb-5 tracking-wide" 
-                  style={{ textShadow: "0 0 2px rgba(0,0,0,0.3)" }}>
+
+              <h1
+                className="text-4xl md:text-5xl font-extrabold leading-tight text-white mb-5 tracking-wide"
+                style={{ textShadow: '0 0 2px rgba(0,0,0,0.3)' }}
+              >
                 {slide.title}
               </h1>
-              
-              <p className="text-white mb-8 text-base leading-relaxed" style={{ textShadow: "0 0 1px rgba(0,0,0,0.3)" }}>
+
+              <p
+                className="text-white mb-8 text-base leading-relaxed"
+                style={{ textShadow: '0 0 1px rgba(0,0,0,0.3)' }}
+              >
                 {slide.description}
               </p>
-              
-         <a
-  href={`/${locale}/subcategory`}
-  className="inline-block bg-[#FF671F] text-white font-semibold py-3 px-8 transition-all duration-300 shadow-md hover:shadow-lg rounded-md"
-  style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.2)" }}
->
-  {slide.buttonText}
-</a>
 
+              <a
+                href={`/${locale}/subcategory`}
+                className="inline-block bg-[#FF671F] text-white font-semibold py-3 px-8 transition-all duration-300 shadow-md hover:shadow-lg rounded-md"
+                style={{ boxShadow: '0 0 0 1px rgba(0,0,0,0.2)' }}
+              >
+                {slide.buttonText}
+              </a>
             </div>
           </div>
         </div>
       ))}
 
-      {/* الأسهم */}
+      {/* Arrows */}
       <button
         onClick={prevSlide}
         className={`absolute top-1/2 -translate-y-1/2 w-11 h-11 bg-black text-white rounded-full opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-300 ease-in-out flex items-center justify-center hover:bg-black/70 z-20 ${
@@ -114,7 +140,7 @@ function HeroSection() {
         }`}
         aria-label="Previous Slide"
       >
-        <ChevronLeft size={24} isRTL={isRTL} />
+        <ChevronLeft isRTL={isRTL} />
       </button>
 
       <button
@@ -124,7 +150,7 @@ function HeroSection() {
         }`}
         aria-label="Next Slide"
       >
-        <ChevronRight size={24} isRTL={isRTL} />
+        <ChevronRight isRTL={isRTL} />
       </button>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
@@ -145,7 +171,11 @@ function HeroSection() {
 
 export default function App() {
   return (
-    <div className="font-sans">
+    // التغيير الرئيسي هنا:
+    // 1. overflow-x-hidden: يمنع السكرول الأفقي تماماً
+    // 2. w-full: يضمن أخذ العرض المتاح فقط
+    // 3. relative: لضمان احتواء العناصر المطلقة داخله
+    <div className="relative w-full max-w-[100vw] overflow-x-hidden font-sans">
       <HeroSection />
     </div>
   );

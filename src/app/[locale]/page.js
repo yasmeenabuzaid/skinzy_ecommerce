@@ -13,7 +13,6 @@ export default async function RealPage({ params: { locale } }) {
     conn.fetchProducts(), // ⭐️ استدعاء دالة المنتجات
     conn.fetchCategories() // ⭐️ استدعاء دالة التصنيفات
   ]);
-console.log('Fetched fetchCategories response:', categoriesResponse);
   // 4. تنظيف البيانات (لأن دوالك ترجع استجابة axios كاملة)
   //    نقوم بمحاكاة ما كان يفعله الـ "select" في الهوك
   

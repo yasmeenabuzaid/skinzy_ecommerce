@@ -32,6 +32,10 @@ images: {
       protocol: 'https',
       hostname: 'example.com', // <-- أضيفي هذا
     },
+     {
+      protocol: 'https',
+     hostname: 'cdn.shopify.com',
+    },
   ],
 },
 

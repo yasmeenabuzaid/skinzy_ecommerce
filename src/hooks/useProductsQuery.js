@@ -45,9 +45,6 @@ const useProductsQuery = () => {
         },
     });
 
-    // هذه الأسطر مفيدة للفحص، يمكن تركها أو حذفها
-    // console.log('✅ Final products:', data?.products || []);
-    // console.log('✅ Final groups:', data?.groups || []);
 
     return {
         products: data?.products || [],

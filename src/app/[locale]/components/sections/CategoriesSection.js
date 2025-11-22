@@ -14,7 +14,6 @@ const CategorySkeleton = () => (
 
 // ⭐️ المكون الرئيسي يستقبل البيانات كـ props
 export default function CategoriesSection({ categories, isLoading, error }) {
-    console.log('CategoriesSection categories:', categories);
     // 💡 لم يعد هناك أي منطق لتأخير الظهور
     const ref = React.useRef(null);
     

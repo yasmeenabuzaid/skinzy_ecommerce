@@ -13,7 +13,23 @@ class BackendConnector {
             },
         });
     }
+// ✅ دالة جلب معلومات المستخدم
+    getUserInfo_2 = () => {
+        return storageService.getUserInfo();
+    }
 
+    // ✅ دالة مساعدة لجلب الهيدر (للاستخدام مع المفضلة فقط)
+    getAuthHeaders() {
+        const userData = storageService.getUserInfo();
+        if (userData && userData.accessToken) {
+            return { 
+                'Authorization': `Bearer ${userData.accessToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+        }
+        return {};
+    }
     /**
      * Helper function to get user info from cookies on the server-side.
      * @param {object} context - The context object from getServerSideProps.
@@ -128,14 +144,46 @@ class BackendConnector {
     };
 
 getCities = () => {
-    const options = {
-        url: `/e-commerce/customer/cities`,
-        baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-    };
-    // 🚨 التعديل الضروري: إعادة response.data فقط، حيث توجد المصفوفة
-    return requests.get(options).then((response) => response.data).catch((err) => err);
-};
+        const options = {
+            url: `/e-commerce/customer/cities`,
+            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+        };
 
+        return requests.get(options)
+            .then((response) => {
+                // فحص ذكي: هل البيانات موجودة في response مباشرة أم في response.data؟
+                const payload = response?.data ? response.data : response;
+                
+
+                // تنظيف البيانات من هيكلية Laravel الغريبة
+                let cleanCities = [];
+
+                if (payload?.data && payload.data['Illuminate\\Database\\Eloquent\\Collection']) {
+                    cleanCities = payload.data['Illuminate\\Database\\Eloquent\\Collection'];
+                } 
+                else if (payload?.data && Array.isArray(payload.data)) {
+                    cleanCities = payload.data;
+                }
+                else if (payload?.cities) {
+                    cleanCities = payload.cities;
+                }
+                else if (Array.isArray(payload)) {
+                    cleanCities = payload;
+                }
+
+                // إرجاع كائن موحد للواجهة
+                return { 
+                    success: true,
+                    cities: cleanCities,
+                    original: payload 
+                };
+            })
+            .catch((err) => {
+                // رمي الخطأ لتلتقطه الواجهة وتعرض التنبيه
+                throw err; 
+            });
+    };
+    
     fetchProducts = async (params, context = null) => {
         const options = {
             url: "/e-commerce/customer/products",
@@ -200,14 +248,34 @@ fetchProductsByBrand = async ({ brandId, filter }, context = null) => {
         return requests.get(options).then((response) => response).catch((err) => err);
     };
 
-    fetchFavorites = async (context = null) => {
-        const defaultHeaders = await this.getDefaultHeaders(context);
+  fetchFavorites = async () => {
+        // نستخدم الطريقة التي تستخدمها باقي الدوال (options object)
         const options = {
             url: "/e-commerce/customer/favorites",
             baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-            headers: { ...defaultHeaders },
+            headers: this.getAuthHeaders() // نمرر الهيدرز هنا
         };
         return requests.get(options).then((response) => response).catch((err) => err);
+    };
+
+    addToFavorites = async (data) => {
+        const options = {
+            url: "/e-commerce/customer/favorites",
+            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+            data: data,
+            headers: this.getAuthHeaders() // نمرر الهيدرز هنا
+        };
+        return requests.post(options).then((response) => response).catch((err) => err);
+    };
+
+    removeFromFavorites = async (productId) => {
+        const options = {
+            // نستخدم DELETE ونمرر الهيدرز
+            url: `/e-commerce/customer/favorites/${productId}`,
+            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+            headers: this.getAuthHeaders()
+        };
+        return requests.delete(options).then((response) => response).catch((err) => err);
     };
     
     getFeedbacks = async (productId, context = null) => {
@@ -291,26 +359,9 @@ fetchProductsByBrand = async ({ brandId, filter }, context = null) => {
     // and are typically called from the client-side, so they don't need the `context` parameter.
     // They will continue to work as they did before.
     
-    removeFromFavorites = async (productId) => {
-        const defaultHeaders = await this.getDefaultHeaders();
-        const response = await requests.patch({
-            url: `/e-commerce/customer/favorites/${productId}`,
-            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-            headers: { ...defaultHeaders },
-        });
-        return response;
-    };
 
-    addToFavorites = async (data) => {
-        const defaultHeaders = await this.getDefaultHeaders();
-        const options = {
-            data: data,
-            url: "/e-commerce/customer/favorites",
-            baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-            headers: { ...defaultHeaders },
-        };
-        return requests.post(options).then((response) => response).catch((err) => err);
-    };
+
+   
 
     addFeedback = async (data) => {
         const defaultHeaders = await this.getDefaultHeaders();
@@ -355,6 +406,7 @@ fetchProductsByBrand = async ({ brandId, filter }, context = null) => {
         };
         return requests.patch(options).then((response) => response).catch((err) => err);
     };
+    
 
     deleteCart = async (data) => {
         const defaultHeaders = await this.getDefaultHeaders();

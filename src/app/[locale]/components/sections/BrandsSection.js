@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from 'next-intl';
 import useBrandsQuery from "../../../../hooks/useBrandsQuery";
 
-// No changes needed for this Intersection Observer hook
+// 🟢 تعريف رابط الصورة البديلة في متغير لسهولة التعديل
+const PLACEHOLDER_IMAGE = "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?v=1530129081";
+
 const useOnScreen = (options) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -45,7 +47,6 @@ const BrandsSection = memo(function BrandsSection() {
     router.push(`/${locale}/brands/${brandId}`);
   }, [router, locale]);
   
-  // يمكن تعديل هذه القيمة لتغيير سرعة الشريط
   const animationDuration = (brands?.length || 10) * 1.1;
 
   if (errorBrands) return <p className="text-center text-red-500 py-6">{t('error')} {errorBrands.message}</p>;
@@ -54,7 +55,6 @@ const BrandsSection = memo(function BrandsSection() {
   return (
     <section
       ref={ref}
-      // التغيير 1: تقليل الحشوة العمودية أكثر إلى py-6
       className={`py-6 bg-gray-50 border-y border-gray-200 transition-all duration-700 ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
@@ -68,17 +68,15 @@ const BrandsSection = memo(function BrandsSection() {
             {[...brands, ...brands].map((brand, index) => (
               <div
                 key={`${brand.id}-${index}`}
-                // التغيير 2: تصغير العرض والحشوة بشكل إضافي
-                // w-28 للموبايل, sm:w-40 للشاشات الأكبر
                 className="w-28 sm:w-40 flex-shrink-0 flex items-center justify-center px-2 cursor-pointer group"
                 onClick={() => handleBrandClick(brand.id)}
               >
                 <Image
-                  src={brand.image || "/placeholder-brand.svg"}
+                  // 🟢 التعديل هنا: استخدام الرابط الجديد في حال عدم وجود صورة
+                  src={brand.image || PLACEHOLDER_IMAGE}
                   alt={brand.name || 'Brand Logo'}
                   width={150}
                   height={50}
-                  // التغيير 3: تصغير ارتفاع الصورة ليتناسب مع الحجم الجديد
                   className="object-contain h-10 sm:h-12 opacity-50 group-hover:opacity-100 transition-opacity"
                   style={{ color: 'transparent' }}
                 />
