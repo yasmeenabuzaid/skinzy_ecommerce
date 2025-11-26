@@ -1,24 +1,50 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import Breadcrumbs from "./Breadcrumbs"; // تأكد من المسار
-import ProductGallery from "./ProductGallery"; // تأكد من المسار
-import ProductDetails from "./ProductDetails"; // تأكد من المسار
-import ProductDescriptionSection from "./ProductDescriptionSection"; // تأكد من المسار
-import ScrollToTopButton from "../ui/ScrollToTopButton"; // تأكد من المسار
-import ProductSection from '..//sections/ProductSection';
+import Breadcrumbs from "./Breadcrumbs"; 
+import ProductGallery from "./ProductGallery"; 
+import ProductDetails from "./ProductDetails"; 
+import ProductDescriptionSection from "./ProductDescriptionSection"; 
+import ScrollToTopButton from "../ui/ScrollToTopButton"; 
+import ProductSection from '../sections/ProductSection';
 import { useLocale, useTranslations } from "next-intl";
+
+// 🟢 استيراد الكونتكس (تأكد من صحة المسار حسب مشروعك)
+// قد يكون المسار مثلاً: "@/context/CartContext" أو نفس الملف إذا كانوا بنفس المجلد
+import { useCartContext } from "../../../../context/CartContext"; 
+
 export default function ProductPageClient({ product , products}) {
   const [mainImage, setMainImage] = useState("");
   const [selectedVariation, setSelectedVariation] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
-const t = useTranslations('ProductPage');
+  
+  const t = useTranslations('ProductPage');
   const locale = useLocale();
   const isArabic = locale === "ar";
 
+  // 🟢 تفعيل الكونتكس
+  const { addCart } = useCartContext();
+
   const handleQuantityChange = (amount) => {
     setQuantity((prev) => Math.max(1, prev + amount));
+  };
+
+  // 🟢 دالة الإضافة للسلة التي تجمع البيانات وترسلها
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    // يمكنك إضافة تحقق هنا إذا كان الفاريشن إجباري
+    // if (product.variations?.length > 0 && !selectedVariation) {
+    //   alert("Please select an option");
+    //   return;
+    // }
+
+    addCart({
+        productId: product.id,
+        quantity: quantity,
+        variationId: selectedVariation ? selectedVariation.id : null
+    });
   };
 
   const handleScroll = () => {
@@ -34,7 +60,6 @@ const t = useTranslations('ProductPage');
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 1. تعيين الحالة الافتراضية عند تحميل المنتج
   useEffect(() => {
     if (product) {
       const defaultVariation = product.variations?.[0] || null;
@@ -49,7 +74,6 @@ const t = useTranslations('ProductPage');
     }
   }, [product]);
 
-  // 2. مراقبة تغيير التنويع
   useEffect(() => {
     if (selectedVariation) {
       const newVariationImage = product.images?.find(
@@ -62,7 +86,6 @@ const t = useTranslations('ProductPage');
     }
   }, [selectedVariation, product]);
 
-  // تجهيز البيانات المترجمة
   const translatedProduct = {
     ...product,
     name: isArabic ? product.name_ar : product.name,
@@ -88,12 +111,14 @@ const t = useTranslations('ProductPage');
               setMainImage={setMainImage}
             />
 
+            {/* 🟢 تم تمرير دالة الإضافة onAddToCart هنا */}
             <ProductDetails
               product={translatedProduct}
               selectedVariation={selectedVariation}
               setSelectedVariation={setSelectedVariation}
               quantity={quantity}
               handleQuantityChange={handleQuantityChange}
+              onAddToCart={handleAddToCart} 
             />
           </main>
         </div>
@@ -105,8 +130,8 @@ const t = useTranslations('ProductPage');
 
         <ScrollToTopButton show={showScrollBtn} onClick={scrollToTop} />
          <ProductSection
-                  title={t('gridExampleTitle')}    // "Grid Section Example"
-                  subtitle={t('gridExampleSubtitle')} // "Another Grid"
+                  title={t('gridExampleTitle')}   
+                  subtitle={t('gridExampleSubtitle')} 
                   products={products}
                   isLoading={false}
                   error={null}

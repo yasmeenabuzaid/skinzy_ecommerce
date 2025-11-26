@@ -1,7 +1,7 @@
 "use client";
-import { useCartContext } from "@/context/CartContext";
+// تأكد من مسار الاستدعاء الصحيح للكونتكس
+import { useCartContext } from "@/context/CartContext"; 
 import { Heart, Minus, Plus } from "lucide-react";
-// 1. استبدال سويت اليرت بـ توست
 import toast from "react-hot-toast";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -118,17 +118,18 @@ export default function ProductDetails({
     setSelectedVariation(variation);
   };
 
-  // تعديل دالة إضافة السلة: إزالة Swal والاعتماد على Context
+  // ==========================================================
+  // 🟢 التعديل المهم هنا: استخدام variationId بدلاً من size
+  // ==========================================================
   const _performAddToCart = () => {
     addCart({
       productId: mainProduct.id,
       quantity: quantity,
-      size: selectedVariation?.variation_value || "default",
+      // نرسل الـ ID الخاص بالفاريشن لربطه بقاعدة البيانات
+      variationId: selectedVariation ? selectedVariation.id : null, 
     });
-    // لا حاجة لإضافة Toast هنا لأن addCart في Context تقوم بذلك بالفعل
   };
 
-  // تعديل دالة المفضلة لاستخدام Toast بدلاً من Swal
   const _performAddToFavorites = async () => {
     const currentUserInfo = storageService.getUserInfo();
     const userId = currentUserInfo?.user?.id;
@@ -148,7 +149,6 @@ export default function ProductDetails({
       if (response?.favorite) {
         toast.success(response.message || t.favoriteAdded, { id: toastId });
       } else {
-        // قد تكون العملية إزالة من المفضلة أو فشل
         toast.success(response?.message || t.favoriteRemoved, { id: toastId });
       }
     } catch (error) {
@@ -163,6 +163,7 @@ export default function ProductDetails({
   };
 
   const handleAddToCart = () => {
+    // التحقق من تسجيل الدخول قبل الإضافة للسلة (إذا كان مطلوباً)
     if (!userInfo?.accessToken) {
       handleAuthRequired(() => _performAddToCart());
     } else {
@@ -281,6 +282,7 @@ export default function ProductDetails({
                           {variation.variation_value}
                         </span>
                         
+                        {/* عرض السعر إذا كان مختلفاً عن المنتج الرئيسي (اختياري) */}
                         {variation.price && (
                           <span className="text-xs text-gray-600 block mt-1 text-center">
                             {formatPrice(variation.price)}

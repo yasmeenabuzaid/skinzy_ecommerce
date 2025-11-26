@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect, createContext } from "react";
 import BackendConnector from "@/services/connectors/BackendConnector";
 import storageService from "@/services/storage/storageService";
 import { useTranslations } from "next-intl";
-import toast, { Toaster } from 'react-hot-toast'; // استيراد التوست
+import toast, { Toaster } from 'react-hot-toast';
 
 const CartContext = createContext({});
 
@@ -48,73 +48,64 @@ export const CartContextProvider = ({ children }) => {
     fetchCartCount();
   }, []);
 
-  // --- إضافة للكارت ---
-  const addCart = async ({ productId, quantity = 1, size = null }) => {
+  // --- إضافة للكارت (معدلة) ---
+  const addCart = async ({ productId, quantity = 1, variationId = null }) => {
     const userInfo = storageService.getUserInfo();
     if (!userInfo?.accessToken) {
-      toast.error(t("loginRequired")); // استبدال Swal بـ toast
+      toast.error(t("loginRequired"));
       return;
     }
 
-    // تحديث وهمي سريع للعدد (اختياري)
-    setCartCount(prev => prev + 1); 
-
-    const toastId = toast.loading(t("adding")); // إظهار لودينج صغير
+    const toastId = toast.loading(t("adding"));
 
     try {
-      const resp = await BackendConnector.addCart({ productId, quantity, size });
-      
+      const resp = await BackendConnector.addCart({ 
+          productId, 
+          quantity, 
+          product_variation_id: variationId // ربط كامل مع قاعدة البيانات
+      });
+
       if (resp?.success) {
-        toast.success(t("addSuccess"), { id: toastId }); // تحويل اللودينج لنجاح
-        await fetchCart(true); // تحديث صامت للداتا الحقيقية
-        await fetchCartCount();
+        toast.success(t("addSuccess"), { id: toastId });
+        await fetchCart(true);
+        await fetchCartCount(); // تحديث count من السيرفر
       } else {
         toast.error(t("addError"), { id: toastId });
-        setCartCount(prev => prev - 1); // تراجع في حالة الفشل
       }
     } catch (error) {
       toast.error(t("addError"), { id: toastId });
-      setCartCount(prev => prev - 1); // تراجع
+      console.error("Add cart error:", error);
     }
   };
 
-  // --- حذف من الكارت (تحديث فوري) ---
+  // --- حذف من الكارت ---
   const deleteCart = async (id) => {
-    // 1. حفظ النسخة القديمة احتياطاً
     const previousCart = [...cart];
     const previousCount = cartCount;
 
-    // 2. التحديث الفوري للواجهة (حذف العنصر فوراً)
+    // تحديث مؤقت للسلاسة
     setCart((prev) => prev.filter((item) => item.id !== id));
-    setCartCount((prev) => Math.max(0, prev - 1));
-    
-    // رسالة صغيرة
+
     toast.success(t("deleteSuccess"), { duration: 2000 });
 
     try {
-      // 3. إرسال الطلب للسيرفر
-const data = await BackendConnector.updateCart({ id, is_deleted: 1 });
-      
+      const data = await BackendConnector.updateCart({ id, is_deleted: 1 });
       if (!data.success) {
         throw new Error(data.message);
       }
-      // في حالة النجاح، لا نفعل شيئاً لأننا حدثنا الواجهة بالفعل
-      // يمكن عمل fetch في الخلفية للتأكد من الداتا
-      fetchCartCount(); 
+      await fetchCartCount(); // تحديث count من السيرفر
     } catch (error) {
-      // 4. في حالة الفشل: استرجاع النسخة القديمة
       setCart(previousCart);
       setCartCount(previousCount);
       toast.error(t("deleteError"));
+      console.error("Delete cart error:", error);
     }
   };
 
-  // --- تحديث الكمية (تحديث فوري) ---
+  // --- تحديث الكمية ---
   const updateCartq = async (id, quantity) => {
-    // 1. حفظ النسخة القديمة
     const previousCart = [...cart];
 
-    // 2. التحديث الفوري للواجهة (تغيير الرقم فوراً أمام اليوزر)
     setCart((prevCart) => 
       prevCart.map((item) => 
         item.id === id ? { ...item, quantity: quantity } : item
@@ -122,28 +113,21 @@ const data = await BackendConnector.updateCart({ id, is_deleted: 1 });
     );
 
     try {
-      // 3. إرسال الطلب للسيرفر بدون لودينج مزعج
       const data = await BackendConnector.updateCartq({ id, quantity });
-      
       if (!data?.success) {
         throw new Error(data?.message);
       }
-      
-      // نجاح صامت، أو يمكن عمل fetch silent للتأكد من الأسعار
-      fetchCart(true); 
-      
+      await fetchCart(true); // تحديث البيانات من السيرفر
     } catch (error) {
-      // 4. تراجع عند الخطأ
       setCart(previousCart);
       toast.error(t("updateError"));
       console.error("Update cart error:", error);
     }
   };
 
-  // دالة updateCart القديمة (إذا كنت تستخدمها لحذف المنتج عند نقص الكمية لصفر)
+  // دالة updateCart القديمة للتوحيد
   const updateCart = async (id, quantity) => {
-     // يمكنك تطبيق نفس منطق updateCartq هنا
-     // ...
+      return updateCartq(id, quantity);
   };
 
   return (
@@ -151,7 +135,7 @@ const data = await BackendConnector.updateCart({ id, is_deleted: 1 });
       value={{
         addCart,
         deleteCart,
-        updateCart, // تأكد من توحيد استخدامك للدوال
+        updateCart,
         updateCartq,
         cartCount,
         cart,
@@ -160,7 +144,6 @@ const data = await BackendConnector.updateCart({ id, is_deleted: 1 });
         fetchCartCount
       }}
     >
-      {/* ضروري لإظهار التوست في التطبيق */}
       <Toaster position="top-center" reverseOrder={false} />
       {children}
     </CartContext.Provider>
